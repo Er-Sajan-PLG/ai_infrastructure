@@ -20,4 +20,10 @@ Charter §12 and §22: why implement or not; why this architecture; why this dep
 
 ## Open items requiring human decision
 
-- **Contribution policy.** Apache-2.0 is in place, but no CLA/DCO-with-relicense-grant has been adopted, so external contributions are not accepted ([ADR-0002](0002-license-selection.md), [`../CONTRIBUTING.md`](../../CONTRIBUTING.md)). Adopting one is required before external contributions can be taken.
+- **Contribution policy — DECIDED 2026-09-16: remains closed.** Apache-2.0 is in place and no CLA/DCO-with-relicense-grant has been adopted, so external contributions are not accepted ([ADR-0002](0002-license-selection.md), [`../CONTRIBUTING.md`](../../CONTRIBUTING.md)).
+
+  This was reviewed and the maintainer chose to keep the repository closed rather than adopt a CLA or DCO now. The reasoning: the ability to relicense *future* versions survives only while the maintainer is sole copyright holder, and it is destroyed by the first accepted outside contribution. Nothing in Phase 1 needs outside contributions, so keeping it closed costs nothing today and preserves the whole option. Adopting a policy later remains possible at any time; the reverse is not.
+
+  **Recorded without a new ADR deliberately.** No decision was *changed* — ADR-0002 and `CONTRIBUTING.md` already stated this policy, and the review confirmed them. Burning an ADR number on a non-change would create a record implying a change occurred. If a CLA or DCO is ever adopted, that *is* a change and takes an ADR superseding the note in ADR-0002.
+
+  It stays listed here, rather than being deleted, because it is a **standing choice with a known cost**: it blocks an entire class of work, and the next session should see that cost rather than have it silently disappear.

@@ -208,7 +208,18 @@ compatibility_status: >
   The mcp-client capability (separate taxonomy entry) will implement the stdio transport.
   This study informs our registry's identity and schema model, not a shared wire format.
 standards: ["JSON-RPC 2.0", "JSON Schema"]
-last_reviewed: 2026-09-15
+last_reviewed: 2026-09-16
+review_note: >
+  Re-read in depth in session 16 against 2026-07-28 primary sources. Two findings
+  this entry did not carry: (1) the two protocol ERAS are now named in the spec
+  ("Modern" = per-request _meta, 2026-07-28+; "Legacy" = initialize handshake,
+  2025-11-25 and earlier), and the compatibility matrix says a modern client against
+  a legacy server FAILS rather than degrades -- so the era choice determines which
+  servers a client can reach at all. (2) The spec now partitions the JSON-RPC reserved
+  range (-32000..-32099): -32020..-32099 is reserved for MCP, -32000..-32019 is frozen
+  legacy, and -32002 (resource not found, legacy) MUST NOT be emitted but SHOULD still
+  be accepted. None of this changes the entry's conclusions; it sharpens the era risk
+  from "six revisions in flight" to "two incompatible protocol designs".
 ```
 
 ---
@@ -974,6 +985,149 @@ compatibility_status: >
   streaming timing names. No code reused.
 standards: []
 last_reviewed: 2026-09-15
+```
+
+### MCP Python SDK (official client)
+
+```yaml
+project: MCP Python SDK
+repository: https://github.com/modelcontextprotocol/python-sdk
+authors: Anthropic and contributors
+license: MIT
+version_studied: main branch, src/mcp/client/stdio.py, src/mcp/client/session.py, src/mcp/shared/jsonrpc_dispatcher.py, src/mcp/shared/exceptions.py, src/mcp/os/posix/utilities.py, pyproject.toml (fetched 2026-09-16)
+capabilities: >
+  The reference Python client and server implementation of MCP, including the stdio
+  transport, request/response correlation, and the session lifecycle.
+architecture: >
+  Async-only, built on anyio. stdio_client is an async context manager that spawns the
+  server with anyio.open_process and wires TextReceiveStream to a newline-delimited
+  reader. Correlation is a dict of pending entries keyed by request id, with the request
+  id doubling as the progress token.
+strengths:
+  - "FACT: no shell anywhere -- the command and args are passed as a list to anyio.open_process; there is no shell=True equivalent."
+  - "FACT: the environment is an ALLOWLIST, not the full os.environ. POSIX inherits only HOME, LOGNAME, PATH, SHELL, TERM, USER, and values starting with '()' are skipped with the comment 'Skip functions, which are a security risk.'"
+  - "FACT: shutdown kills the whole POSIX process GROUP via os.killpg(pgid, SIGTERM) then os.killpg(pgid, SIGKILL), enabled by start_new_session=True. The docstring names the leak this avoids: killpg 'reaches every descendant atomically, even ones whose parent already exited.'"
+  - "FACT: shutdown runs inside anyio.CancelScope(shield=True), so a cancellation cannot leak the child process."
+  - "FACT: stderr is INHERITED to the parent's stderr by default (errlog: TextIO = sys.stderr), not captured. Separately, the remaining stdout is drained and discarded in a cancel shield so a server flushing buffered output cannot block on a full pipe."
+  - "FACT: three distinct error paths -- MCPError(code=CONNECTION_CLOSED) for transport failure, MCPError(code=<peer code>) for a JSON-RPC error response, and a plain returned CallToolResult with is_error=True for a tool failure. An isError result is NOT an exception."
+  - "FACT: coerce_request_id turns a stringified int back to int so a peer-echoed id still correlates (the docstring says it matches the TS SDK)."
+  - "FACT: read_timeout_seconds defaults to None (no timeout); DISCOVER_TIMEOUT_SECONDS = 10.0 is a module constant."
+  - "FACT: timeouts on shutdown are named constants -- PROCESS_TERMINATION_TIMEOUT = 2.0, FORCE_KILL_TIMEOUT = 2.0."
+weaknesses:
+  - "FACT: it cannot meet a zero-runtime-dependency rule. Declared runtime deps include anyio, httpx2, pydantic, starlette, python-multipart, sse-starlette, uvicorn, jsonschema, pyjwt[crypto], typing-extensions, typing-inspection, and opentelemetry-api. The stdio transport alone needs anyio."
+  - "FACT: async-only. Every entry point is async def; there is no sync client in the package. A sync client would have to be a wrapper."
+  - "OBSERVATION: a JSON parse failure on stdout is returned as a VALUE on the read stream and the connection stays open -- the client tolerates a chatty server rather than failing. The spec does not require either behaviour."
+  - "FACT: no startup timeout on the transport."
+patterns_worth_adopting:
+  - "Process-group kill on POSIX. The Go and TypeScript clients kill only the direct child and leak grandchildren."
+  - "The stderr allowlist rather than full environment inheritance."
+  - "The cancel-shield around shutdown, so a cancelled run cannot leak a process."
+  - "Three genuinely distinct error paths for transport / protocol / tool failure."
+patterns_worth_avoiding:
+  - "The dependency footprint, which is disqualifying for a zero-dependency repository."
+  - "The async-only posture, which would force a repository-wide reversal of ADR-0007 D-3."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target and no code reuse. Studied as the reference implementation of
+  the transport we intend to build, and as the source of the process-group-kill behaviour
+  we do intend to adopt.
+standards: ["Model Context Protocol"]
+last_reviewed: 2026-09-16
+```
+
+### MCP TypeScript SDK (official client)
+
+```yaml
+project: MCP TypeScript SDK
+repository: https://github.com/modelcontextprotocol/typescript-sdk
+authors: Anthropic and contributors
+license: MIT
+version_studied: main branch (v2 pnpm monorepo), packages/client/src/client/stdio.ts, packages/client/package.json, packages/core-internal/package.json, root package.json (fetched 2026-09-16)
+capabilities: >
+  The official TypeScript client and server implementation of MCP, including a stdio
+  transport exported as a separate entry point so browser bundles do not pull in Node
+  process APIs.
+architecture: >
+  Promise-based, layered over a shared protocol module that owns request correlation.
+  The stdio transport spawns via cross-spawn with an explicit shell:false, feeds stdout
+  chunks into a ReadBuffer, and writes with backpressure via the drain event.
+strengths:
+  - "FACT: shell is explicitly false -- 'shell: false' appears verbatim in the spawn options. No code path in the stdio file uses a shell."
+  - "FACT: the environment is an allowlist mirroring the Python SDK, and also skips values starting with '()'."
+  - "FACT: the stdio entry is deliberately kept separate from the root entry so bundling for browser or Cloudflare Workers 'does not pull in node:child_process, node:stream, or cross-spawn' -- an explicit acknowledgement that the transport is Node-only."
+  - "FACT: ReadBuffer carries a maxBufferSize with a documented default of 10 MB; a single message exceeding it emits an error and closes the transport."
+  - "FACT: writes respect backpressure -- if write() returns false the transport waits for the 'drain' event."
+weaknesses:
+  - "FACT: the stdio entry requires cross-spawn, a third-party package. Package deps also include eventsource, eventsource-parser, jose, pkce-challenge, and zod. This alone is disqualifying under a zero-runtime-dependency rule."
+  - "OBSERVATION: on an unparseable stdout line it throws out of readMessage(), routes to onerror, and CLOSES the transport -- the opposite of the Python SDK's tolerate-and-continue."
+  - "FACT: no startup timeout; start() resolves on the 'spawn' event and rejects on 'error'."
+  - "UNVERIFIED: the newline-vs-Content-Length boundary logic inside ReadBuffer (packages/core-internal/src/shared/stdio.ts was not read), and the request-correlation table in protocol.ts. Do not cite the TS framing mechanism as FACT."
+  - "UNVERIFIED: the SdkErrorCode taxonomy and whether any TypeScript code path elsewhere uses shell: true."
+patterns_worth_adopting:
+  - "An explicit documented buffer cap with a stated number (10 MB) -- a bound rather than an unbounded read."
+  - "Explicit shell:false as a stated property rather than an incidental one."
+  - "Backpressure handled via the drain event rather than ignoring the write result."
+patterns_worth_avoiding:
+  - "Failing the whole transport on one unparseable line, when the spec does not require it."
+  - "The dependency footprint."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target and no code reuse. Studied as a contrast case: it is the only
+  one of the three clients that tears the transport down on bad stdout, and it is the one
+  whose stdio entry point cannot exist without a third-party dependency.
+standards: ["Model Context Protocol"]
+last_reviewed: 2026-09-16
+```
+
+### mcp-go (independent client)
+
+```yaml
+project: mcp-go
+repository: https://github.com/mark3labs/mcp-go
+authors: mark3labs
+license: MIT
+version_studied: main branch, client/transport/stdio.go, client/stdio.go (fetched 2026-09-16)
+capabilities: >
+  An independent Go implementation of MCP, including a stdio client transport written
+  entirely against the standard library.
+architecture: >
+  Blocking API taking a context.Context. The stdio transport wraps the child in a
+  bufio.Reader for newline framing, a map of response channels for correlation, a
+  drop-oldest ring buffer for stderr, and a bounded shutdown escalation.
+strengths:
+  - "FACT: imports are the Go standard library only -- bufio, bytes, context, encoding/json, errors, fmt, io, io/fs, log/slog, os, os/exec, runtime, strings, sync, syscall, time -- plus an in-repo package. Its stdio transport is genuinely zero-third-party-dependency."
+  - "FACT: stderr defaults to io.Discard and is DRAINED CONTINUOUSLY into a 64 KiB drop-oldest ring buffer, so Write never blocks. The doc comment states the reason exactly: 'the transport drains stderr continuously so that the OS pipe (about 64KB) can never fill up and block the child process, which would deadlock the whole stdio channel.'"
+  - "FACT: writes are serialised under a mutex so concurrent SendRequest/SendNotification/sendResponse calls cannot interleave JSON-RPC lines."
+  - "FACT: framing tolerates CRLF -- ReadString('\\n') followed by TrimRight(line, '\\r\\n')."
+  - "FACT: shutdown is a bounded escalation -- gracefulShutdownTimeout = 2 * time.Second, forceKillTimeout = 3 * time.Second -- and is idempotent via closeOnce."
+  - "FACT: an optional CommandFunc seam exists specifically for sandboxing and custom environment control."
+weaknesses:
+  - "FACT: it inherits the FULL os.Environ() (cmd.Env = append(os.Environ(), c.env...)), the opposite of the Python and TypeScript allowlists. This is the one place where the zero-dependency reference is less safe than the dependency-heavy ones."
+  - "FACT: it kills only the direct child (c.cmd.Process), not the process group, so grandchildren leak -- the exact leak the Python SDK's killpg avoids."
+  - "OBSERVATION: unparseable stdout lines are silently continue'd. A dropped message produces no diagnostic at all."
+  - "FACT: no startup timeout."
+patterns_worth_adopting:
+  - "The drained drop-oldest stderr ring. This is the single most valuable finding in the client survey: an undrained stderr pipe deadlocks the child, and the failure is invisible on a cooperative server."
+  - "Serialised writes, so concurrent sends cannot interleave."
+  - "CRLF tolerance in the framing reader."
+  - "A bounded, idempotent shutdown escalation with named constants."
+patterns_worth_avoiding:
+  - "Full environment inheritance -- we should adopt the allowlist the other two use."
+  - "Silently discarding an unparseable line with no diagnostic."
+  - "Killing only the direct child rather than the process group."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. This is the closest existing design to what a zero-dependency
+  stdio client can be, and it is the primary structural reference for mcp-client. No code
+  reused -- the reference is architectural, not textual.
+standards: ["Model Context Protocol"]
+last_reviewed: 2026-09-16
 ```
 
 

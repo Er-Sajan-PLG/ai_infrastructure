@@ -226,11 +226,11 @@ capabilities:
   - id: mcp-client
     name: MCP Client (stdio transport)
     category: mcp
-    status: DISCOVERED
+    status: RESEARCHED
     maturity: experimental
     priority: medium — COMPATIBILITY candidate (charter §16): MCP is an established protocol; a thin working client beats a comprehensive never-finished one (§24.4).
     depends_on: [tool-registry]
-    decision: pending
+    decision: pending (ADR-0009; open questions in the research record §10)
     description: Connect to an MCP server over stdio, list tools, call tools, surface results into the local tool registry.
     problem: Interoperate with the MCP ecosystem instead of inventing a private tool protocol.
     inputs: ["server command/config", "tool calls"]
@@ -238,8 +238,8 @@ capabilities:
     interfaces: []
     dependencies: []
     standards: ["Model Context Protocol"]
-    reference_projects: []
-    research_records: []
+    reference_projects: ["Model Context Protocol", "MCP Python SDK (official client)", "MCP TypeScript SDK (official client)", "mcp-go (independent client)"]
+    research_records: ["research/mcp/mcp-client.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -247,8 +247,7 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: ""
-
+    last_reviewed: "2026-09-16"
   - id: execution-trace-recorder
     name: Agent Trajectory / Execution Trace Recorder
     category: observability
