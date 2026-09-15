@@ -69,7 +69,7 @@ format: ## Auto-format the codebase (ruff --fix + black)
 typecheck: ## Run mypy in strict mode
 	@# Pass only existing targets: naming an empty directory makes mypy exit 2,
 	@# and empty category directories are the normal state of a young category.
-	@targets=$$(find catalog scripts tests study_pipeline -name '*.py' \
+	@targets=$$(find catalog integrations scripts tests study_pipeline -name '*.py' \
 		-not -path '*/.venv/*' 2>/dev/null); \
 	if [ -z "$$targets" ]; then \
 		echo "No Python sources to type-check yet."; \

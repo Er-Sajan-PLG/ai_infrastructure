@@ -47,7 +47,11 @@ minversion = "9.0"
 # charter §13. They MUST be collected: with testpaths limited to tests/, a
 # capability could ship tests that never ran while every gate stayed green.
 # That was a real hole — see docs/decisions/0004.
-testpaths = ["tests", "catalog"]
+# integrations/ joins these for the same reason: the Phase 1 exit criterion
+# requires an end-to-end composition to live there WITH its own tests, so a
+# testpath that excludes it would let those tests never run. Sixth instance of
+# the same class of hole (docs/decisions/0004 is the first).
+testpaths = ["tests", "catalog", "integrations"]
 # Keep the skeleton valid when catalog/ has no test files yet.
 norecursedirs = [".venv", ".uv-cache", "study_pipeline"]
 python_files = ["test_*.py"]
@@ -62,7 +66,7 @@ filterwarnings = ["error"]
 
 [tool.coverage.run]
 # Include catalog so capability tests actually contribute measurement.
-source = ["catalog", "scripts"]
+source = ["catalog", "integrations", "scripts"]
 branch = true
 
 [tool.coverage.report]
