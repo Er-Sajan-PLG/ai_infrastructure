@@ -53,11 +53,13 @@ silently, and it is the one the tooling checks hardest.
 
 | # | Rule | Charter | Enforced by |
 |---|---|---|---|
-| T1 | Every implementation has tests | §18 | `make status` (L6) |
+| T1 | Every implementation has tests | §18 | `make status` (L6); `make validate-strict` rejects an empty `tests/` |
 | T2 | Failure modes are tested, not just the happy path | §18 | Human review (see §7) |
 | T3 | A test that cannot fail is not a test | §18 | Human review |
 | T4 | Tests are never weakened to obtain a pass | §28 | Human review; pre-commit refuses `--no-verify` |
 | T5 | The suite passes before a status advance to `TESTED` | §18 | pre-commit, CI |
+| T6 | Capability tests are actually collected and run | §18 | `testpaths` includes `catalog/`; guarded by a test (ADR-0004) |
+| T7 | `tests/` and `examples/` must contain real content, not just exist | §13 | `make validate` (error in all modes) |
 
 ## 5. Documentation rules
 

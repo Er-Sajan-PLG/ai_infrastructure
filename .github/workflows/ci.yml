@@ -49,8 +49,11 @@ jobs:
             -not -path '*/.venv/*' 2>/dev/null || true)
           if [ -n "$targets" ]; then .venv/bin/mypy $targets; else echo "no sources"; fi
 
-      - name: Catalog entry contract
-        run: .venv/bin/python scripts/validate_catalog.py
+      - name: Catalog entry contract (strict)
+        # Strict in CI: an entry must carry tests/ and examples/, and an empty
+        # tests/ directory is an error. Local pre-commit stays lenient so a
+        # half-built entry can be committed, but CI is the backstop.
+        run: .venv/bin/python scripts/validate_catalog.py --strict
 
       - name: Governance drift (taxonomy vs artifacts)
         run: .venv/bin/python scripts/repo_status.py

@@ -78,6 +78,16 @@ REQUIRED_ENTRY_SECTIONS: tuple[str, ...] = (
 # can be validated before any implementation exists (--strict upgrades these).
 SOFT_ENTRY_PATHS: tuple[str, ...] = ("examples", "tests")
 
+# An entry's tests/ directory must contain real test files. An empty directory
+# satisfies "exists" while proving nothing, which is the exact failure charter
+# §4 forbids: a status claim the artifacts do not support. Enforced in BOTH
+# normal and strict mode, because "the directory is there" is never evidence.
+#
+# This was a real hole: an entry with an empty tests/ passed --strict, and
+# pyproject.toml's testpaths never looked in catalog/ at all, so a capability
+# could ship tests that never ran while every gate stayed green.
+TEST_FILE_GLOB: str = "test_*.py"
+
 
 @dataclass
 class Report:
@@ -179,6 +189,36 @@ def validate(root: Path, strict: bool) -> Report:
                         report.error(entry / soft, message)
                     else:
                         report.warn(entry, message)
+
+            # A tests/ directory that exists but is empty (or holds no test
+            # files) is never evidence. This is an error in every mode: the
+            # directory's presence is what the contract asks for, but its
+            # contents are what the claim depends on.
+            tests_dir = entry / "tests"
+            if tests_dir.is_dir():
+                test_files = sorted(tests_dir.rglob(TEST_FILE_GLOB))
+                if not test_files:
+                    report.error(
+                        tests_dir,
+                        f"tests/ directory contains no {TEST_FILE_GLOB} files — "
+                        "an empty or placeholder tests/ directory is not evidence "
+                        "of testing (charter §4, §18)",
+                    )
+            elif strict:
+                report.error(
+                    tests_dir,
+                    "entry has no tests/ directory (required in strict mode)",
+                )
+
+            examples_dir = entry / "examples"
+            if examples_dir.is_dir():
+                contents = [p for p in examples_dir.rglob("*") if p.is_file()]
+                if not contents:
+                    report.error(
+                        examples_dir,
+                        "examples/ directory is empty — remove it or add a real "
+                        "example (charter §13)",
+                    )
 
             provenance = entry / "PROVENANCE.md"
             if provenance.is_file():

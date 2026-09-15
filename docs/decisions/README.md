@@ -8,6 +8,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0001](0001-bootstrap-structure.md) | Bootstrap the Repository as a Knowledge/Code Plane Split | Accepted |
 | [0002](0002-license-selection.md) | License Selection (Apache-2.0) | Accepted |
 | [0003](0003-toolchain-and-enforcement.md) | Toolchain, Enforcement, and the Drift Detector | Accepted |
+| [0004](0004-testing-enforcement-holes.md) | Close the Testing-Enforcement Holes | Accepted |
 
 ## When an ADR is required
 

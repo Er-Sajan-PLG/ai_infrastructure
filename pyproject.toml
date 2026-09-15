@@ -43,8 +43,14 @@ packages = ["catalog"]
 
 [tool.pytest.ini_options]
 minversion = "9.0"
-testpaths = ["tests"]
-# Capability tests live beside their entry; include them in a full run.
+# Capability tests live beside their entry (catalog/<cat>/<entry>/tests/), per
+# charter §13. They MUST be collected: with testpaths limited to tests/, a
+# capability could ship tests that never ran while every gate stayed green.
+# That was a real hole — see docs/decisions/0004.
+testpaths = ["tests", "catalog"]
+# Keep the skeleton valid when catalog/ has no test files yet.
+norecursedirs = [".venv", ".uv-cache", "study_pipeline"]
+python_files = ["test_*.py"]
 # addopts keeps the summary readable and fails on unknown markers.
 addopts = "-q --strict-markers --strict-config"
 markers = [
@@ -55,6 +61,7 @@ markers = [
 filterwarnings = ["error"]
 
 [tool.coverage.run]
+# Include catalog so capability tests actually contribute measurement.
 source = ["catalog", "scripts"]
 branch = true
 

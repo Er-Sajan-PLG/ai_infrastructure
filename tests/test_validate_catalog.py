@@ -125,6 +125,102 @@ def test_strict_promotes_missing_examples_to_error(tmp_path: Path) -> None:
     assert any("examples" in e for e in report.errors), report.errors
 
 
+# ---------------------------------------------------------------------------
+# Empty-directory holes (regression)
+#
+# These were REAL holes: an entry whose tests/ directory existed but was empty
+# passed --strict, and pytest's testpaths never looked inside catalog/ at all.
+# A capability could therefore ship tests that never ran (or none at all) while
+# every gate stayed green — the exact failure charter §4 forbids.
+# ---------------------------------------------------------------------------
+
+
+def _entry_with(root: Path, name: str = "demo_tool") -> Path:
+    """Create a structurally valid entry, without tests/ or examples/."""
+    entry = root / "catalog" / "tools" / name
+    entry.mkdir()
+    (entry / "README.md").write_text(_entry_readme("Demo"), encoding="utf-8")
+    (entry / "PROVENANCE.md").write_text("# Provenance\n", encoding="utf-8")
+    return entry
+
+
+def test_empty_tests_directory_is_an_error_in_normal_mode(tmp_path: Path) -> None:
+    """An empty tests/ is never evidence, even outside strict mode."""
+    root = _scaffold(tmp_path)
+    entry = _entry_with(root)
+    (entry / "tests").mkdir()
+    report = validate(root, strict=False)
+    assert any("no test_*.py files" in e for e in report.errors), report.errors
+
+
+def test_empty_tests_directory_is_an_error_in_strict_mode(tmp_path: Path) -> None:
+    """--strict must not accept a placeholder tests/ directory."""
+    root = _scaffold(tmp_path)
+    entry = _entry_with(root)
+    (entry / "tests").mkdir()
+    report = validate(root, strict=True)
+    assert any("no test_*.py files" in e for e in report.errors), report.errors
+
+
+def test_tests_directory_with_a_real_test_passes(tmp_path: Path) -> None:
+    """A populated tests/ satisfies the contract."""
+    root = _scaffold(tmp_path)
+    entry = _entry_with(root)
+    tests = entry / "tests"
+    tests.mkdir()
+    (tests / "test_demo.py").write_text(
+        "def test_ok():\n    assert True\n", encoding="utf-8"
+    )
+    report = validate(root, strict=False)
+    assert report.errors == [], report.errors
+
+
+def test_empty_examples_directory_is_an_error(tmp_path: Path) -> None:
+    """An empty examples/ is a placeholder, not an example."""
+    root = _scaffold(tmp_path)
+    entry = _entry_with(root)
+    (entry / "examples").mkdir()
+    report = validate(root, strict=False)
+    assert any(
+        "examples/ directory is empty" in e for e in report.errors
+    ), report.errors
+
+
+def test_nested_test_file_is_found(tmp_path: Path) -> None:
+    """Tests nested below tests/ still count as present."""
+    root = _scaffold(tmp_path)
+    entry = _entry_with(root)
+    nested = entry / "tests" / "unit"
+    nested.mkdir(parents=True)
+    (nested / "test_nested.py").write_text(
+        "def test_ok():\n    assert True\n", encoding="utf-8"
+    )
+    report = validate(root, strict=False)
+    assert report.errors == [], report.errors
+
+
+def test_catalog_tests_are_collected_by_pytest() -> None:
+    """pytest's testpaths must include catalog/ (regression).
+
+    If this fails, capability tests are silently skipped by `make check` while
+    the suite still reports green.
+    """
+    import subprocess
+
+    result = subprocess.run(
+        [sys.executable, "-m", "pytest", "--collect-only", "-q"],
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    combined = result.stdout + result.stderr
+    # The real repo has no catalog entries yet, so assert the CONFIG includes
+    # catalog rather than that it collected something from it.
+    assert "catalog" in (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    assert result.returncode == 0, combined
+
+
 def test_private_directories_are_ignored(tmp_path: Path) -> None:
     """Directories starting with _ or . are not treated as entries."""
     root = _scaffold(tmp_path)
