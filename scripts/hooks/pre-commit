@@ -43,9 +43,6 @@ if echo "$STAGED" | grep -qE '\.py$'; then
     echo "pre-commit: ruff check"
     "${VENV}/bin/ruff" check . >/dev/null 2>&1 || fail "ruff found lint errors (run 'make lint')"
 
-    echo "pre-commit: ruff format --check"
-    "${VENV}/bin/ruff" format --check . >/dev/null 2>&1 || fail "formatting differs (run 'make format')"
-
     echo "pre-commit: black --check"
     "${VENV}/bin/black" --check . >/dev/null 2>&1 || fail "black would reformat (run 'make format')"
 

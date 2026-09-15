@@ -20,8 +20,19 @@ The environment must therefore do two things: make the standards executable, and
 **1. `uv` for environment management, with a workspace-local cache.**
 `pyproject.toml` declares intent; `requirements-dev.txt` is the pinned lock file. `uv` was chosen over plain `venv`+`pip` because it is already installed, is fast, and resolves the pinned set deterministically. `UV_CACHE_DIR` is redirected to `.uv-cache/` inside the workspace because the default `~/.cache/uv` was not writable (observed: `Read-only file system (os error 30)`).
 
-**2. ruff + black + mypy (strict), all pinned.**
-Ruff covers lint and formatting rules broadly; black is the reference formatter; mypy runs `strict = true`. Pinned to `ruff==0.16.7`, `black==26.5.1`, `mypy==2.3.1`, `pytest==9.1.1`. Rationale: charter §13 states type-hinted and formatted Python as a requirement, and §19/§23 imply results must be comparable across time. Unpinned tooling silently changes what "passes" means.
+**2. ruff for linting, black for formatting — only one formatter.**
+Ruff covers lint rules broadly; black is the reference formatter. mypy runs `strict = true`. Pinned to `ruff==0.16.7`, `black==26.5.1`, `mypy==2.3.1`, `pytest==9.1.1`. Rationale: charter §13 states type-hinted and formatted Python as a requirement, and §19/§23 imply results must be comparable across time. Unpinned tooling silently changes what "passes" means.
+
+> **Amendment (session 3).** This ADR originally configured *both* ruff's
+> formatter and black, justified as "two agreeing formatters are cheap
+> insurance, and disagreement is a useful signal." That justification was
+> wrong and has been removed: two opinionated formatters that agree provide no
+> additional coverage, and disagreement would be a configuration bug rather
+> than a signal. The repository now uses **ruff for linting only** and **black
+> for formatting only**. `[tool.ruff.format]` remains in `pyproject.toml` with
+> a comment recording the deliberate choice, because ruff reads that section
+> if it is ever invoked. This keeps one convention for future catalog entries
+> to inherit.
 
 **3. No runtime dependencies.**
 `[project].dependencies` is empty and documented as such. Charter §20 lists unnecessary dependencies as something to avoid; the first two capabilities are specified to run on the standard library. Adding one is a charter §22 human gate, recorded as an ADR.

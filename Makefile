@@ -56,12 +56,12 @@ uninstall-hooks: ## Remove the git pre-commit hook
 # ---------------------------------------------------------------------------
 
 .PHONY: lint
-lint: ## Run ruff over the codebase
+lint: ## Run ruff (lint only — black owns formatting)
 	$(RUFF) check .
-	$(RUFF) format --check .
+	$(BLACK) --check .
 
 .PHONY: format
-format: ## Auto-format the codebase (ruff + black)
+format: ## Auto-format the codebase (ruff --fix + black)
 	$(RUFF) check --fix .
 	$(BLACK) .
 

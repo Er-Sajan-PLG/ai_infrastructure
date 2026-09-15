@@ -37,19 +37,21 @@ Versions are pinned in `requirements-dev.txt` (a lock file) and declared in `pyp
 |---|---|---|---|
 | pytest | 9.1.1 | Tests | `[tool.pytest.ini_options]` |
 | pytest-cov | 7.1.0 | Branch coverage | `[tool.coverage.*]` |
-| ruff | 0.16.7 | Lint + format | `[tool.ruff]`, `[tool.ruff.lint]` |
-| black | 26.5.1 | Format (belt and braces) | `[tool.black]` |
+| ruff | 0.16.7 | **Lint only** | `[tool.ruff.lint]` |
+| black | 26.5.1 | **Format only** | `[tool.black]` |
 | mypy | 2.3.1 | Types, **strict** | `[tool.mypy]` |
 
-Why both ruff-format and black: ruff's linter is fast and broad; black is the
-reference formatter. They agree on the committed style. If they ever disagree,
-black wins and the ruff config is adjusted — record that in an ADR.
+**Division of labour: ruff lints, black formats.** Ruff's formatter is
+deliberately not used. Two opinionated formatters that always agree provide no
+additional coverage — disagreement would be a config bug, not a signal — so the
+repository keeps one formatter and inherits one convention. Reason recorded in
+[ADR-0003](decisions/0003-toolchain-and-enforcement.md).
 
 ## The gates
 
 | Command | Checks | Charter |
 |---|---|---|
-| `make lint` | ruff lint + format | §13, §20 |
+| `make lint` | ruff lint + black format check | §13, §20 |
 | `make typecheck` | mypy strict | §13 |
 | `make validate` | catalog entry contract | §13, §21 |
 | `make test` | test suite | §18 |

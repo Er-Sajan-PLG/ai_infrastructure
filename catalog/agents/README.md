@@ -38,7 +38,7 @@ Every entry under this directory is a subdirectory containing:
 <capability_id>/
 ├── README.md          # Category documentation standard (charter §13)
 ├── PROVENANCE.md      # Original source, license, what was changed and why (§11)
-├── <implementation>   # Python, type-hinted, ruff/black formatted
+├── <implementation>   # Python, type-hinted, ruff-linted, black-formatted
 ├── examples/          # Runnable usage examples
 └── tests/             # Unit/integration tests (§18)
 ```

@@ -40,10 +40,8 @@ jobs:
       - name: Lint (ruff)
         run: .venv/bin/ruff check .
 
-      - name: Format check (ruff + black)
-        run: |
-          .venv/bin/ruff format --check .
-          .venv/bin/black --check .
+      - name: Format check (black)
+        run: .venv/bin/black --check .
 
       - name: Type check (mypy strict)
         run: |

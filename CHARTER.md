@@ -195,7 +195,7 @@ Each category `README.md` must contain: What it is · Why it exists · How it wo
 
 ### Implementation Standards
 
-Each recreated piece must be standalone, well-documented, include examples and tests, include `PROVENANCE.md`, be Pythonic (primary language: Python), and follow consistent style (ruff/black formatted, type-hinted).
+Each recreated piece must be standalone, well-documented, include examples and tests, include `PROVENANCE.md`, be Pythonic (primary language: Python), and follow consistent style (ruff-linted, black-formatted, type-hinted).
 
 ## §14. Infrastructure Taxonomy
 

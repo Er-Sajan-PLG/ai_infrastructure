@@ -19,7 +19,7 @@ Contributions — human or AI agent — follow the charter. This file is the sho
 
 ## Implementation standards (charter §13)
 
-- Primary language: **Python**, type-hinted, ruff/black formatted.
+- Primary language: **Python**, type-hinted, ruff-linted, black-formatted.
 - Each catalog entry is a directory: `README.md`, `PROVENANCE.md`, `implementation.py` (or package), `examples/`, `tests/`.
 - Standalone: runnable without the original studied repo's dependencies.
 - Every implementation carries tests (§18); run them before claiming IMPLEMENTED → TESTED.

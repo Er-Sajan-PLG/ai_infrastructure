@@ -29,7 +29,7 @@ Full rule-to-check map: [`docs/standards.md`](docs/standards.md). Environment de
 - Distinguish *inspired-by* from *derived-from* in `docs/registry/RESEARCH_REGISTRY.md` (§11). Conflation is a licensing risk. `code_reused: true` is currently blocked by ADR-0002.
 - Licensing uncertainty, major dependency additions, trust-boundary changes, deletions of mature infrastructure → **stop and request human review** (§22).
 - Never weaken a check to obtain a pass, and never commit with `--no-verify` (§28).
-- Primary implementation language: Python, type-hinted (mypy strict), ruff/black formatted (§13).
+- Primary implementation language: Python, type-hinted (mypy strict), ruff-linted, black-formatted (§13).
 - No runtime dependency without an ADR (§22).
 
 ## End of session (leave the repo resumable)

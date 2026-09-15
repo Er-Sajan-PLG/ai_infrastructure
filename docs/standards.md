@@ -42,7 +42,7 @@ silently, and it is the one the tooling checks hardest.
 | # | Rule | Charter | Enforced by |
 |---|---|---|---|
 | C1 | Python, type-hinted | §13 | mypy `strict = true` |
-| C2 | Formatted (ruff format + black) | §13 | `make lint` |
+| C2 | Formatted (black; the ruff formatter is deliberately unused) | §13 | `make lint` |
 | C3 | Linted (ruff, ruleset in `pyproject.toml`) | §20 | `make lint` |
 | C4 | No runtime dependency without an ADR | §22 | Human review gate |
 | C5 | Public functions/classes have docstrings explaining *why* | §13 | Human review (see §7) |

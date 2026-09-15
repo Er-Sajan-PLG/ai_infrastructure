@@ -115,6 +115,9 @@ known-first-party = ["catalog"]
 ban-relative-imports = "all"
 
 [tool.ruff.format]
+# Ruff's formatter is deliberately NOT used. Black owns formatting; ruff owns
+# linting. Two opinionated formatters that always agree add no coverage, only a
+# second thing to configure. See ADR-0003.
 quote-style = "double"
 indent-style = "space"
 
