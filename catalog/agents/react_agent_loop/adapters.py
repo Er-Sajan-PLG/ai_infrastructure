@@ -38,14 +38,52 @@ class RegistryDispatcher:
     reintroduce the ambiguity it exists to avoid.
     """
 
-    def __init__(self, registry: ToolRegistry) -> None:
+    def __init__(
+        self,
+        registry: ToolRegistry,
+        *,
+        allowed: frozenset[str] | None = None,
+    ) -> None:
+        """Bind a registry, optionally restricting which tools this run may use.
+
+        Args:
+            registry: The source of tools.
+            allowed: Tool names (the same ``namespace:name`` rendering used on the
+                wire) that this dispatcher will advertise and dispatch. ``None``
+                means every registered tool -- the pre-existing behaviour.
+
+                A set rather than a predicate so the restriction is inspectable and
+                serialisable; a callback would be untestable by inspection and
+                impossible to log.
+
+        Raises:
+            ValueError: ``allowed`` names a tool the registry does not hold.
+                Rejected at construction rather than ignored, for the same reason
+                ``run()`` rejects ``max_steps=0``: a typo in a policy should fail
+                before a model call is paid for, and a silently-ignored name would
+                look like a working restriction while permitting nothing.
+
+        Why this exists: the 2026-09-16 audit found the loop advertised *every*
+        registered tool with no way for a caller to narrow the set -- an agent run
+        against a fifty-tool registry was offered all fifty, whether or not the
+        task needed write access. Least privilege is a caller decision, so it is a
+        constructor argument and not a default the adapter picks.
+        """
         self._registry = registry
+        self._allowed = allowed
         self._by_name: dict[str, ToolId] = {
             str(tool_id): tool_id for tool_id in registry.ids()
         }
+        if allowed is not None:
+            unknown = sorted(allowed - set(self._by_name))
+            if unknown:
+                raise ValueError(
+                    f"allowed names {', '.join(unknown)} are not registered; "
+                    f"this dispatcher can only permit what the registry holds"
+                )
 
     def schemas(self) -> Sequence[Mapping[str, Any]]:
-        """Advertise every registered tool, using its model-facing schema.
+        """Advertise the permitted tools, using their model-facing schema.
 
         The registry keeps two schema views precisely so injected parameters never
         reach a model (ADR-0006 D-3). Advertising validation_schema here would
@@ -64,9 +102,17 @@ class RegistryDispatcher:
         boundary. The dispatcher's documented job is to return tools "in the
         neutral OpenAI-shaped form that every provider adapter accepts", so the
         conversion belongs here.
+
+        When ``allowed`` was given at construction, only those tools are
+        advertised. This is the half of least privilege that a model can see: a
+        tool it is never offered is a tool it is far less likely to call, so the
+        filter is the primary control and :meth:`dispatch` is the backstop for a
+        model that calls one anyway.
         """
         schemas: list[Mapping[str, Any]] = []
         for name, tool_id in sorted(self._by_name.items()):
+            if self._allowed is not None and name not in self._allowed:
+                continue
             descriptor = self._registry.describe(tool_id)
             if descriptor is None:  # pragma: no cover - ids() and describe() agree
                 continue
@@ -86,9 +132,24 @@ class RegistryDispatcher:
         them (ADR-0006 D-4). This adapter obeys that classification rather than
         re-litigating it: duplicating the judgement here would let the two drift,
         and the loop would then enforce a rule the registry no longer holds.
+
+        A call for a tool outside ``allowed`` is refused here, not merely hidden
+        from :meth:`schemas`. Hiding it is the primary control -- a model cannot
+        ask for what it was never offered -- but a model can still emit a name it
+        remembers from a system prompt or a previous run, and a filter that only
+        applied to advertising would be a suggestion rather than a restriction.
+
+        The refusal is reported with ``model_visible=False`` and ``kind="not_found"``
+        for the same reason the registry does so: the model cannot be told "that
+        tool exists but you may not use it" without also being told the tool
+        exists. Being denied a capability it was never offered is indistinguishable,
+        from the model's side, from the tool not being there -- and that
+        indistinguishability is the point.
         """
         tool_id = self._by_name.get(call.name)
-        if tool_id is None:
+        if tool_id is None or (
+            self._allowed is not None and call.name not in self._allowed
+        ):
             return DispatchOutcome(
                 ok=False,
                 text=None,

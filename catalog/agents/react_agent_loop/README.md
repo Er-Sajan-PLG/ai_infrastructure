@@ -197,8 +197,26 @@ stores and forwards a prompt; it does not own prompt text.
 
 **Error text.** A provider error body never reaches a model-facing message.
 
+**Least privilege.** `RegistryDispatcher(registry, allowed=frozenset({...}))`
+restricts a run to named tools. `allowed=None` (the default) means every
+registered tool -- the pre-existing behaviour. The restriction is enforced in
+**both** directions: a tool outside the set is neither advertised to the model
+nor dispatchable if the model names it anyway. Refusal is reported as
+`not_found`, identical to a name that does not exist, so a model denied a
+capability it was never offered cannot tell the difference between "not
+allowed" and "not there". An unknown name in `allowed` raises at construction
+rather than being ignored.
+
+This closed the audit's only unmet security rule (`AI-003`, least privilege).
+The gap was real: before it, an agent run against a fifty-tool registry was
+offered all fifty regardless of the task.
+
 **Non-goal.** This is not a sandbox, a rate limiter, or an approval gate. A
-dispatched tool runs with full process privilege.
+dispatched tool runs with full process privilege, and the allowlist is a
+*caller* control -- it constrains which tools a run may reach, not what a
+permitted tool then does. Confirming consequential actions is `AI-010` and
+remains unimplemented; it belongs to the capability that first dispatches
+something irreversible.
 
 ## Landscape
 

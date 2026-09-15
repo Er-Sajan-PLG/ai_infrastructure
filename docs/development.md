@@ -9,8 +9,22 @@ How to get a working environment and what the repository expects of it. Everythi
 | Python | 3.12+ (verified on 3.14.7) | `pyproject.toml` sets `requires-python = ">=3.12"` |
 | [uv](https://docs.astral.sh/uv/) | 0.12.1 | Environment and installation |
 | git | 2.55.0 | Pre-commit hook |
+| [gitleaks](https://github.com/gitleaks/gitleaks) | 8.30.1 | Secret scanning. **Optional locally, required in CI** |
 
 Runtime dependencies: **none**. The toolchain is development-only.
+
+`gitleaks` is the one prerequisite that is a standalone binary rather than a Python package, so
+unlike everything else here it can be absent. The pre-commit hook detects that and prints a
+warning instead of silently passing — an unrun check must never look like a passed one (charter
+§28). CI installs a pinned 8.30.1 and has no such excuse. To install locally:
+
+```bash
+# macOS
+brew install gitleaks
+# Linux — see https://github.com/gitleaks/gitleaks/releases for the current version
+curl -sSfL https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz \
+  | tar -xz -C "$HOME/.local/bin" gitleaks
+```
 
 ## Setup
 

@@ -62,6 +62,7 @@ silently, and it is the one the tooling checks hardest.
 | T7 | `tests/` and `examples/` must contain real content, not just exist | §13 | `make validate` (error in all modes) |
 | T8 | Relative Markdown links must resolve | §4, §21 | `make links` (pre-commit, CI) |
 | T9 | Documented stage transitions must match the charter §4 lifecycle order | §4 | `make phase-plan` (pre-commit, CI) |
+| T10 | No secret is committed, including anywhere in history | §28 | `gitleaks` (pre-commit on staged changes; CI on the full history) |
 
 ## 5. Documentation rules
 

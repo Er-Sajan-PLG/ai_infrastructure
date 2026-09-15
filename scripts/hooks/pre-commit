@@ -38,6 +38,25 @@ fail() {
     exit 1
 }
 
+# --- 0. Secrets -----------------------------------------------------------
+# Runs first and on EVERY commit, not only Python ones: a credential is most
+# likely to arrive in a config, a notebook, or a .env-shaped file, and those
+# are exactly the paths a language-scoped check would skip.
+#
+# gitleaks is an external binary, not a Python package, so unlike every other
+# gate here it may simply be absent. A missing scanner is reported and skipped
+# rather than silently passing -- an unrun check must never look like a passed
+# one (charter §28). CI installs a pinned gitleaks and has no such excuse.
+echo "pre-commit: gitleaks (secret scan)"
+if command -v gitleaks >/dev/null 2>&1; then
+    gitleaks git --staged --no-banner --redact --exit-code 1 \
+        -c "${REPO_ROOT}/.gitleaks.toml" >/dev/null 2>&1 \
+        || fail "gitleaks found a secret in staged changes (run 'gitleaks git --staged --no-banner --redact')"
+else
+    echo "pre-commit: WARNING - gitleaks not installed; secret scan SKIPPED locally." >&2
+    echo "pre-commit: CI still runs it. Install: https://github.com/gitleaks/gitleaks" >&2
+fi
+
 # --- 1. Python: lint + format --------------------------------------------
 if echo "$STAGED" | grep -qE '\.py$'; then
     echo "pre-commit: ruff check"

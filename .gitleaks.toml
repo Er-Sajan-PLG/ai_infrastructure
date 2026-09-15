@@ -1,0 +1,35 @@
+# gitleaks configuration for ai_infrastructure.
+#
+# The default rule set is EXTENDED, not replaced. Re-declaring detectors by hand
+# would rot as upstream adds them; the value here is upstream's work plus a place
+# to record local policy.
+#
+# ---------------------------------------------------------------------------
+# There is deliberately NO allowlist here. That is a finding, not an omission.
+# ---------------------------------------------------------------------------
+#
+# The 2026-09-16 audit flagged two `api_key="scripted-key"` literals in
+# integrations/agent_loop_end_to_end/system.py as CRITICAL hardcoded credentials
+# (SEC-001). The obvious move was to add a gitleaks allowlist for them.
+#
+# Measuring first showed that would have been dead config. gitleaks' default
+# ruleset never matches that string:
+#
+#   api_key="scripted-key"        -> exit 0   (no match, config or no config)
+#   api_key = "9f8e7d6c5b4a39..." -> exit 7   (matched; generic-api-key rule)
+#
+# The sentinel is not key-shaped, so no default rule fires on it. An allowlist
+# entry would have suppressed nothing while *looking* like diligence, and would
+# have implied the repository needed an exemption it does not need. The audit's
+# finding is a genuine false positive, but the correct response to a false
+# positive is to record why it is one -- not to write a rule that silences it.
+#
+# Verify this reasoning yourself before adding an allowlist:
+#   printf 'api_key="scripted-key"' | gitleaks stdin --no-banner ; echo $?
+#   printf 'api_key = "9f8e7d6c5b4a39281706aabb"' | gitleaks stdin --no-banner ; echo $?
+# The second must exit non-zero. If a future change makes the first exit
+# non-zero, that is the moment an allowlist becomes warranted -- and it should
+# be anchored to the exact path AND the exact literal, never to the file alone.
+
+[extend]
+useDefault = true
