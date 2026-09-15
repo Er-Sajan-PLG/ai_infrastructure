@@ -18,6 +18,9 @@ venv/
 .coverage
 htmlcov/
 
+# uv workspace-local cache (see docs/development.md)
+.uv-cache/
+
 # Study pipeline local artifacts
 study_pipeline/studied_repos/*/checkout/
 

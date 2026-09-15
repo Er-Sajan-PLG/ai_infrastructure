@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+#
+# Git pre-commit hook for ai_infrastructure.
+#
+# Enforces the repository's quality gates locally so that a session cannot
+# commit a state that violates the charter. Installed by `make install-hooks`.
+#
+# Skips the slow gates when nothing relevant changed, so commits stay fast.
+#
+# Charter references: §4 (honest status), §13 (standards), §18 (testing),
+# §21 (definition of done).
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+VENV="${REPO_ROOT}/.venv"
+if [ ! -x "${VENV}/bin/python" ]; then
+    echo "pre-commit: no virtualenv found at .venv — run 'make setup' first." >&2
+    echo "pre-commit: skipping gates (environment not set up)." >&2
+    exit 0
+fi
+
+# Files staged in this commit.
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED" ]; then
+    exit 0
+fi
+
+fail() {
+    echo "" >&2
+    echo "pre-commit FAILED: $1" >&2
+    echo "Fix the problem, re-stage, and commit again." >&2
+    echo "(Do not use --no-verify to skip a gate; charter §28 forbids" >&2
+    echo " weakening checks to obtain a passing result.)" >&2
+    exit 1
+}
+
+# --- 1. Python: lint + format --------------------------------------------
+if echo "$STAGED" | grep -qE '\.py$'; then
+    echo "pre-commit: ruff check"
+    "${VENV}/bin/ruff" check . >/dev/null 2>&1 || fail "ruff found lint errors (run 'make lint')"
+
+    echo "pre-commit: ruff format --check"
+    "${VENV}/bin/ruff" format --check . >/dev/null 2>&1 || fail "formatting differs (run 'make format')"
+
+    echo "pre-commit: black --check"
+    "${VENV}/bin/black" --check . >/dev/null 2>&1 || fail "black would reformat (run 'make format')"
+
+    echo "pre-commit: mypy (strict)"
+    TARGETS=$(find catalog scripts tests study_pipeline -name '*.py' -not -path '*/.venv/*' 2>/dev/null || true)
+    if [ -n "$TARGETS" ]; then
+        # shellcheck disable=SC2086
+        "${VENV}/bin/mypy" $TARGETS >/dev/null 2>&1 || fail "type errors (run 'make typecheck')"
+    fi
+fi
+
+# --- 2. Tests -------------------------------------------------------------
+if echo "$STAGED" | grep -qE '^(catalog|scripts|tests)/.*\.py$'; then
+    echo "pre-commit: pytest"
+    "${VENV}/bin/pytest" >/dev/null 2>&1 || fail "tests failed (run 'make test')"
+fi
+
+# --- 3. Catalog entry contract -------------------------------------------
+if echo "$STAGED" | grep -qE '^catalog/'; then
+    echo "pre-commit: catalog entry contract"
+    "${VENV}/bin/python" scripts/validate_catalog.py >/dev/null 2>&1 \
+        || fail "catalog contract violated (run 'make validate')"
+fi
+
+# --- 4. Governance drift --------------------------------------------------
+# The single most important gate: no commit may claim a lifecycle status the
+# artifacts on disk do not support (charter §4).
+if echo "$STAGED" | grep -qE '^(TAXONOMY\.md|specifications/|catalog/|docs/decisions/)'; then
+    echo "pre-commit: governance drift check"
+    "${VENV}/bin/python" scripts/repo_status.py --quiet \
+        || fail "taxonomy claims exceed artifacts on disk (run 'make status')"
+fi
+
+echo "pre-commit: all gates passed."
+exit 0

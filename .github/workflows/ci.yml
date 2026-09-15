@@ -1,0 +1,61 @@
+# CI for ai_infrastructure.
+#
+# Runs the same gates as `make ci` so a green pipeline means the same thing as
+# a green local run. Charter §18 (testing) and §21 (definition of done) are the
+# reason this exists: a standard that is not enforced in CI is a suggestion.
+#
+# The governance-drift step is the important one — it is what stops a future
+# session from claiming a lifecycle status the artifacts do not support.
+
+name: ci
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: quality gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Create virtualenv and install pinned toolchain
+        run: |
+          uv venv --python 3.12
+          uv pip install -r requirements-dev.txt
+
+      - name: Lint (ruff)
+        run: .venv/bin/ruff check .
+
+      - name: Format check (ruff + black)
+        run: |
+          .venv/bin/ruff format --check .
+          .venv/bin/black --check .
+
+      - name: Type check (mypy strict)
+        run: |
+          targets=$(find catalog scripts tests study_pipeline -name '*.py' \
+            -not -path '*/.venv/*' 2>/dev/null || true)
+          if [ -n "$targets" ]; then .venv/bin/mypy $targets; else echo "no sources"; fi
+
+      - name: Catalog entry contract
+        run: .venv/bin/python scripts/validate_catalog.py
+
+      - name: Governance drift (taxonomy vs artifacts)
+        run: .venv/bin/python scripts/repo_status.py
+
+      - name: Tests
+        run: .venv/bin/pytest --cov --cov-report=term-missing

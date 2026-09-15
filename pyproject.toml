@@ -1,0 +1,150 @@
+[project]
+name = "ai-infrastructure"
+version = "0.0.1"
+description = "An independent, evolving AI infrastructure laboratory: research, architecture knowledge, implementations, interoperability, and evaluation."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "UNLICENSED — see docs/decisions/0002-license-selection.md" }
+authors = [{ name = "ai_infrastructure maintainers" }]
+
+# Runtime dependencies are deliberately empty.
+#
+# Charter §20 lists "unnecessary dependencies" as something to avoid, and §3
+# requires complexity to earn its place. The first capabilities
+# (tool-registry, model-provider-abstraction) are specified to run on the
+# standard library alone, so there is nothing to depend on yet.
+#
+# Adding a runtime dependency is a human review gate (charter §22,
+# "Adding a major dependency"). Record it as an ADR first.
+dependencies = []
+
+[project.optional-dependencies]
+# Development toolchain. Versions are pinned (see requirements-dev.txt) so that
+# two sessions a year apart verify against the same checks.
+dev = [
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "ruff==0.16.7",
+    "black==26.5.1",
+    "mypy==2.3.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["catalog"]
+
+# ---------------------------------------------------------------------------
+# Testing
+# ---------------------------------------------------------------------------
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+# Capability tests live beside their entry; include them in a full run.
+# addopts keeps the summary readable and fails on unknown markers.
+addopts = "-q --strict-markers --strict-config"
+markers = [
+    "slow: takes more than a couple of seconds",
+    "network: requires outbound network access (never run in CI by default)",
+    "external: requires a real external service or model provider",
+]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+source = ["catalog", "scripts"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+# No threshold is enforced yet: there is no implementation to measure. Set
+# fail_under when the first catalog entry lands (charter §18).
+skip_covered = false
+
+# ---------------------------------------------------------------------------
+# Linting and formatting
+# ---------------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+src = ["catalog", "scripts", "tests", "study_pipeline"]
+# Explicit so that tooling behavior is intentional rather than incidental.
+extend-exclude = [".venv", ".uv-cache", "study_pipeline/studied_repos"]
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort (import order)
+    "N",    # pep8-naming
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "A",    # flake8-builtins (shadowing builtins)
+    "C4",   # flake8-comprehensions
+    "DTZ",  # flake8-datetimez (naive datetimes are a correctness bug)
+    "T20",  # flake8-print (no stray prints in library code)
+    "SIM",  # flake8-simplify
+    "PTH",  # flake8-use-pathlib
+    "RUF",  # ruff-specific
+    "S",    # flake8-bandit (basic security checks)
+    "TID",  # flake8-tidy-imports
+    "PIE",  # flake8-pie
+    "RET",  # flake8-return
+    "ARG",  # unused arguments
+]
+ignore = [
+    # Long docstring/URL lines are a readability tradeoff we accept; the
+    # formatter handles code line length.
+    "E501",
+    # Assertions in tests are the point of tests.
+    "S101",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "ARG", "T20"]
+"scripts/**" = ["T20"]  # CLI scripts legitimately print
+
+[tool.ruff.lint.isort]
+known-first-party = ["catalog"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+# ---------------------------------------------------------------------------
+# Type checking
+# ---------------------------------------------------------------------------
+
+[tool.mypy]
+python_version = "3.12"
+# Strict where it matters. The charter (§13) requires type-hinted Python;
+# strict mode is what makes that requirement enforceable rather than aspirational.
+strict = true
+warn_unreachable = true
+warn_no_return = true
+disallow_any_unimported = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+show_error_codes = true
+pretty = true
+# No `files` list: targets are passed by the Makefile. Naming directories here
+# makes mypy fail with "no files in directory" whenever a category is empty,
+# which is the normal state of a category that declares itself but has no
+# entries yet (charter §4 honest-status rule).
+exclude = ["^\\.venv/", "^\\.uv-cache/", "^study_pipeline/"]
+
+[[tool.mypy.overrides]]
+# Tests use fixtures and monkeypatching patterns that strict mode fights.
+module = "tests.*"
+disallow_untyped_decorators = false

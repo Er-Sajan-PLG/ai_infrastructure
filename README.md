@@ -11,6 +11,8 @@ The goal is **not** to build another agent framework. The goal is to understand 
 | File / Directory | Purpose |
 |---|---|
 | [`CHARTER.md`](CHARTER.md) | Mission, rules, quality bar, session protocol (the source of truth) |
+| [`docs/standards.md`](docs/standards.md) | **Enforceable** engineering standards — every rule mapped to its check |
+| [`docs/development.md`](docs/development.md) | Environment setup, toolchain, gates |
 | [`TAXONOMY.md`](TAXONOMY.md) | Machine-readable map: what capabilities exist, their status, our implementations |
 | [`AGENTS.md`](AGENTS.md) | Entry point for AI agent sessions (start-of-session checklist) |
 | [`research/`](research/) | Study findings, organized by category |
@@ -27,14 +29,26 @@ The goal is **not** to build another agent framework. The goal is to understand 
 
 ## Current status
 
-**Phase 1 — Seed.** Repository skeleton established; taxonomy, registry, and decision-record standards in place. No capabilities implemented yet. See [`docs/roadmap.md`](docs/roadmap.md) for the seeded capability queue.
+**Phase 1 — Seed.** Repository skeleton and enforced environment established: taxonomy, registry, ADR process, standards mapped to checks, and a drift detector that refuses to let status drift from reality. No capabilities implemented yet. See [`docs/roadmap.md`](docs/roadmap.md) for the seeded capability queue.
+
+## Getting started
+
+```bash
+make setup            # create .venv, install pinned toolchain
+make install-hooks    # enforce gates locally on every commit
+make check            # lint + types + catalog contract + tests
+make status           # detect taxonomy drift vs. artifacts on disk
+```
+
+See [`docs/development.md`](docs/development.md) for details.
 
 ## Working on this repository
 
 1. Check [`TAXONOMY.md`](TAXONOMY.md) for the highest-priority capability that isn't MATURE (priority reasoning is recorded in each entry, per charter §24).
 2. Follow the Session Protocol (charter §25) and Agent Operating Procedure (§26).
-3. Produce the Output Contract (§27). Keep status honest (§4).
+3. Produce the Output Contract (§27). Keep status honest (§4) — `make status` enforces this.
 4. Record decisions as ADRs (§12) in the same session they're made.
+5. Consult [`docs/standards.md`](docs/standards.md) for the rule you are about to satisfy and the check that proves it.
 
 ## License
 

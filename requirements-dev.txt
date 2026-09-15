@@ -1,0 +1,33 @@
+# Fully pinned development toolchain (direct + transitive).
+#
+# This is a LOCK FILE, not the source of truth. The source of truth for direct
+# development dependencies is [project.optional-dependencies].dev in
+# pyproject.toml. Regenerate this file after changing it:
+#
+#   UV_CACHE_DIR=.uv-cache uv venv --python 3.14
+#   UV_CACHE_DIR=.uv-cache uv pip install -r requirements-dev.txt
+#   UV_CACHE_DIR=.uv-cache uv pip freeze > requirements-dev.txt
+#
+# Rationale (charter §19, §23): a session run a year from now must verify
+# against the same checks as this one. Unpinned tooling silently changes
+# results, which makes "tests pass" an unstable claim.
+#
+# There are no runtime dependencies. See the note in pyproject.toml.
+ast-serialize==0.11.2
+black==26.5.1
+click==8.5.0
+coverage==7.16.1
+iniconfig==2.3.0
+librt==0.15.0
+mypy==2.3.1
+mypy-extensions==1.1.0
+packaging==26.3
+pathspec==1.1.1
+platformdirs==4.11.8
+pluggy==1.6.0
+pygments==2.21.0
+pytest==9.1.1
+pytest-cov==7.1.0
+pytokens==0.4.1
+ruff==0.16.7
+typing-extensions==4.16.0
