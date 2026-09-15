@@ -226,27 +226,27 @@ capabilities:
   - id: mcp-client
     name: MCP Client (stdio transport)
     category: mcp
-    status: RESEARCHED
+    status: TESTED
     maturity: experimental
     priority: medium — COMPATIBILITY candidate (charter §16): MCP is an established protocol; a thin working client beats a comprehensive never-finished one (§24.4).
     depends_on: [tool-registry]
-    decision: pending (ADR-0009; open questions in the research record §10)
+    decision: COMPATIBILITY (ADR-0009) — legacy era only; approval decision before every dispatch
     description: Connect to an MCP server over stdio, list tools, call tools, surface results into the local tool registry.
     problem: Interoperate with the MCP ecosystem instead of inventing a private tool protocol.
     inputs: ["server command/config", "tool calls"]
     outputs: ["tool listings", "tool results"]
-    interfaces: []
-    dependencies: []
-    standards: ["Model Context Protocol"]
+    interfaces: ["MCPClient", "Transport", "ApprovalPolicy", "ApprovalRequest", "ToolCallOutcome", "project_tools", "ProjectionReport", "StdioTransport"]
+    dependencies: ["Python standard library only (no runtime dependency)"]
+    standards: ["Model Context Protocol", "JSON-RPC 2.0", "JSON Schema 2020-12 (documented subset)"]
     reference_projects: ["Model Context Protocol", "MCP Python SDK (official client)", "MCP TypeScript SDK (official client)", "mcp-go (independent client)"]
     research_records: ["research/mcp/mcp-client.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/protocols/mcp_client"
+    tests: "catalog/protocols/mcp_client/tests"
     benchmarks: ""
-    security: ""
+    security: "Mandatory approval seam (default denies); no shell; client-minted namespace; stderr drained but never an error signal; tool annotations untrusted. Not a sandbox for the server."
     license: Apache-2.0
     provenance: original
-    compatibility: ""
+    compatibility: "Legacy MCP era only (2025-11-25 and earlier). A modern-only (2026-07-28+) server is reported as a named protocol error, not retried."
     last_reviewed: "2026-09-16"
   - id: execution-trace-recorder
     name: Agent Trajectory / Execution Trace Recorder

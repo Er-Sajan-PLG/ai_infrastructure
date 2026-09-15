@@ -13,6 +13,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0006](0006-tool-registry.md) | `tool-registry`: a standalone, JSON-Schema-native registry | Accepted |
 | [0007](0007-model-provider-abstraction.md) | `model-provider-abstraction`: own the shape, not the socket | Accepted |
 | [0008](0008-react-agent-loop.md) | `react-agent-loop`: a bounded dispatcher, not a reasoner | Accepted |
+| [0009](0009-mcp-client.md) | `mcp-client`: implement the legacy era, and put the approval before the call | Accepted |
 
 ## When an ADR is required
 
