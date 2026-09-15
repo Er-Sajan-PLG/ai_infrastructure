@@ -1,0 +1,71 @@
+# USA foundation intent — what this project is and what it promises.
+# Deterministic input to readiness auditing: the coordinator turns
+# project.intents[] into intent:<value> facts. Hand-edit freely, but keep
+# it parseable — a broken file fails the audit loudly, never silently.
+version: 1
+
+# Who this project is for and what it wants to be.
+project:
+  name: ai_infrastructure
+  vision: "An independent, evolving AI infrastructure laboratory: study how real AI systems solve infrastructure problems, then build composable, verifiable, well-documented implementations of those capabilities so that many different AI systems can be assembled from the pieces. Not a framework, not a clone."
+  # One or more of: api, cli, library, service, frontend, docs-site, data-pipeline, mobile.
+  # library  — catalog/ ships importable capability implementations
+  # cli      — scripts/validate_catalog.py and scripts/repo_status.py are real CLIs
+  # docs-site — the knowledge plane (research/, taxonomy, ADRs) is a primary deliverable
+  intents:
+    - library
+    - cli
+    - docs-site
+
+# Stage target: prototype|mvp|beta|production|legacy.
+# Honest value: Phase 1 (Seed). No capability is implemented yet; the repository
+# is taxonomy, standards, enforcement machinery and 4 Python modules. Declaring
+# mvp would overstate it and let the audit hold it to a bar it has not reached.
+stage: prototype
+
+pillars:
+  # Files the docs pillar requires to exist.
+  docs:
+    required:
+      - README.md
+      - CHARTER.md
+      - CONTRIBUTING.md
+      - LICENSE
+      - TAXONOMY.md
+  # Governance files the project promises to keep.
+  governance:
+    codeOfConduct: false
+    contributing: true
+    securityPolicy: true
+    license: true
+  # AI posture: may assistants read, and may they write?
+  # writable: true — AGENTS.md governs agent sessions, and the Makefile gates
+  # (make check / make status) exist specifically to constrain what they write.
+  ai:
+    readable: true
+    writable: true
+  # Where tests live and the coverage bar (0-100).
+  # minCoverage 0: no threshold is enforced yet. pyproject.toml says so
+  # explicitly ("Set fail_under when the first catalog entry lands").
+  # Declaring 80 here would assert a bar the repository does not hold itself to.
+  testing:
+    dirs:
+      - tests
+    minCoverage: 0
+  # Env exemplars contributors copy.
+  environment:
+    files: []
+  # Local package scripts and CI workflow paths.
+  pipelines:
+    local:
+      - check
+      - status
+      - test
+      - lint
+      - typecheck
+      - validate
+    ci:
+      - ".github/workflows/ci.yml"
+  # Standards catalogues and spec documents (empty when none).
+  standards: []
+  specs: []
