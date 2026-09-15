@@ -4,7 +4,8 @@ Owns the *shape* of a model interaction (messages, responses, usage, finish
 reasons, errors, stream deltas) and delegates the *socket* to an injected
 transport. Zero runtime dependencies (ADR-0007).
 
-    from model_provider import ChatRequest, Message, Role, TextBlock, OpenAIProvider
+    from model_provider import ChatRequest, Message, Role, TextBlock
+    from model_provider.providers import OpenAIProvider
     from model_provider.transport import RecordingTransport
 
     provider = OpenAIProvider()

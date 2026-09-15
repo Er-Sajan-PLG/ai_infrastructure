@@ -11,4 +11,12 @@ Compositions of catalog components into working systems (charter §17, §31). An
 
 ## Status
 
-Empty. No catalog entries exist yet, so there is nothing to compose. Expected first candidate: `tool-registry` + `model-provider-abstraction` + `react-agent-loop` (see [`../docs/roadmap.md`](../docs/roadmap.md)).
+**1 integration.** Phase 1's exit criterion — *"at least one end-to-end
+composition: model + tools + agent loop, demonstrated in `integrations/`"* — is
+met.
+
+| Integration | Composes | Proves |
+|---|---|---|
+| [`agent_loop_end_to_end`](agent_loop_end_to_end/) | `tool-registry` + `model-provider-abstraction` + `react-agent-loop`, all `TESTED` | The three capabilities compose into a working system, and the composition is verified by 25 tests with no network. It found a real defect on the seam that neither capability's own suite could see. |
+
+See [`agent_loop_end_to_end/README.md`](agent_loop_end_to_end/README.md).

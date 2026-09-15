@@ -50,6 +50,20 @@ class RegistryDispatcher:
         The registry keeps two schema views precisely so injected parameters never
         reach a model (ADR-0006 D-3). Advertising validation_schema here would
         undo that, so this uses input_schema.
+
+        The schema is converted to plain JSON-safe containers. This is not
+        defensive padding -- it is a defect this integration found. The registry
+        exposes ``input_schema`` as a ``MappingProxyType`` for good reason
+        (immutability), and ``MappingProxyType`` is a perfectly valid
+        ``Mapping``. But a provider adapter encodes a request with
+        ``json.dumps``, and ``json.dumps`` cannot serialise a mappingproxy::
+
+            TypeError: Object of type mappingproxy is not JSON serializable
+
+        Neither capability's own tests caught this, because neither crosses the
+        boundary. The dispatcher's documented job is to return tools "in the
+        neutral OpenAI-shaped form that every provider adapter accepts", so the
+        conversion belongs here.
         """
         schemas: list[Mapping[str, Any]] = []
         for name, tool_id in sorted(self._by_name.items()):
@@ -60,7 +74,7 @@ class RegistryDispatcher:
                 {
                     "name": name,
                     "description": descriptor.description,
-                    "parameters": descriptor.input_schema,
+                    "parameters": _json_safe(descriptor.input_schema),
                 }
             )
         return tuple(schemas)
@@ -125,6 +139,26 @@ class RegistryDispatcher:
             kind=kind,
             tool_id=str(tool_id),
         )
+
+
+def _json_safe(value: Any) -> Any:
+    """Recursively convert a value into containers ``json.dumps`` can encode.
+
+    A deep conversion, not ``dict(value)``: a shallow copy of a mapping leaves
+    its *nested* values untouched, so a mappingproxy one level down still
+    reaches ``json.dumps`` and still raises. That is exactly the bug this
+    function fixes -- see :meth:`RegistryDispatcher.schemas`.
+
+    Unknown leaf types are returned unchanged rather than stringified. Coercing
+    them here would hide a genuinely unserialisable value until it failed
+    somewhere less obvious; leaving them lets the encoder raise at the boundary
+    that actually owns the problem.
+    """
+    if isinstance(value, Mapping):
+        return {str(k): _json_safe(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(v) for v in value]
+    return value
 
 
 def _as_observation(value: Any) -> str:
