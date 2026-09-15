@@ -150,7 +150,7 @@ capabilities:
   - id: react-agent-loop
     name: ReAct Agent Loop
     category: agents
-    status: DECIDED
+    status: TESTED
     maturity: experimental
     priority: high — canonical first agent pattern; exercises model abstraction + tool registry together; classic first end-to-end proof of composition.
     depends_on: [tool-registry, model-provider-abstraction]
@@ -159,15 +159,15 @@ capabilities:
     problem: Simplest agent control loop that grounds LLM output in tool interaction with a clear termination condition.
     inputs: ["task", "tool registry", "model"]
     outputs: ["final answer", "step trace", "stop reason"]
-    interfaces: ["run", "Agent", "AgentResult", "StopReason", "ModelCaller", "ToolDispatcher"]
+    interfaces: ["run", "Agent", "AgentResult", "StopReason", "ModelCaller", "ToolDispatcher", "ProviderCaller", "RegistryDispatcher"]
     dependencies: []
     standards: []
     reference_projects: ["ReAct (Yao et al.)", "LangGraph react agent executor", "OpenAI Agents SDK", "smolagents", "LangChain tool error surface"]
     research_records: ["research/agents/react-agent-loop.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/agents/react_agent_loop"
+    tests: "catalog/agents/react_agent_loop/tests"
     benchmarks: ""
-    security: ""
+    security: "catalog/agents/react_agent_loop/README.md#security"
     license: Apache-2.0
     provenance: original
     compatibility: ""

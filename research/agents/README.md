@@ -1,6 +1,6 @@
 # Agents & Orchestration
 
-> **Status: no entries yet.** This directory is a declared research category (charter §2, ADR-0001). Nothing here has been studied or implemented.
+> **Status: 1 capability studied.** This directory is a declared research category (charter §2, ADR-0001).
 
 ## What it is
 
@@ -20,16 +20,26 @@ Not yet surveyed.
 
 ## Landscape
 
-Not yet surveyed. External projects studied will be registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
+Five sources were studied for [`react-agent-loop`](react-agent-loop.md), all registered in
+[`../../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the
+charter §11 schema and `code_reused: false`:
+
+| Source | What it contributed |
+|---|---|
+| ReAct (Yao et al., arXiv:2210.03629v3) | The pattern's shape; the evidence that repetition is its most common ReAct-specific failure and is left unmitigated |
+| LangGraph react agent executor | A cap trip that yields a readable result; model-readable templated error text |
+| OpenAI Agents SDK | Typed next-step values instead of boolean flags; a documented turn unit |
+| smolagents | Recording *why* the loop stopped as a state flag; error kinds named by model-actionability |
+| LangChain tool error surface | The model-actionability split, corroborating ADR-0006 D-4 independently |
 
 ## Our implementations
 
-None. See [`../TAXONOMY.md`](../../TAXONOMY.md) §4 for capabilities in this category and their honest lifecycle status.
+[`catalog/agents/react_agent_loop/`](../../catalog/agents/react_agent_loop/) — status `TESTED`. See [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
 
 ## When to use / When not to use
 
-To be filled from evidence, not intuition.
+Documented per entry: [`react_agent_loop/README.md`](../../catalog/agents/react_agent_loop/README.md#when-to-use--when-not-to-use).
 
 ## References & citations
 
-None yet.
+See [`react-agent-loop.md`](react-agent-loop.md) §8 for primary sources and recorded limitations.

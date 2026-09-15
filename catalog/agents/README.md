@@ -1,6 +1,6 @@
 # Agents (catalog)
 
-> **Status: no entries yet.** This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27). Empty is correct for Phase 1.
+> **Status: 1 entry.** This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27).
 
 ## What it is
 
@@ -12,7 +12,8 @@ The control loop is the defining structure of an agent system, and the clearest 
 
 ## How it works
 
-Not yet implemented. Any future entry documents its architecture in its own `README.md`.
+Each entry documents its own architecture in its `README.md`. For the loop itself,
+see [`react_agent_loop/README.md`](react_agent_loop/README.md).
 
 ## Variants & types
 
@@ -24,7 +25,11 @@ External reference projects, once studied, are registered in [`../../docs/regist
 
 ## Our implementations
 
-None. Capabilities planned for this category are listed in [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
+| Entry | Status | What it does |
+|---|---|---|
+| [`react_agent_loop`](react_agent_loop/) | `TESTED` | A bounded dispatcher: calls a model, dispatches structured tool calls against a registry, feeds results back as observations, and stops with a stated reason. Composes `tool-registry` and `model-provider-abstraction` through protocols it defines, so it runs against scripted doubles with no network. Sync-only. |
+
+Full capability list: [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
 
 ## When to use / When not to use
 
