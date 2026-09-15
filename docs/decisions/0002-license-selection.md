@@ -1,47 +1,117 @@
-# ADR-0002 — License Selection Is Deferred to Human Decision
+# ADR-0002 — License Selection
 
-- **Status:** Proposed
+- **Status:** Accepted (supersedes the Proposed state of this ADR)
 - **Date:** 2026-01-01
 - **Supersedes:** —
+- **Superseded by:** —
 
 ## Context
 
-The repository currently has **no `LICENSE` file**. Charter §22 makes licensing a human review gate, and charter §11 requires that reuse and attribution be tracked precisely. Two facts force this ADR now:
+This ADR was originally raised as **Proposed** to block code reuse while the
+repository had no `LICENSE` file. Charter §22 makes licensing a human review
+gate; charter §11 requires reuse and attribution to be tracked precisely, and
+the obligations that tracking creates depend on the license this repository
+carries.
 
-1. Charter §13's proposed layout includes a `LICENSE`, but the charter does not say which license.
-2. Phase-1 capabilities will study licensed external projects (`docs/registry/RESEARCH_REGISTRY.md`). The license this repository carries constrains — and is constrained by — what can lawfully be adapted from projects under copyleft licenses, and determines the attribution obligations recorded with `code_reused: true`.
+The maintainer's stated position: the repository is primarily for personal use;
+the future is unknown; commercialization (possibly as a product) remains a
+possibility; and open-sourcing is plausible if the project matures. There is no
+settled position on whether downstream users should be obliged to keep
+derivatives open.
 
-Choosing a license unilaterally would resolve a high-impact ambiguity silently, which charter §22 forbids.
+That combination — undecided future, explicit possibility of commercialization —
+makes **optionality** the governing requirement, not the expression of a value
+that has not yet been chosen.
 
 ## Decision
 
-**Do not create a `LICENSE` file in this session.** Record the decision as pending human review, and make the absence explicit in `README.md` so no one assumes permissive reuse.
+**License this repository under Apache-2.0.** `LICENSE` contains the canonical
+Apache License, Version 2.0 text; `NOTICE` carries the copyright statement and
+the third-party-notices scaffolding.
 
-Until a license is chosen, the standing rule for contributors and agents is:
+Reasoning, in the order that decided it:
 
-- **Study freely, copy nothing.** Reading documentation and source for architectural understanding is fine and is the point of the research plane.
-- **No source code, text, or assets from any external project may be copied into `catalog/`.** Reimplementations must be written from understanding, following `UNDERSTAND → ABSTRACT → DESIGN → IMPLEMENT → TEST` (charter §9).
-- **`code_reused: true` is not to be set on any registry entry** while this ADR is Proposed — there is no lawful basis for reuse until the repository's own licensing position is settled.
-- Flag any study that appears to require code-level derivation for human review before proceeding.
+1. **Permissive does not foreclose commercialization.** The maintainer can build
+   a proprietary product on their own Apache-2.0 code without friction, and the
+   license does not make the maintainer compete with their own terms.
+2. **Permission is the reversible direction.** As sole copyright holder, the
+   maintainer may license *future versions* under different terms. The reverse
+   move — restrictive to permissive — is not credibly available once the work is
+   out under copyleft. Choosing permissive preserves the decision; choosing
+   restrictive makes it.
+3. **The patent grant matters for infrastructure.** This repository targets a
+   patent-dense field (agent orchestration, retrieval, model routing).
+   Apache-2.0's express patent grant and retaliation clause protects downstream
+   users in a way MIT does not address. For a foundation intended to be built
+   upon, that is the substantive difference from MIT.
+4. **Compatibility with every current study target.** LangChain, LlamaIndex,
+   AutoGen, CrewAI, DSPy, SWE-agent, Semantic Kernel and OpenAI Swarm are MIT;
+   Haystack and MemGPT/Letta are Apache-2.0. All are permissive, so Apache-2.0
+   keeps `code_reused: true` available for all of them should a future session
+   need it. Copyleft here would have constrained charter §29's pipeline.
+5. **Contribution clarity.** Apache-2.0 §5's inbound=outbound default permits
+   accepting outside contributions without a bespoke CLA mechanism.
+
+### Charter §22 gate satisfied
+
+This decision was escalated to the maintainer and explicitly approved
+("Apache-2.0") in the session that produced this ADR. It was not made
+unilaterally by an agent.
+
+### Consequence now in force
+
+`docs/registry/RESEARCH_REGISTRY.md` no longer prohibits `code_reused: true`.
+The rule that replaces the block is the original charter §11 requirement: any
+entry setting `code_reused: true` must record `attribution_requirements`, and
+the required notice text must be added to `NOTICE` in the same change. Copying
+code remains subject to the charter §9 rule that independent implementations are
+written from understanding (`UNDERSTAND → ABSTRACT → DESIGN → IMPLEMENT → TEST`),
+not `COPY → RENAME → MODIFY`.
+
+### Explicit non-decision: contribution policy
+
+Commercial optionality depends on retaining the ability to relicense the whole
+work later — for example to a source-available license such as BSL 1.1 if a
+hosted product emerges. **That ability is destroyed by the first outside
+contribution accepted without a relicense grant**, because every contributor's
+code would carry Apache-2.0.
+
+This ADR therefore records a deliberate, temporary restriction: **no external
+contributions are accepted until a contribution policy (DCO sign-off plus a
+relicense grant, or a CLA) is adopted.** This is stated in `CONTRIBUTING.md`.
+It costs nothing while the project has one maintainer and preserves the option.
 
 ## Consequences
 
-- The repository is not legally reusable by third parties yet; `README.md` says so plainly.
-- Copyleft-heavy candidates (e.g. AGPL projects) can be studied, but their patterns cannot be adapted into this repository until the license question is answered and the compatibility of the chosen license with theirs is assessed.
-- The license choice must land before any capability reaches BENCHMARKED/INTEGRATED in a way that embeds third-party-derived logic, and before any external contribution is accepted.
-- A follow-up ADR (expected `NNNN-license-selection.md`) will supersede this one and add the `LICENSE` file; until then, this ADR stays Proposed and visible.
+- The repository is legally reusable by third parties under Apache-2.0 terms.
+- `code_reused: true` is unblocked, subject to `attribution_requirements` and a
+  `NOTICE` update in the same change.
+- The maintainer keeps open the option to relicense future versions, provided
+  the contribution restriction above holds.
+- Choosing Apache-2.0 does **not** and cannot control how the software is used.
+  A license governs redistribution, not intent; the maintainer's stated concern
+  about downstream intent is not addressable by any open-source license. This is
+  recorded so a future session does not misread the license as a safety control.
+- If a hosted product emerges, BSL 1.1 or similar remains an option for future
+  versions; that would be a new ADR superseding this one.
 
 ## Alternatives considered
 
-- **Pick MIT now** — rejected: it is a plausible default, but it is precisely a §22 gate and would prejudice derivative-work options the maintainer may want (e.g. copyleft compatibility). Not an agent's call.
-- **Pick Apache-2.0 now** — rejected for the same reason, plus its patent grant is a deliberate legal position.
-- **Pick a copyleft license now to match likely study targets** — rejected: constrains downstream consumers (charter §31 expects many systems to build on this) and is a major compatibility commitment (§22).
-- **Ship no license and say nothing** — rejected: absence would be read as "public domain" by some consumers. The gap is now documented and linked from `README.md`.
+| Option | Why rejected |
+|---|---|
+| **MIT** | Simpler, and the common default. Rejected because it is silent on patents in a patent-dense domain; Apache-2.0's grant protects downstream users for a small amount of extra notice obligation. |
+| **AGPL-3.0** | Would express "derivatives must stay open." Rejected because it directly conflicts with charter §31's goal of components being adoptable piecemeal (including partial adoption by proprietary systems), and it would constrain reuse from AGPL study targets. Also rejected because it does **not** achieve the maintainer's stated goal — AGPL regulates redistribution, not use, so it cannot control downstream intent while imposing real costs on legitimate adopters. |
+| **BSL 1.1 / Elastic License** | Best protection for a future hosted service, but is not OSI open source, is banned by many prospective users, and would forfeit the open-source credibility the project is built on. Recorded as a future option for a mature product, not a starting point. |
+| **Defer indefinitely (keep no LICENSE)** | Rejected: absence is read as "public domain" by some consumers, and it blocks all reuse including legitimate reuse. Deferring also removed pressure to settle the contribution-policy question, which is the decision that actually matters. |
+| **Dual licensing (Apache-2.0 + commercial)** | Premature: requires a CLA and a product to sell. Available later from this position. |
 
 ## Charter references
 
-§11 Research Registry, Attribution & Intellectual Property; §22 Human Review Gates; §28 Failure & Uncertainty Policy ("licensing is unclear → stop and request human review").
+§11 (Research Registry, Attribution & Intellectual Property), §22 (Human Review
+Gates), §28 (Failure & Uncertainty Policy — "licensing is unclear → stop and
+request human review"), §29 (study pipeline), §31 (long-term composability goal).
 
 ## Taxonomy impact
 
-None. Blocks future `license:` field values and any registry entry setting `code_reused: true`.
+None directly. Unblocks the `license:` field and the `code_reused` registry
+rule; no capability status changes.

@@ -26,7 +26,8 @@ Full rule-to-check map: [`docs/standards.md`](docs/standards.md). Environment de
 - Never claim a lifecycle status without the artifacts existing and passing (charter §4). **`make status` enforces this** — it exits 1 when a claim exceeds what is on disk.
 - Never begin work with "what should we copy" — begin with capability/problem/analysis (§1).
 - Decide IMPLEMENT / ADAPT / COMPATIBILITY / PROTOTYPE / DOCUMENT / DEFER / REJECT **before** building (§8), and record the decision as an ADR in `docs/decisions/` in the same session (§12).
-- Distinguish *inspired-by* from *derived-from* in `docs/registry/RESEARCH_REGISTRY.md` (§11). Conflation is a licensing risk. `code_reused: true` is currently blocked by ADR-0002.
+- Distinguish *inspired-by* from *derived-from* in `docs/registry/RESEARCH_REGISTRY.md` (§11). Conflation is a licensing risk. This repository is Apache-2.0; `code_reused: true` requires `attribution_requirements` plus a `NOTICE` update in the same change.
+- External contributions are **not accepted** (see `CONTRIBUTING.md`) — do not merge outside PRs; it would forfeit the maintainer's relicense option.
 - Licensing uncertainty, major dependency additions, trust-boundary changes, deletions of mature infrastructure → **stop and request human review** (§22).
 - Never weaken a check to obtain a pass, and never commit with `--no-verify` (§28).
 - Primary implementation language: Python, type-hinted (mypy strict), ruff-linted, black-formatted (§13).

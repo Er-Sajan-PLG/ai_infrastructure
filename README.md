@@ -52,4 +52,6 @@ See [`docs/development.md`](docs/development.md) for details.
 
 ## License
 
-Pending — see [`docs/decisions/0002-license-selection.md`](docs/decisions/0002-license-selection.md). Do not reuse code from this repository as if it carried a license until a license is chosen (human review gate, charter §22).
+[Apache-2.0](LICENSE) — see [`NOTICE`](NOTICE) and [ADR-0002](docs/decisions/0002-license-selection.md) for the reasoning, including why this license was chosen over MIT, AGPL, and BSL.
+
+**External contributions are not currently accepted** — see [`CONTRIBUTING.md`](CONTRIBUTING.md) for the reason (it preserves the option to relicense future versions).

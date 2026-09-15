@@ -171,7 +171,8 @@ ai_infrastructure/
 ├── TAXONOMY.md            # Machine-readable taxonomy + capability registry
 ├── CONTRIBUTING.md        # How to add new patterns
 ├── AGENTS.md              # Entry point for AI agent sessions
-├── LICENSE                # PENDING — see ADR-0002 (human decision required)
+├── LICENSE                # Apache-2.0 — see ADR-0002
+├── NOTICE                 # Apache-2.0 copyright + third-party notices
 ├── research/              # Findings, mirrors §2 categories
 ├── specifications/        # DESIGNED-stage docs, pre-code
 ├── catalog/               # The main implementation library

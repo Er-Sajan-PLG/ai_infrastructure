@@ -116,7 +116,7 @@ capabilities:
     tests: ""
     benchmarks: ""
     security: ""
-    license: ""
+    license: Apache-2.0
     provenance: original
     compatibility: ""
     last_reviewed: ""
@@ -142,7 +142,7 @@ capabilities:
     tests: ""
     benchmarks: ""
     security: ""
-    license: ""
+    license: Apache-2.0
     provenance: original
     compatibility: ""
     last_reviewed: ""
@@ -168,7 +168,7 @@ capabilities:
     tests: ""
     benchmarks: ""
     security: ""
-    license: ""
+    license: Apache-2.0
     provenance: original
     last_reviewed: ""
 
@@ -193,7 +193,7 @@ capabilities:
     tests: ""
     benchmarks: ""
     security: ""
-    license: ""
+    license: Apache-2.0
     provenance: original
     last_reviewed: ""
 
@@ -218,7 +218,7 @@ capabilities:
     tests: ""
     benchmarks: ""
     security: ""
-    license: ""
+    license: Apache-2.0
     provenance: original
     last_reviewed: ""
 
@@ -243,7 +243,7 @@ capabilities:
     tests: ""
     benchmarks: ""
     security: ""
-    license: ""
+    license: Apache-2.0
     provenance: original
     compatibility: ""
     last_reviewed: ""
@@ -269,7 +269,7 @@ capabilities:
     tests: ""
     benchmarks: ""
     security: ""
-    license: ""
+    license: Apache-2.0
     provenance: original
     last_reviewed: ""
 ```

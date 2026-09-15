@@ -74,14 +74,23 @@ silently, and it is the one the tooling checks hardest.
 
 These cannot be automated and must stop for a human (charter §22):
 
-- Significant licensing risk, or `code_reused: true` — **currently blocked by ADR-0002**
+- Significant licensing risk, or setting `code_reused: true` — **Apache-2.0 is in force** ([ADR-0002](decisions/0002-license-selection.md)); reuse additionally requires `attribution_requirements` and a `NOTICE` update in the same change
 - Copying or adapting substantial external code
+- **Accepting an external contribution** — currently prohibited outright; see below
 - Changing foundational architecture
 - Adding a major dependency
 - Security-sensitive infrastructure, or any trust-boundary / auth change
 - Deleting or replacing mature infrastructure
 - Declaring a capability production-ready
 - Major compatibility commitments
+- **Relicensing** — permitted for future versions only while no external contribution has been accepted
+
+### Licensing rule
+
+The repository is **Apache-2.0**. Two consequences for ordinary work:
+
+1. `code_reused: true` in the research registry is permitted, but the entry must record `attribution_requirements`, and the required notice text must be added to `NOTICE` in the same change.
+2. **External contributions are not accepted** ([`../CONTRIBUTING.md`](../CONTRIBUTING.md)). As sole copyright holder the maintainer can relicense future versions; the first accepted outside contribution removes that ability. Do not merge an outside PR.
 
 ## 7. What is deliberately not automated
 

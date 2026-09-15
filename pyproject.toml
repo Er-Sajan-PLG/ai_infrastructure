@@ -4,7 +4,8 @@ version = "0.0.1"
 description = "An independent, evolving AI infrastructure laboratory: research, architecture knowledge, implementations, interoperability, and evaluation."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "UNLICENSED — see docs/decisions/0002-license-selection.md" }
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 authors = [{ name = "ai_infrastructure maintainers" }]
 
 # Runtime dependencies are deliberately empty.

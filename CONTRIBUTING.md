@@ -2,6 +2,21 @@
 
 Contributions — human or AI agent — follow the charter. This file is the short version of the rules; [`CHARTER.md`](CHARTER.md) wins on any conflict.
 
+## ⚠️ External contributions are not currently accepted
+
+This repository is licensed **Apache-2.0** ([`LICENSE`](LICENSE)). No contribution policy has been adopted yet, and **pull requests from outside the project are not being accepted at this time.**
+
+The reason is specific and temporary: the maintainer's future plans (possibly commercializing) depend on retaining the ability to relicense *future versions* of the whole work — for example to a source-available license if a hosted product emerges. As sole copyright holder that ability exists today. It would be **destroyed by the first accepted outside contribution**, because that contributor's code would carry Apache-2.0 and could not be relicensed without their consent.
+
+Before external contributions can be accepted, one of the following must be adopted:
+
+- a **CLA** granting the maintainer the right to relicense, or
+- a **DCO sign-off plus an explicit relicense grant** recorded in this file,
+
+together with an ADR superseding the contribution-policy note in [ADR-0002](docs/decisions/0002-license-selection.md).
+
+This is not a judgement on any contribution's quality. It is a deliberate sequencing choice: adopting a license now cost nothing; adopting a contribution policy without thinking it through would have cost an option.
+
 ## Golden rules
 
 1. **Capability first, not repository first** (charter §1). Start from the problem and the landscape, never from "let's copy X".
