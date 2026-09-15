@@ -33,4 +33,5 @@ For each: RESEARCHED → UNDERSTOOD → DECIDED (ADR) → DESIGNED → IMPLEMENT
 
 ## Latest session notes
 
-- **2026 (skeleton session):** Repository bootstrapped — charter, taxonomy with 7 seeded DISCOVERED capabilities, registry, ADR-0001/0002, category skeletons, catalog validator. Next session: begin `tool-registry` research (RESEARCHED stage): survey how LangChain, OpenAI function calling, MCP, and Semantic Kernel model tool schema/validation/invocation; register studies in `docs/registry/`; record the DECISION as ADR-0003 before any code.
+- **2026 (skeleton session):** Repository bootstrapped — charter, taxonomy with 7 seeded DISCOVERED capabilities, registry, ADR-0000/0001/0002, 39 category stubs, catalog validator with 11 passing tests. Committed as `9cd728b` (63 tracked files). Next session: begin `tool-registry` research (RESEARCHED stage): survey how LangChain, OpenAI function calling, MCP, and Semantic Kernel model tool schema/validation/invocation; register studies in `docs/registry/`; record the DECISION as ADR-0003 before any code.
+- **Open human decision:** ADR-0002 — choose the repository license. Until resolved, no external code may enter `catalog/` and `code_reused: true` must not be set in the registry.
