@@ -14,6 +14,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0007](0007-model-provider-abstraction.md) | `model-provider-abstraction`: own the shape, not the socket | Accepted |
 | [0008](0008-react-agent-loop.md) | `react-agent-loop`: a bounded dispatcher, not a reasoner | Accepted |
 | [0009](0009-mcp-client.md) | `mcp-client`: implement the legacy era, and put the approval before the call | Accepted |
+| [0010](0010-execution-trace-recorder.md) | `execution-trace-recorder`: record flat, bound everything, capture nothing by default | Accepted |
 
 ## When an ADR is required
 

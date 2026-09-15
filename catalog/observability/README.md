@@ -1,6 +1,6 @@
 # Observability (catalog)
 
-> **Status: no entries yet.** This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27). Empty is correct for Phase 1.
+> **Status: 1 entry, `TESTED`.** This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27).
 
 ## What it is
 
@@ -12,23 +12,54 @@ Turning agent behavior into inspectable, testable data.
 
 ## How it works
 
-Not yet implemented. Any future entry documents its architecture in its own `README.md`.
+Each entry documents its own architecture. The shared pattern in this category is a
+**writer with an injected clock and a bounded record shape**: the clock is a
+protocol so timing is deterministic in tests, and every string is bounded before it
+reaches the sink so a record is always writable.
 
 ## Variants & types
 
-None implemented.
+| Entry | What it is |
+|---|---|
+| [`execution_trace_recorder`](execution_trace_recorder/) | Flat JSONL records with `parent_id` pointers, content **off by default**, and a write failure that is counted rather than raised. `TESTED`, 50 tests. |
 
 ## Landscape
 
-External reference projects, once studied, are registered in [`../../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md).
+Six systems studied for `execution-trace-recorder`, registered in
+[`../../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md)
+with `code_reused: false`: OpenTelemetry's GenAI conventions, OpenInference,
+Langfuse, LangSmith, MLflow, and AgentOps.
+
+**The findings that shaped the category:**
+
+- **There is no stable standard to conform to.** The OTel GenAI conventions are
+  `Development`, have just moved repositories, have **no published schema URL**, and
+  have already reversed one content-capture decision. An entry here therefore
+  publishes a *correspondence* rather than claiming compatibility.
+- **The six do not agree on a taxonomy axis.** OTel uses an operation *verb*; the
+  other five use a kind *noun*; MLflow keeps its taxonomy open on purpose. Any
+  entry must pick one and say which.
+- **Default-off content capture is the minority position**, and that is the argument
+  for it: only one of six states that rule, and it is the only one with a privacy
+  review.
+- **Flat records with parent pointers are unanimous.** No surveyed system stores a
+  nested tree, and a nested tree cannot be appended to without rewriting the file.
 
 ## Our implementations
 
-None. Capabilities planned for this category are listed in [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
+[`execution_trace_recorder`](execution_trace_recorder/) — `TESTED`. The first
+capability in this category, and the one that makes charter §18's *"demonstrated
+run"* reviewable by someone who was not present.
 
 ## When to use / When not to use
 
-To be documented per entry.
+Use an entry in this category when you need a persisted, reviewable record of what
+a run did — and when you want the safe default to be what you get without thinking
+about it.
+
+Do **not** expect an entry here to export to a vendor's ingest endpoint or to
+compute cost. `execution_trace_recorder` claims conformance to no standard, and
+cost is DEFERred because a pricing table ages.
 
 ## Entry contract
 
@@ -47,4 +78,5 @@ Validate with `python ../../scripts/validate_catalog.py`.
 
 ## References & citations
 
-None yet.
+See [`execution_trace_recorder/README.md`](execution_trace_recorder/README.md) and
+its [`PROVENANCE.md`](execution_trace_recorder/PROVENANCE.md).

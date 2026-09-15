@@ -251,24 +251,25 @@ capabilities:
   - id: execution-trace-recorder
     name: Agent Trajectory / Execution Trace Recorder
     category: observability
-    status: RESEARCHED
+    status: TESTED
     maturity: experimental
     priority: medium — needed to evaluate and debug agents honestly (charter §18); simple JSONL recorder first.
     depends_on: []
-    decision: pending (ADR to follow; open questions recorded in the research record §10)
+    decision: IMPLEMENT (ADR-0010) — flat JSONL records; content capture off by default; a write failure is counted, never raised
     description: Record structured traces of agent/model/tool steps with timing and token usage for replay and evaluation.
     problem: Without traces, agent behavior cannot be tested, evaluated, or debugged with evidence.
-    inputs: ["step events"]
-    outputs: ["JSONL traces", "aggregate stats"]
-    interfaces: []
-    dependencies: []
-    standards: ["OpenTelemetry GenAI semantic conventions (Development — studied, not conformed to)"]
+    inputs: ["step events", "model calls", "tool calls"]
+    outputs: ["JSONL traces"]
+    interfaces: ["TraceRecorder", "TraceRecord", "RecordKind", "Outcome", "Clock", "CapturePolicy", "Bounds"]
+    dependencies: ["Python standard library only (no runtime dependency)"]
+    standards: ["OpenTelemetry GenAI semantic conventions (Development — studied, correspondence documented, NOT conformed to)"]
     reference_projects: ["OpenTelemetry GenAI semantic conventions", "Langfuse", "LangSmith", "MLflow (tracing)", "AgentOps", "OpenInference"]
     research_records: ["research/observability/execution-trace-recorder.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/observability/execution_trace_recorder"
+    tests: "catalog/observability/execution_trace_recorder/tests"
     benchmarks: ""
-    security: ""
+    security: "Content capture OFF by default as a policy object; never a '__REDACTED__' sentinel. Every string bounded before writing. An unserialisable or cyclic payload cannot kill the run. A write failure is counted and inspectable, never raised — it cannot kill the run it observes."
     license: Apache-2.0
     provenance: original
-    last_reviewed: "2026-09-15"
+    compatibility: "No conformance to any standard claimed: the OTel GenAI conventions are Development, moved repositories, have no published schema URL, and reversed one content-capture decision. specifications/execution-trace-recorder.md s4 publishes a correspondence table instead."
+    last_reviewed: "2026-09-16"

@@ -23,9 +23,8 @@ A spec is not implementation (charter §10). Do not add code to this directory.
 
 | Specification | Capability | Status |
 |---|---|---|
-| Specification | Capability | Status |
-|---|---|---|
 | [`tool-registry.md`](tool-registry.md) | `tool-registry` | ✅ TESTED — decided by [ADR-0006](../docs/decisions/0006-tool-registry.md) |
 | [`model-provider-abstraction.md`](model-provider-abstraction.md) | `model-provider-abstraction` | ✅ TESTED — decided by [ADR-0007](../docs/decisions/0007-model-provider-abstraction.md) |
 | [`react-agent-loop.md`](react-agent-loop.md) | `react-agent-loop` | ✅ TESTED — decided by [ADR-0008](../docs/decisions/0008-react-agent-loop.md) |
 | [`mcp-client.md`](mcp-client.md) | `mcp-client` | ✅ TESTED — decided by [ADR-0009](../docs/decisions/0009-mcp-client.md) |
+| [`execution-trace-recorder.md`](execution-trace-recorder.md) | `execution-trace-recorder` | ✅ TESTED — decided by [ADR-0010](../docs/decisions/0010-execution-trace-recorder.md) |
