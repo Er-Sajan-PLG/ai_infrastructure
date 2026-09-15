@@ -9,6 +9,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0002](0002-license-selection.md) | License Selection (Apache-2.0) | Accepted |
 | [0003](0003-toolchain-and-enforcement.md) | Toolchain, Enforcement, and the Drift Detector | Accepted |
 | [0004](0004-testing-enforcement-holes.md) | Close the Testing-Enforcement Holes | Accepted |
+| [0005](0005-phase-model-and-plans.md) | Name the Foundation Work "Phase 0"; add phase plans | Accepted |
 
 ## When an ADR is required
 

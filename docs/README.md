@@ -11,6 +11,7 @@ How to navigate this repository's documentation. Read in this order when you are
 | [`standards.md`](standards.md) | You are about to do work and want the enforceable rules |
 | [`development.md`](development.md) | You need to set up or run the environment |
 | [`roadmap.md`](roadmap.md) | You want to know what's next and why |
+| [`phases/`](phases/) | You want the executable plan for the current (or next) phase |
 | [`architecture.md`](architecture.md) | You need to know where something belongs |
 | [`philosophy.md`](philosophy.md) | You need the engineering attitude behind the rules |
 

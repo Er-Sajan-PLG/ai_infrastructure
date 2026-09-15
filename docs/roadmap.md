@@ -4,13 +4,16 @@
 
 **Phase 1 — Seed** (charter §30). Establish taxonomy, registry, documentation standards, and the first handful of end-to-end capabilities.
 
-| Phase | Status |
-|---|---|
-| 1 — Seed | **In progress** — skeleton done, no capabilities implemented |
-| 2 — Study pipeline | Not started (machinery in `study_pipeline/` is a stub) |
-| 3 — Discover | Not started |
-| 4 — Compose | Not started |
-| 5 — Sustain | Not started |
+| Phase | Status | Plan |
+|---|---|---|
+| 0 — Foundation *(ADR-0005)* | ✅ Complete | [`phases/phase-0-foundation.md`](phases/phase-0-foundation.md) |
+| 1 — Seed | 🔄 **In progress** — capability work starts now | [`phases/phase-1-seed.md`](phases/phase-1-seed.md) |
+| 2 — Study pipeline | Not started | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
+| 3 — Discover | Not started | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
+| 4 — Compose | Not started | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
+| 5 — Sustain | Not started | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
+
+Executable plans — including exit criteria — live in [`docs/phases/`](phases/). Read the current phase's plan before starting work.
 
 ## Phase 1 queue
 
