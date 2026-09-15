@@ -1,6 +1,6 @@
 # Models (catalog)
 
-> **Status: no entries yet.** This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27). Empty is correct for Phase 1.
+> **Status: 1 entry.** Independent implementations at IMPLEMENTED or later (charter §4, §27).
 
 ## What it is
 
@@ -24,7 +24,11 @@ External reference projects, once studied, are registered in [`../../docs/regist
 
 ## Our implementations
 
-None. Capabilities planned for this category are listed in [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
+| Entry | Status | What it does |
+|---|---|---|
+| [`model_provider`](model_provider/) | `TESTED` | A vendor-neutral chat interface for OpenAI, Anthropic and Gemini with streaming, usage normalisation and a structural error taxonomy. Zero runtime dependencies; transport injected. |
+
+Full capability list: [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
 
 ## When to use / When not to use
 

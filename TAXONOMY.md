@@ -124,7 +124,7 @@ capabilities:
   - id: model-provider-abstraction
     name: Model Provider Abstraction
     category: models
-    status: DECIDED
+    status: TESTED
     maturity: experimental
     priority: high — everything above depends on a minimal LLM call interface; the narrow slice is text-in/text-out with errors and token metadata.
     depends_on: []
@@ -138,10 +138,10 @@ capabilities:
     standards: ["OpenAI Chat Completions wire format", "Anthropic Messages API", "Google Gemini GenerateContent v1beta", "Server-Sent Events"]
     reference_projects: ["LiteLLM", "OpenAI Python SDK (provider client design)", "LangChain BaseChatModel", "LlamaIndex LLM"]
     research_records: ["research/models/model-provider-abstraction.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/models/model_provider"
+    tests: "catalog/models/model_provider/tests"
     benchmarks: ""
-    security: ""
+    security: "catalog/models/model_provider/README.md#failure-taxonomy--by-caller-actionable-category"
     license: Apache-2.0
     provenance: original
     compatibility: ""
