@@ -98,20 +98,20 @@ capabilities:
   - id: tool-registry
     name: Tool Registry & Function Calling Primitive
     category: tools
-    status: DISCOVERED
+    status: UNDERSTOOD
     maturity: experimental
     priority: high — a named call graph: model-agnostic tool schema/invocation/result handling; nearly every downstream capability (agents, harnesses, MCP) consumes it.
     depends_on: []
-    decision: pending
+    decision: IMPLEMENT — standalone, JSON-Schema-native registry with zero runtime dependencies (ADR-0006)
     description: Register, describe, validate, and invoke tools/functions with typed schemas; surface call failures deterministically.
     problem: Give agents and runtimes a uniform, inspectable, validated boundary between model intent and executable behavior.
     inputs: ["tool definitions", "call arguments"]
     outputs: ["tool results", "validation/execution errors"]
     interfaces: []
     dependencies: []
-    standards: ["JSON Schema"]
-    reference_projects: []
-    research_records: []
+    standards: ["JSON Schema 2020-12 (documented subset — see ADR-0006)"]
+    reference_projects: ["OpenAI function calling / tools", "LangChain / LangGraph", "Model Context Protocol", "Microsoft Semantic Kernel"]
+    research_records: ["research/tools/tool-registry.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -119,7 +119,7 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: ""
+    last_reviewed: "2026-09-15"
 
   - id: model-provider-abstraction
     name: Model Provider Abstraction

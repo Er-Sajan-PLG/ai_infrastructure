@@ -149,6 +149,134 @@ last_reviewed: 2026-09-15
 > **Depth note.** LangGraph's `tool_node.py` was read directly (2030 lines) to verify the
 > injection-defence and error-handling claims rather than relying on documentation alone.
 
+---
+
+### Model Context Protocol (MCP)
+
+```yaml
+project: Model Context Protocol
+relevant_categories: [tools, protocols]
+repository: https://github.com/modelcontextprotocol/modelcontextprotocol
+authors: Anthropic (and contributors)
+license: MIT
+version_studied: schema revisions 2024-11-05 .. 2026-07-28 (2025-06-18 and 2026-07-28 in depth)
+capabilities: >
+  An open protocol for exposing tools, resources, and prompts to LLM applications over
+  JSON-RPC. Defines tool discovery (tools/list) and invocation (tools/call), plus
+  capability negotiation and transports (stdio, Streamable HTTP).
+architecture: >
+  JSON-RPC 2.0 with a lifecycle: initialize -> notifications/initialized -> tools/list
+  -> tools/call. Tools carry a name, description, and inputSchema (JSON Schema).
+  Results carry content[] and optional structuredContent, with isError as an in-band flag.
+  Later revisions (2026-07-28) remove the handshake entirely, add server/discover, make
+  the protocol stateless, and require resultType on all results.
+strengths:
+  - Clean separation of discovery from invocation
+  - Two-tier error taxonomy grounded in model-actionability, with the rationale documented
+  - Annotations explicitly marked as untrusted hints rather than guarantees
+  - Real transport specification (stdio and Streamable HTTP)
+  - list_changed invalidation notification for dynamic tool sets
+weaknesses:
+  - Tool identity is scoped to a live connection/process and dies on restart
+  - The 2025-06-18 inputSchema type permits only type/properties/required while prose
+    says "JSON Schema"; the ambiguity caused documented multi-year cross-SDK breakage
+  - structuredContent was object-only until SEP-2106 (2025-06-18 shape carries a
+    now-removed constraint)
+  - 2025-06-18 lists "Invalid arguments" as protocol-level AND "Invalid input data" as
+    execution-level - overlapping guidance
+  - Six schema revisions in flight; anything built against the handshake is already legacy
+patterns_worth_adopting:
+  - Discovery/invocation separation
+  - inputSchema rooted at type:object; ALWAYS emit an explicit $schema (>=2020-12)
+  - Normalise schemas to be self-contained; never auto-dereference network $ref
+  - Error taxonomy keyed on model-visibility, with isError as an in-band flag
+  - Annotations explicitly untrusted
+  - The observation that an untrusted schema is an attack surface (external $ref -> SSRF,
+    pathological composition -> CPU exhaustion)
+patterns_worth_avoiding:
+  - Inheriting the dialect ambiguity
+  - Object-only structuredContent
+  - Duplicated structured+text payload shims
+  - Accepting unvalidated opaque inputSchema
+  - Coupling to handshake lifecycle
+  - Server-centric tool identity
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target for Phase 1. The capability map is the launch point (charter 21).
+  The mcp-client capability (separate taxonomy entry) will implement the stdio transport.
+  This study informs our registry's identity and schema model, not a shared wire format.
+standards: ["JSON-RPC 2.0", "JSON Schema"]
+last_reviewed: 2026-09-15
+```
+
+---
+
+### Microsoft Semantic Kernel
+
+```yaml
+project: Microsoft Semantic Kernel
+relevant_categories: [tools]
+repository: https://github.com/microsoft/semantic-kernel
+authors: Microsoft
+license: MIT
+version_studied: python 1.44.1 (source read directly)
+capabilities: >
+  Plugin/function model for exposing native and prompt functions to models, with an
+  auto function-calling loop, allowlisting, and an onion middleware filter system.
+architecture: >
+  KernelFunction (Pydantic model) with KernelFunctionFromMethod / FromPrompt subclasses.
+  @kernel_function plants __kernel_function_*__ dunders; KernelFunctionFromMethod raises
+  unless they are present. KernelPlugin is dict-like; the Kernel is a god object holding
+  services, plugins, filters, and prompt rendering. FunctionChoiceBehavior drives the
+  auto-calling loop. Filters are (context, next) middleware assembled per filter type.
+strengths:
+  - Onion middleware over invocation - logging, approval, retry, caching, PII redaction
+    without touching tool code
+  - Metadata separated from the callable
+  - A pure metadata -> vendor tool JSON rendering function
+  - Explicit advertise filters (include/exclude plugins and functions)
+weaknesses:
+  - Registration is decorator-gated dunder smuggling, not an explicit protocol
+  - Schema inference runs as an eager Pydantic model_validator side effect (C# caches lazily)
+  - Tool name is "Plugin-function" - a namespace flattened into a model-visible string
+    then re-parsed
+  - The core tool type imports opentelemetry unconditionally and instruments every
+    invocation with spans and histograms
+  - Very heavy transitive dependencies (azure-*, openai, numpy, openapi_core, aiortc,
+    websockets, pydantic, opentelemetry-api)
+  - Fail-open defaults: with no function_choice_behavior it logs (at debug) that no
+    allowlist validation will be performed; an empty include list is a no-op
+  - Filters live on the Kernel instance, so they silently vanish when a chat service is
+    used without passing the kernel
+  - KernelInvokeException masks the original error cause
+patterns_worth_adopting:
+  - Middleware over invocation - but on a standalone object whose absence is a type
+    error, not a silent bypass
+  - Metadata/callable separation
+  - A pure per-vendor rendering adapter
+  - Advertising as explicit policy
+  - The <=10-20 advertised-tools constraint
+patterns_worth_avoiding:
+  - God-object container
+  - Dunder-gated registration instead of an explicit protocol
+  - Namespace flattened into a model-facing name
+  - Schema inference inside a validator side effect
+  - Unconditional telemetry imports in the core tool type
+  - Fail-open allowlist defaults
+  - Exception masking
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. The middleware pattern is adopted as a CONCEPT, deliberately
+  re-placed onto a standalone object. No code reused.
+standards: ["JSON Schema", "OpenAPI"]
+last_reviewed: 2026-09-15
+```
+
+
 ## License compatibility note
 
 All identified Phase-2 study targets are permissive and compatible with this repository's Apache-2.0 license:

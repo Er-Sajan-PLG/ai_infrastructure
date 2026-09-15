@@ -100,6 +100,73 @@ def test_discovered_claim_is_clean() -> None:
     assert check_capability(_cap(status="DISCOVERED"), REPO) == []
 
 
+# ---------------------------------------------------------------------------
+# Research-record existence (regression)
+#
+# REAL HOLE: the RESEARCHED check only verified that `research_records` was
+# non-empty. A taxonomy entry could cite a research record that did not exist
+# on disk and still pass — the same class of bug as the empty-tests/ hole in
+# validate_catalog.py (ADR-0004). Existence is not evidence.
+# ---------------------------------------------------------------------------
+
+
+def test_researched_with_missing_record_path_is_an_error() -> None:
+    """Citing a research record that does not exist is drift."""
+    drifts = check_capability(
+        _cap(status="RESEARCHED", research_records="research/tools/nope.md"), REPO
+    )
+    assert drifts, "a cited but missing research record must be an error"
+    assert any("do not exist" in d.message for d in drifts), drifts
+
+
+def test_researched_with_real_record_path_is_clean() -> None:
+    """A research record that exists satisfies the claim."""
+    assert (
+        check_capability(
+            _cap(
+                status="RESEARCHED",
+                research_records="research/tools/tool-registry.md",
+            ),
+            REPO,
+        )
+        == []
+    )
+
+
+def test_researched_with_empty_records_is_still_an_error() -> None:
+    """The original empty-field check must not regress."""
+    drifts = check_capability(_cap(status="RESEARCHED"), REPO)
+    assert any("is empty" in d.message for d in drifts), drifts
+
+
+def test_quoted_inline_list_records_are_stripped() -> None:
+    """YAML renders inline lists with quotes; paths must be stripped of them."""
+    assert (
+        check_capability(
+            _cap(
+                status="RESEARCHED",
+                research_records='"research/tools/tool-registry.md"',
+            ),
+            REPO,
+        )
+        == []
+    )
+
+
+def test_multiple_records_report_only_the_missing_ones() -> None:
+    """A real path alongside a fake one reports just the fake one."""
+    drifts = check_capability(
+        _cap(
+            status="RESEARCHED",
+            research_records="research/tools/tool-registry.md, research/tools/ghost.md",
+        ),
+        REPO,
+    )
+    assert drifts, "the missing record must be reported"
+    assert "ghost.md" in drifts[0].message
+    assert "tool-registry.md" not in drifts[0].message
+
+
 @pytest.mark.parametrize(
     "status",
     ["DESIGNED", "DECIDED", "IMPLEMENTED", "TESTED", "BENCHMARKED", "MATURE"],

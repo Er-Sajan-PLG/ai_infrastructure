@@ -245,7 +245,12 @@ def check_capability(cap: Capability, root: Path) -> list[Drift]:
                 )
             )
 
-    # RESEARCHED or later requires research records.
+    # RESEARCHED or later requires research records that actually exist.
+    #
+    # This previously only checked that the field was non-empty, so a taxonomy
+    # entry could cite a research record that did not exist on disk and still
+    # pass the drift check — the same class of bug as the empty-tests/ hole in
+    # validate_catalog.py (ADR-0004). Existence is not evidence; presence is.
     if stage >= STAGE_INDEX["RESEARCHED"] and _is_absent(cap.research_records):
         drifts.append(
             Drift(
@@ -256,6 +261,24 @@ def check_capability(cap: Capability, root: Path) -> list[Drift]:
                 "error",
             )
         )
+    elif stage >= STAGE_INDEX["RESEARCHED"]:
+        missing = [
+            record
+            for record in (
+                part.strip().strip("\"'") for part in cap.research_records.split(",")
+            )
+            if record and not (root / record).is_file()
+        ]
+        if missing:
+            drifts.append(
+                Drift(
+                    cap.id,
+                    claimed,
+                    f"claims {claimed} but research record(s) do not exist: "
+                    f"{', '.join(missing)}",
+                    "error",
+                )
+            )
 
     # IMPLEMENTED or later requires an implementation path that exists.
     if stage >= STAGE_INDEX["IMPLEMENTED"]:
