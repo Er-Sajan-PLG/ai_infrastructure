@@ -1,6 +1,6 @@
 # Models
 
-> **Status: no entries yet.** This directory is a declared research category (charter §2, ADR-0001). Nothing here has been studied or implemented.
+> **Status: 1 study.** Provider wire formats (OpenAI, Anthropic, Gemini) and four existing abstractions were surveyed for `model-provider-abstraction`.
 
 ## What it is
 
@@ -12,11 +12,13 @@ Every component above needs a model call. Normalizing provider differences, erro
 
 ## How it works
 
-To be documented once the first capability in this category is studied. Research artifacts are expected at `research/models/<capability-id>.md` and must label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6).
+Research artifacts live at `research/models/<capability-id>.md` and label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6).
+
+- [`model-provider-abstraction.md`](model-provider-abstraction.md) — where three providers diverge, and why the abstraction owns shape rather than transport.
 
 ## Variants & types
 
-Not yet surveyed.
+Two families, per the survey: abstractions that **own the transport** (LiteLLM, DSPy, OpenAI SDK) and abstractions over **shape only** (LangChain, LlamaIndex, Haystack). Dependency weight follows this split exactly.
 
 ## Landscape
 

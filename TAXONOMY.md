@@ -124,20 +124,20 @@ capabilities:
   - id: model-provider-abstraction
     name: Model Provider Abstraction
     category: models
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
     priority: high — everything above depends on a minimal LLM call interface; the narrow slice is text-in/text-out with errors and token metadata.
     depends_on: []
-    decision: pending
+    decision: IMPLEMENT — shape-owning, transport-injected; zero runtime dependencies; sync-only core (ADR-0007)
     description: A minimal, vendor-neutral interface for chat/completion calls with streaming, error normalization, and usage metadata.
     problem: Components must not hard-code one provider's SDK, error shapes, or streaming model.
     inputs: ["messages/prompts", "generation parameters"]
     outputs: ["completions", "token usage", "provider errors normalized"]
     interfaces: []
     dependencies: []
-    standards: []
-    reference_projects: []
-    research_records: []
+    standards: ["OpenAI Chat Completions wire format", "Anthropic Messages API", "Google Gemini GenerateContent v1beta", "Server-Sent Events"]
+    reference_projects: ["LiteLLM", "OpenAI Python SDK (provider client design)", "LangChain BaseChatModel", "LlamaIndex LLM"]
+    research_records: ["research/models/model-provider-abstraction.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -145,7 +145,7 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: ""
+    last_reviewed: "2026-09-15"
 
   - id: react-agent-loop
     name: ReAct Agent Loop

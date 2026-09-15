@@ -391,6 +391,33 @@ def check_dependencies(caps: list[Capability]) -> list[Drift]:
     return drifts
 
 
+def check_adr_index(root: Path) -> list[Drift]:
+    """Verify every ADR file is listed in docs/decisions/README.md.
+
+    An unlisted ADR is invisible: two sessions already shipped ADRs that the
+    index never mentioned, so a reader could not discover them from the entry
+    point. Charter 4 -- a claim (here, the index) must match the artifacts.
+    """
+    decisions = root / "docs" / "decisions"
+    index = decisions / "README.md"
+    if not decisions.is_dir() or not index.is_file():
+        return []
+
+    index_text = index.read_text(encoding="utf-8")
+    drifts: list[Drift] = []
+    for adr in sorted(decisions.glob("[0-9][0-9][0-9][0-9]-*.md")):
+        if adr.name not in index_text:
+            drifts.append(
+                Drift(
+                    capability_id=f"ADR {adr.name[:4]}",
+                    claimed="ADR exists",
+                    message=f"not listed in docs/decisions/README.md: {adr.name}",
+                    severity="error",
+                )
+            )
+    return drifts
+
+
 def count_catalog_entries(root: Path) -> int:
     """Count catalog entries present on disk."""
     catalog = root / "catalog"
@@ -445,6 +472,7 @@ def main(argv: list[str] | None = None) -> int:
     for cap in caps:
         drifts.extend(check_capability(cap, root))
     drifts.extend(check_dependencies(caps))
+    drifts.extend(check_adr_index(root))
 
     errors = [d for d in drifts if d.severity == "error"]
     warnings = [d for d in drifts if d.severity == "warning"]

@@ -10,6 +10,8 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0003](0003-toolchain-and-enforcement.md) | Toolchain, Enforcement, and the Drift Detector | Accepted |
 | [0004](0004-testing-enforcement-holes.md) | Close the Testing-Enforcement Holes | Accepted |
 | [0005](0005-phase-model-and-plans.md) | Name the Foundation Work "Phase 0"; add phase plans | Accepted |
+| [0006](0006-tool-registry.md) | `tool-registry`: a standalone, JSON-Schema-native registry | Accepted |
+| [0007](0007-model-provider-abstraction.md) | `model-provider-abstraction`: own the shape, not the socket | Accepted |
 
 ## When an ADR is required
 

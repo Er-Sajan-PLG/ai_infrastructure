@@ -22,6 +22,7 @@ from repo_status import (  # noqa: E402
     LIFECYCLE,
     Capability,
     _parse_capabilities,
+    check_adr_index,
     check_capability,
     check_dependencies,
     main,
@@ -284,6 +285,50 @@ def test_summarize_counts_each_stage() -> None:
     assert counts["DISCOVERED"] == 1
     assert counts["TESTED"] == 1
     assert counts["MATURE"] == 0
+
+
+# --------------------------------------------------------------------------- #
+# ADR index (charter §4 applied to the decision log)
+# --------------------------------------------------------------------------- #
+
+
+def _adr_repo(tmp_path: Path, *, listed: bool) -> Path:
+    """Build a minimal repo containing one ADR, optionally listed in the index."""
+    decisions = tmp_path / "docs" / "decisions"
+    decisions.mkdir(parents=True)
+    (decisions / "0001-example.md").write_text("# ADR-0001\n", encoding="utf-8")
+    body = "# Architecture Decision Records\n\n"
+    if listed:
+        body += "| [0001](0001-example.md) | Example | Accepted |\n"
+    (decisions / "README.md").write_text(body, encoding="utf-8")
+    return tmp_path
+
+
+def test_unlisted_adr_is_reported(tmp_path: Path) -> None:
+    """An ADR absent from the index is invisible to a reader, so it is an error.
+
+    Two ADRs were shipped in earlier sessions without being added to the index;
+    nothing detected it until it was done by hand. This pins the check that now
+    does.
+    """
+    drifts = check_adr_index(_adr_repo(tmp_path, listed=False))
+    assert len(drifts) == 1
+    assert drifts[0].severity == "error"
+    assert "0001-example.md" in drifts[0].message
+
+
+def test_listed_adr_is_clean(tmp_path: Path) -> None:
+    assert check_adr_index(_adr_repo(tmp_path, listed=True)) == []
+
+
+def test_missing_decisions_dir_is_not_an_error(tmp_path: Path) -> None:
+    """A repo with no ADR directory must not crash the detector."""
+    assert check_adr_index(tmp_path) == []
+
+
+def test_real_adr_index_lists_every_adr() -> None:
+    """The committed decisions directory must be fully indexed."""
+    assert check_adr_index(REPO_ROOT) == []
 
 
 if __name__ == "__main__":
