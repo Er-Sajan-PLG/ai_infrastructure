@@ -58,6 +58,9 @@ jobs:
       - name: Markdown link integrity
         run: .venv/bin/python scripts/check_links.py
 
+      - name: Phase plan vs charter lifecycle
+        run: .venv/bin/python scripts/check_phase_plan.py
+
       - name: Governance drift (taxonomy vs artifacts)
         run: .venv/bin/python scripts/repo_status.py
 

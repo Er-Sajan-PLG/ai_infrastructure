@@ -64,11 +64,18 @@ Each capability takes **2–4 sessions**, one lifecycle stage each:
 | Session | Stage | Deliverable |
 |---|---|---|
 | A | `DISCOVERED → RESEARCHED` | Survey 3–5 reference projects; findings in `research/<category>/<id>.md`; register each project in `docs/registry/RESEARCH_REGISTRY.md` |
-| B | `RESEARCHED → UNDERSTOOD → DECIDED` | `docs/decisions/NNNN-<id>.md` — decision (IMPLEMENT/ADAPT/…) with rejected alternatives |
-| C | `DECIDED → DESIGNED` | `specifications/<id>.md` — interfaces, data flow, invariants, failure modes, security, test strategy |
-| D | `DESIGNED → IMPLEMENTED → TESTED` | `catalog/<category>/<id>/` with implementation, tests, examples, PROVENANCE |
+| B | `RESEARCHED → UNDERSTOOD → DESIGNED` | `specifications/<id>.md` — interfaces, data flow, invariants, failure modes, security, test strategy |
+| C | `DESIGNED → DECIDED` | `docs/decisions/NNNN-<id>.md` — decision (IMPLEMENT/ADAPT/…) with rejected alternatives |
+| D | `DECIDED → IMPLEMENTED → TESTED` | `catalog/<category>/<id>/` with implementation, tests, examples, PROVENANCE |
 
-You may merge B into A or C if the work is genuinely small — but **never** skip the ADR before code (charter §8).
+**Stage order is charter §4, not preference:** the lifecycle is
+`… → UNDERSTOOD → DESIGNED → DECIDED → …`, so the specification (B) precedes the
+ADR (C). An earlier revision of this table had B and C reversed, which
+contradicted the charter and made `make status` reject a correct `DECIDED` claim;
+`scripts/check_phase_plan.py` now guards this.
+
+You may merge B into A or C if the work is genuinely small — but **never** skip the
+ADR before code (charter §8).
 
 ## Per-capability definition of done
 

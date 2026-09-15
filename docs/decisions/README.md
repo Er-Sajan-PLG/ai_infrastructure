@@ -12,6 +12,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0005](0005-phase-model-and-plans.md) | Name the Foundation Work "Phase 0"; add phase plans | Accepted |
 | [0006](0006-tool-registry.md) | `tool-registry`: a standalone, JSON-Schema-native registry | Accepted |
 | [0007](0007-model-provider-abstraction.md) | `model-provider-abstraction`: own the shape, not the socket | Accepted |
+| [0008](0008-react-agent-loop.md) | `react-agent-loop`: a bounded dispatcher, not a reasoner | Accepted |
 
 ## When an ADR is required
 

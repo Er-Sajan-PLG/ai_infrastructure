@@ -150,27 +150,28 @@ capabilities:
   - id: react-agent-loop
     name: ReAct Agent Loop
     category: agents
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
     priority: high — canonical first agent pattern; exercises model abstraction + tool registry together; classic first end-to-end proof of composition.
     depends_on: [tool-registry, model-provider-abstraction]
-    decision: pending
+    decision: IMPLEMENT — a bounded dispatcher with injected protocols; sync-only; consecutive-repeat detection and bounded observations (ADR-0008)
     description: Reason-act-observe loop: interleaved reasoning traces and tool calls until termination.
     problem: Simplest agent control loop that grounds LLM output in tool interaction with a clear termination condition.
     inputs: ["task", "tool registry", "model"]
-    outputs: ["final answer", "step trace"]
-    interfaces: []
+    outputs: ["final answer", "step trace", "stop reason"]
+    interfaces: ["run", "Agent", "AgentResult", "StopReason", "ModelCaller", "ToolDispatcher"]
     dependencies: []
     standards: []
-    reference_projects: []
-    research_records: []
+    reference_projects: ["ReAct (Yao et al.)", "LangGraph react agent executor", "OpenAI Agents SDK", "smolagents", "LangChain tool error surface"]
+    research_records: ["research/agents/react-agent-loop.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
     security: ""
     license: Apache-2.0
     provenance: original
-    last_reviewed: ""
+    compatibility: ""
+    last_reviewed: "2026-09-15"
 
   - id: vector-memory-store
     name: In-Memory Vector Memory Store

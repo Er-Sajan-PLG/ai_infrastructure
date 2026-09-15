@@ -86,12 +86,16 @@ coverage: ## Run tests with branch coverage
 	$(PYTEST) --cov --cov-report=term-missing
 
 .PHONY: validate
-validate: links ## Check the catalog entry contract + doc links (charter §13)
+validate: links phase-plan ## Check the catalog entry contract + doc links (charter §13)
 	$(PY) scripts/validate_catalog.py
 
 .PHONY: links
 links: ## Verify relative Markdown links resolve
 	$(PY) scripts/check_links.py
+
+.PHONY: phase-plan
+phase-plan: ## Verify documented stage transitions match charter §4
+	$(PY) scripts/check_phase_plan.py
 
 .PHONY: validate-strict
 validate-strict: ## Catalog validation with examples/tests required
@@ -105,7 +109,7 @@ validate-strict: ## Catalog validation with examples/tests required
 check: lint typecheck validate links test ## The full gate a session must pass before committing
 
 .PHONY: check-strict
-check-strict: lint typecheck validate-strict links test ## Full gate + strict catalog contract
+check-strict: lint typecheck validate-strict links phase-plan test ## Full gate + strict catalog contract
 
 .PHONY: ci
 ci: check-strict coverage ## What CI runs

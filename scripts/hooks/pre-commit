@@ -76,6 +76,16 @@ if echo "$STAGED" | grep -qE '\.md$'; then
         || fail "broken markdown link(s) (run 'make links' to list them)"
 fi
 
+# --- 3c. Phase plan vs charter lifecycle ----------------------------------
+# docs/phases/phase-1-seed.md once listed DESIGNED and DECIDED in the wrong
+# order relative to charter 4, so the drift check rejected a correct DECIDED
+# claim. A documented plan that contradicts the charter is a defect.
+if echo "$STAGED" | grep -qE '^(docs/phases/|TAXONOMY\.md|AGENTS\.md)'; then
+    echo "pre-commit: phase plan vs charter lifecycle"
+    "${VENV}/bin/python" scripts/check_phase_plan.py --quiet >/dev/null 2>&1 \
+        || fail "documented stage order contradicts charter 4 (run 'make phase-plan')"
+fi
+
 # --- 4. Governance drift --------------------------------------------------
 # The single most important gate: no commit may claim a lifecycle status the
 # artifacts on disk do not support (charter §4).

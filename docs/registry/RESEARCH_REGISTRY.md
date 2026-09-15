@@ -456,6 +456,274 @@ standards: []
 last_reviewed: 2026-09-15
 ```
 
+### ReAct (Yao et al.)
+
+```yaml
+project: "ReAct: Synergizing Reasoning and Acting in Language Models"
+repository: https://github.com/ysymyth/ReAct
+authors: Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, Yuan Cao
+license: MIT (reference implementation); paper CC BY 4.0
+version_studied: arXiv:2210.03629v3 (ICLR 2023 camera-ready, 10 Mar 2023)
+capabilities: >
+  A prompting paradigm that interleaves free-form reasoning ("thoughts") with
+  task actions and environment observations, so a frozen LLM can ground its
+  reasoning in external retrieval.
+architecture: >
+  Prompt-format only. Few-shot in-context trajectories use the line prefixes
+  Thought: / Act: / Obs:. The action space is augmented as A-hat = A union L,
+  where L is the space of language; a thought in L emits no observation and only
+  updates the context.
+strengths:
+  - "FACT (verified in the paper): a thought emits no observation -- c_{t+1} = (c_t, a-hat_t) -- which cleanly separates reasoning from environmental effect."
+  - "FACT: thought density is deliberately variable. Dense alternation for reasoning tasks (HotpotQA, FEVER); for decision tasks 'thoughts only need to appear sparsely ... so we let the language model decide'."
+  - "FACT: the step cap was set empirically, not by taste. 7 steps for HotpotQA and 5 for FEVER, justified as 'more steps will not improve ReAct performance'; only 0.84% and 1.33% of CORRECT trajectories used the full budget."
+  - "FACT: the paper reports its own failure modes honestly (Table 2), including a named repetition failure."
+weaknesses:
+  - >
+    FACT: repetition is a documented, frequent, and unmitigated failure. The
+    paper names "one frequent error pattern specific to ReAct, in which the model
+    repetitively generates the previous thoughts and actions ... the model fails
+    to reason about what the proper next action to take and jump out of the
+    loop." The only proposed remedy is a guess that "sub-optimal greedy decoding"
+    is at fault and beam search might help.
+  - >
+    FACT: the format is injection-vulnerable by construction. Observations are
+    concatenated into the same text stream as the thoughts they inform, and the
+    stream is parsed for actions -- so an observation containing action-like text
+    is executable. The paper does not discuss prompt injection at all.
+  - "FACT: 47% of ReAct failures on HotpotQA were reasoning errors, versus 16% for CoT; the interleaving constraint costs flexibility."
+  - "FACT: 23% of error cases were non-informative search results, which 'derails the model reasoning and gives it a hard time to recover'."
+  - "OBSERVATION: it specifies a format but no parser, no loop implementation, no termination mechanism, and no state object. Anything built from it is an engineering design informed by the pattern, not an implementation of the paper."
+patterns_worth_adopting:
+  - "A hard step cap derived from observed data rather than a round number."
+  - "Reporting failure modes honestly in the primary artifact."
+  - "The observation that most correct trajectories need very few steps -- which is what makes a modest default cap nearly free."
+patterns_worth_avoiding:
+  - "Free-text action parsing. It creates format-drift, partial-parse, and injection failure classes that typed tool calls eliminate."
+  - "A structurally mandatory thought step. The paper itself makes thought occurrence model-chosen; forcing it adds cost and a parse-failure mode."
+  - "Shipping a known-recurring failure (repetition) with no mechanism against it."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. The pattern is studied as a CONCEPT source for the
+  agent-loop control design. No prompt text, trajectory, code, or example from
+  the paper or its reference implementation is reused.
+standards: []
+last_reviewed: 2026-09-15
+```
+
+### LangGraph react agent executor
+
+```yaml
+project: LangGraph (langgraph.prebuilt react agent)
+repository: https://github.com/langchain-ai/langgraph
+authors: LangChain, Inc.
+license: MIT
+version_studied: main branch, libs/prebuilt/langgraph/prebuilt/chat_agent_executor.py and langgraph/errors.py
+capabilities: >
+  A graph-based agent loop: an "agent" node calls the model, a "tools" node
+  dispatches tool calls, and a conditional edge routes between them until the
+  model stops requesting tools.
+architecture: >
+  A StateGraph rather than a while-loop. AgentState carries exactly two keys:
+  `messages` (an append-only message list) and `remaining_steps`. Tool calls fan
+  out via Send(). A separate `langgraph/errors.py` defines GraphRecursionError.
+strengths:
+  - >
+    FACT: cap exhaustion produces a readable result, not an opaque crash. The
+    docstring states that when remaining_steps < 2 with tool calls present the
+    agent returns an AI message reading "Sorry, need more steps to process this
+    request." and that "No GraphRecusionError will be raised in this case" -- the
+    cap is soft.
+  - "FACT: an unknown tool becomes a ToolMessage, not an exception: INVALID_TOOL_NAME_ERROR_TEMPLATE = \"Error: {requested_tool} is not a valid tool, try one of [{available_tools}]\"."
+  - "FACT: tool errors are templated for the model: TOOL_CALL_ERROR_TEMPLATE = \"Error: {error}\\n Please fix your mistakes.\""
+  - "FACT: handled errors carry a status: ToolMessage(content=..., name=call[\"name\"], tool_call_id=call[\"id\"], status=\"error\")."
+  - "FACT: a chat-history invariant is validated -- _validate_chat_history raises ValueError with ErrorCode.INVALID_CHAT_HISTORY if any AIMessage.tool_calls entry lacks a matching ToolMessage."
+  - "FACT: retry and caching are explicitly delegated to wrap_tool_call / awrap_tool_call rather than owned by the loop."
+weaknesses:
+  - >
+    FACT: the graph is a runtime, and adopting it means adopting langchain-core.
+    A dispatcher with a bound does not need a superstep engine.
+  - >
+    OBSERVATION: AgentState has NO thought field. This is evidence that a
+    harness-imposed reasoning step is unnecessary once native tool calls exist.
+  - >
+    FACT: the module studied is deprecated -- its decorator points to
+    langchain.agents.create_agent -- so the surface studied is a compatibility
+    path, not the forward direction.
+patterns_worth_adopting:
+  - "A cap trip that yields a readable result rather than an opaque crash."
+  - "Model-readable, templated error text on the unknown-tool and tool-error paths."
+  - "A history invariant check before each model call, since most providers reject an unmatched tool call."
+  - "Delegating retry to a wrapper, keeping the loop free of retry policy."
+patterns_worth_avoiding:
+  - "Owning a graph runtime for a single control loop."
+  - "Silent soft-termination with no machine-readable signal: a caller cannot distinguish 'finished' from 'out of steps' unless a state flag is also recorded."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Mechanism-level study only. No source, template
+  string, or state type is copied; the loop is not graph-based.
+standards: []
+last_reviewed: 2026-09-15
+```
+
+### OpenAI Agents SDK
+
+```yaml
+project: OpenAI Agents SDK (openai-agents-python)
+repository: https://github.com/openai/openai-agents-python
+authors: OpenAI
+license: MIT
+version_studied: main branch, src/agents/run.py and src/agents/exceptions.py
+capabilities: >
+  An imperative agent runtime: Agent + Runner + RunResult, with a turn loop,
+  handoffs between agents, guardrails, sessions, and streaming.
+architecture: >
+  A turn loop, not a graph. run.py documents the cycle: the agent is invoked; if
+  there is a final output the loop terminates; if there is a handoff the loop
+  re-runs with the new agent; otherwise tool calls run and the loop repeats.
+  Decisions are typed next-step values, not booleans.
+strengths:
+  - >
+    FACT: termination is a closed set of typed step results --
+    NextStepFinalOutput | NextStepHandoff | NextStepRunAgain | NextStepInterruption
+    (from run_internal/run_steps.py). This makes the decision surface readable
+    where a boolean flag would not.
+  - "FACT: the cap is a documented parameter with a stated unit -- max_turns, where 'A turn is defined as one AI invocation (including any tool calls that might occur)', and None disables it."
+  - "FACT: exceeding the cap raises MaxTurnsExceeded(AgentsException), a typed exception in the library's own hierarchy."
+  - "FACT: a max-turns handler can produce output instead of raising (finalize_max_turns_handler_output exists), so the hard default is overridable."
+  - "FACT: ModelBehaviorError is documented as 'raised when the model does something unexpected, e.g. calling a tool that doesn't exist, or providing malformed JSON' -- and the unknown-tool response is configurable via ToolNotFoundBehavior and ToolErrorFormatter."
+weaknesses:
+  - >
+    OBSERVATION: the default for an unknown tool is to raise, which kills a run
+    the model could have recovered from. It is configurable, but the safe default
+    is the wrong way round for a bounded loop.
+  - >
+    FACT: the logical cycle is spread across run.py and a run_internal package
+    (run_loop.py and peers, together thousands of lines), and the streaming path
+    is reimplemented separately (start_streaming / run_single_turn_streamed)
+    rather than shared with the sync path.
+  - "OBSERVATION: it is bound to OpenAI's platform features (previous_response_id, conversation_id, sessions), so it is not a neutral loop."
+patterns_worth_adopting:
+  - "Typed next-step values instead of boolean flags."
+  - "A documented turn unit, so 'max turns' has a definition rather than an intuition."
+  - "An overridable cap-exhaustion handler."
+patterns_worth_avoiding:
+  - "Raising on an unknown tool by default, killing a recoverable run."
+  - "Splitting one logical cycle across several large modules."
+  - "Reimplementing the loop separately for streaming."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Studied for control-flow and cap design only. No code,
+  type, or name is reused; this repository has no OpenAI platform dependency.
+standards: []
+last_reviewed: 2026-09-15
+```
+
+### smolagents
+
+```yaml
+project: smolagents
+repository: https://github.com/huggingface/smolagents
+authors: Hugging Face
+license: Apache-2.0
+version_studied: main branch, src/smolagents/agents.py
+capabilities: >
+  A minimal agent library offering a ToolCallingAgent (native JSON-like tool
+  calls) and a CodeAgent (tool calls generated as executable Python), over a
+  MultiStepAgent base.
+architecture: >
+  A generator-based loop. _run_stream sets step_number, builds an ActionStep per
+  step, delegates to _step_stream, and in a finally block finalises the step,
+  appends it to AgentMemory, yields it, and increments. RunResult carries a state
+  literal distinguishing success from exhaustion.
+strengths:
+  - >
+    FACT: cap exhaustion is recorded as a distinguishable STATE, not only an
+    exception -- RunResult.state is Literal["success", "max_steps_error"], and
+    _handle_max_steps_reached appends an ActionStep carrying
+    AgentMaxStepsError("Reached max steps."). A caller can therefore tell
+    "finished" from "ran out".
+  - "FACT: the step cap has a concrete default and is overridable per call: max_steps: int = 20 on __init__, and run(max_steps=...)."
+  - "FACT: tool failures are differentiated by kind -- AgentToolCallError for bad arguments, AgentToolExecutionError for an unknown tool ('Unknown tool {tool_name}, should be one of: ...') and for execution failure ('Please try again or use another tool')."
+  - "FACT: most AgentError subclasses set action_step.error and let the loop continue, so the model sees the failure on the next step."
+  - "FACT: ToolCallingAgent exists specifically to use the model's own tool-calling capability, replacing the older text-parsing path -- a direct precedent for our structured-only decision."
+weaknesses:
+  - >
+    FACT: the final answer is a designated tool. self.tools.setdefault("final_answer",
+    FinalAnswerTool()) and is_final_answer = tool_name == "final_answer". That
+    reserves a tool name and makes completion a tool-call convention rather than
+    an absence of tool calls.
+  - "FACT: CodeAgent executes model-generated Python, which is a materially larger trust boundary than dispatching typed tool calls."
+  - "OBSERVATION: AgentMemory holds typed step objects (SystemPromptStep, TaskStep, PlanningStep, ActionStep, FinalAnswerStep), which is more machinery than an append-only message list."
+patterns_worth_adopting:
+  - "Recording WHY the loop stopped as a state flag a caller can branch on."
+  - "Error kinds named by what the caller/model can do about them."
+  - "Providing a native-tool-calling agent as the successor to a text-parsing one."
+patterns_worth_avoiding:
+  - "Reserving a tool name for the final answer; the absence of a tool call is simpler and does not collide with a user's tools."
+  - "Executing model-generated code inside the loop."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Studied for cap and error reporting design. No code
+  reused; the final-answer-as-tool convention is deliberately NOT adopted.
+standards: []
+last_reviewed: 2026-09-15
+```
+
+### LangChain tool error surface
+
+```yaml
+project: LangChain (langchain-core tool error handling)
+repository: https://github.com/langchain-ai/langchain
+authors: LangChain, Inc.
+license: MIT
+version_studied: langchain-core, libs/core/langchain_core/tools/base.py
+capabilities: >
+  The per-tool error policy that decides whether a tool failure ends a run or is
+  returned to the model as an observation.
+architecture: >
+  A ToolException a tool may raise, plus a handle_tool_error setting on the tool
+  that controls how it is treated.
+strengths:
+  - >
+    FACT (read in source, line 371): `class ToolException(Exception)` with the
+    docstring "This exception allows tools to signal errors without stopping the
+    agent. The error is handled according to the tool's `handle_tool_error`
+    setting, and the result is returned as an observation to the agent."
+  - >
+    OBSERVATION: this is the same split our tool-registry already computes as
+    FailureKind.model_visible (ADR-0006 D-4) -- the decision about whether a
+    failure is model-actionable lives at the TOOL, and defaults to fatal.
+  - "OBSERVATION: defaulting to fatal is the safe direction: nothing enters the model's context unless someone opted in."
+weaknesses:
+  - >
+    OBSERVATION: the mechanism is opt-in per tool, so whether the model ever sees
+    a failure depends on individual tool authors remembering to classify it --
+    a silent, per-tool inconsistency rather than a registry-level guarantee.
+patterns_worth_adopting:
+  - "Classifying a tool failure by whether the model can act on it, and defaulting to not feeding it back."
+  - "Delivering a handled failure as a structured, status-marked message rather than raw exception prose."
+patterns_worth_avoiding:
+  - "Leaving classification to per-tool discretion when a registry can compute it once and enforce it for every tool."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Studied as independent corroboration of the
+  model-actionability split already adopted in ADR-0006. No code reused; our
+  registry computes the classification rather than asking each tool to declare it.
+standards: []
+last_reviewed: 2026-09-15
+```
+
 
 ## License compatibility note
 
