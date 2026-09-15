@@ -1,6 +1,6 @@
 # Tools
 
-> **Status: no entries yet.** This directory is a declared research category (charter §2, ADR-0001). Nothing here has been studied or implemented.
+> **Status: 1 study.** OpenAI function calling, LangChain/LangGraph, MCP and Semantic Kernel were surveyed for the `tool-registry` capability.
 
 ## What it is
 
@@ -12,7 +12,9 @@ Tool calling is the narrow boundary between model intent and real side effects. 
 
 ## How it works
 
-To be documented once the first capability in this category is studied. Research artifacts are expected at `research/tools/<capability-id>.md` and must label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6).
+Research artifacts live at `research/tools/<capability-id>.md` and label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6).
+
+- [`tool-registry.md`](tool-registry.md) — the model-intent-to-execution boundary: declaration, selection, binding, validation, invocation.
 
 ## Variants & types
 
@@ -20,11 +22,13 @@ Not yet surveyed.
 
 ## Landscape
 
-Not yet surveyed. External projects studied will be registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
+Four projects studied for `tool-registry`, all registered in [`../../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema and all `code_reused: false`: OpenAI function calling, LangChain/LangGraph, Model Context Protocol, Microsoft Semantic Kernel.
+
+**Key finding:** none of the four ships a genuine tool registry (ADR-0006).
 
 ## Our implementations
 
-None. See [`../TAXONOMY.md`](../TAXONOMY.md) §4 for capabilities in this category and their honest lifecycle status.
+[`catalog/tools/tool_registry/`](../../catalog/tools/tool_registry/) — status `TESTED`. See [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
 
 ## When to use / When not to use
 

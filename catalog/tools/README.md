@@ -1,6 +1,6 @@
 # Tools (catalog)
 
-> **Status: no entries yet.** This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27). Empty is correct for Phase 1.
+> **Status: 1 entry.** Independent implementations at IMPLEMENTED or later (charter §4, §27).
 
 ## What it is
 
@@ -24,7 +24,11 @@ External reference projects, once studied, are registered in [`../../docs/regist
 
 ## Our implementations
 
-None. Capabilities planned for this category are listed in [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
+| Entry | Status | What it does |
+|---|---|---|
+| [`tool_registry`](tool_registry/) | `TESTED` | Register, describe, validate and invoke tools with typed JSON-Schema contracts. Zero runtime dependencies. |
+
+Full capability list: [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
 
 ## When to use / When not to use
 

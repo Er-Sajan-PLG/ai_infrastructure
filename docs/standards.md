@@ -60,6 +60,7 @@ silently, and it is the one the tooling checks hardest.
 | T5 | The suite passes before a status advance to `TESTED` | §18 | pre-commit, CI |
 | T6 | Capability tests are actually collected and run | §18 | `testpaths` includes `catalog/`; guarded by a test (ADR-0004) |
 | T7 | `tests/` and `examples/` must contain real content, not just exist | §13 | `make validate` (error in all modes) |
+| T8 | Relative Markdown links must resolve | §4, §21 | `make links` (pre-commit, CI) |
 
 ## 5. Documentation rules
 

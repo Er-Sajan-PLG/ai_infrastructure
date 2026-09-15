@@ -9,8 +9,8 @@ Each report must record:
 - Extracted patterns, each mapped to a taxonomy category or flagged as a proposed new category
 - For each pattern: what it does, how the original implements it, trade-offs, and what should be adopted or avoided
 - Evidence classification for non-obvious claims: FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6)
-- Whether any code was reused (currently must be `false` — see [ADR-0002](../../../docs/decisions/0002-license-selection.md))
-- Link to the corresponding entry in [`../../../docs/registry/RESEARCH_REGISTRY.md`](../../../docs/registry/RESEARCH_REGISTRY.md)
+- Whether any code was reused (currently must be `false` — see [ADR-0002](../../docs/decisions/0002-license-selection.md))
+- Link to the corresponding entry in [`../../../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md)
 
 ## Status
 

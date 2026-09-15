@@ -55,6 +55,9 @@ jobs:
         # half-built entry can be committed, but CI is the backstop.
         run: .venv/bin/python scripts/validate_catalog.py --strict
 
+      - name: Markdown link integrity
+        run: .venv/bin/python scripts/check_links.py
+
       - name: Governance drift (taxonomy vs artifacts)
         run: .venv/bin/python scripts/repo_status.py
 

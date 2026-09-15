@@ -113,8 +113,21 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "ARG", "T20"]
+# Tests assert deliberately hostile inputs. The /tmp paths below are forged
+# attack payloads in injection-boundary tests, not temp-file handling.
+"tests/**" = ["S101", "ARG", "T20", "S108"]
+"catalog/**/tests/**" = ["S101", "ARG", "T20", "S108", "TID252", "INP001"]
 "scripts/**" = ["T20"]  # CLI scripts legitimately print
+# Catalog entries are standalone, importable capabilities (charter §31): a
+# consumer adds catalog/<category>/ to sys.path and imports the package by name.
+# Relative imports *inside* an entry are what make it relocatable and
+# independent of how the repository happens to be laid out. Requiring absolute
+# `catalog.tools.x.y` imports would couple every entry to this repo's structure.
+"catalog/**" = ["T20", "TID252"]
+# Examples exist to be read and run, so printing is their purpose, not a stray
+# debug leftover. /tmp paths here are deliberate attack payloads in
+# injection-boundary demonstrations, not temp-file handling.
+"catalog/**/examples/**" = ["T20", "TID252", "S108", "INP001"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["catalog"]

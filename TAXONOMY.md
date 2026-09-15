@@ -98,7 +98,7 @@ capabilities:
   - id: tool-registry
     name: Tool Registry & Function Calling Primitive
     category: tools
-    status: DESIGNED
+    status: TESTED
     maturity: experimental
     priority: high — a named call graph: model-agnostic tool schema/invocation/result handling; nearly every downstream capability (agents, harnesses, MCP) consumes it.
     depends_on: []
@@ -106,16 +106,16 @@ capabilities:
     description: Register, describe, validate, and invoke tools/functions with typed schemas; surface call failures deterministically.
     problem: Give agents and runtimes a uniform, inspectable, validated boundary between model intent and executable behavior.
     inputs: ["tool definitions", "call arguments"]
-    outputs: ["tool results", "validation/execution errors"]
-    interfaces: []
+    outputs: ["tool results", "validation/execution failures"]
+    interfaces: ["ToolRegistry.register", "ToolRegistry.invoke", "ToolRegistry.describe", "ToolRegistry.ids"]
     dependencies: []
     standards: ["JSON Schema 2020-12 (documented subset — see ADR-0006)"]
     reference_projects: ["OpenAI function calling / tools", "LangChain / LangGraph", "Model Context Protocol", "Microsoft Semantic Kernel"]
     research_records: ["research/tools/tool-registry.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/tools/tool_registry"
+    tests: "catalog/tools/tool_registry/tests"
     benchmarks: ""
-    security: ""
+    security: "catalog/tools/tool_registry/README.md#the-injection-boundary"
     license: Apache-2.0
     provenance: original
     compatibility: ""

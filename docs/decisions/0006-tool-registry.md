@@ -2,8 +2,8 @@
 
 - **Status:** Accepted
 - **Date:** 2026-09-15
-- **Capability:** [`tool-registry`](../TAXONOMY.md) (category: tools)
-- **Research record:** [`research/tools/tool-registry.md`](../research/tools/tool-registry.md)
+- **Capability:** [`tool-registry`](../../TAXONOMY.md) (category: tools)
+- **Research record:** [`research/tools/tool-registry.md`](../../research/tools/tool-registry.md)
 - **Supersedes:** —
 
 ## Context

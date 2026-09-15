@@ -30,7 +30,7 @@ Entry point (planned): `./scripts/study_repo.sh <github_url>`
 ## Honesty constraints
 
 - Step 5 **RECREATE** means `UNDERSTAND → ABSTRACT → DESIGN → IMPLEMENT → TEST`, never `COPY → RENAME → MODIFY` (charter §9). Automated extraction proposes candidates; it does not launder copied code.
-- Any step that would import third-party source into `catalog/` is blocked by [ADR-0002](../../docs/decisions/0002-license-selection.md) until a license is chosen by a human.
+- Any step that would import third-party source into `catalog/` is blocked by [ADR-0002](../docs/decisions/0002-license-selection.md) until a license is chosen by a human.
 - Generated reports are proposals, not canonical knowledge; a human or agent session must review and commit findings (charter §6, §28).
 - The pipeline is itself infrastructure: tested, documented, and versioned like everything else (charter §29).
 

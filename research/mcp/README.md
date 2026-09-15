@@ -20,11 +20,11 @@ Not yet surveyed.
 
 ## Landscape
 
-Not yet surveyed. External projects studied will be registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
+Not yet surveyed. External projects studied will be registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
 
 ## Our implementations
 
-None. See [`../TAXONOMY.md`](../TAXONOMY.md) §4 for capabilities in this category and their honest lifecycle status.
+None. See [`../TAXONOMY.md`](../../TAXONOMY.md) §4 for capabilities in this category and their honest lifecycle status.
 
 ## When to use / When not to use
 

@@ -67,6 +67,15 @@ if echo "$STAGED" | grep -qE '^catalog/'; then
         || fail "catalog contract violated (run 'make validate')"
 fi
 
+# --- 3b. Markdown link integrity ------------------------------------------
+# 41 broken links once accumulated here undetected. Docs are a primary
+# deliverable, so a dangling reference is a defect, not cosmetics.
+if echo "$STAGED" | grep -qE '\.md$'; then
+    echo "pre-commit: markdown links"
+    "${VENV}/bin/python" scripts/check_links.py --quiet >/dev/null 2>&1 \
+        || fail "broken markdown link(s) (run 'make links' to list them)"
+fi
+
 # --- 4. Governance drift --------------------------------------------------
 # The single most important gate: no commit may claim a lifecycle status the
 # artifacts on disk do not support (charter §4).
