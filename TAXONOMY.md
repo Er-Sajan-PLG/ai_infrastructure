@@ -252,29 +252,24 @@ capabilities:
   - id: execution-trace-recorder
     name: Agent Trajectory / Execution Trace Recorder
     category: observability
-    status: DISCOVERED
+    status: RESEARCHED
     maturity: experimental
     priority: medium — needed to evaluate and debug agents honestly (charter §18); simple JSONL recorder first.
     depends_on: []
-    decision: pending
+    decision: pending (ADR to follow; open questions recorded in the research record §10)
     description: Record structured traces of agent/model/tool steps with timing and token usage for replay and evaluation.
     problem: Without traces, agent behavior cannot be tested, evaluated, or debugged with evidence.
     inputs: ["step events"]
     outputs: ["JSONL traces", "aggregate stats"]
     interfaces: []
     dependencies: []
-    standards: []
-    reference_projects: []
-    research_records: []
+    standards: ["OpenTelemetry GenAI semantic conventions (Development — studied, not conformed to)"]
+    reference_projects: ["OpenTelemetry GenAI semantic conventions", "Langfuse", "LangSmith", "MLflow (tracing)", "AgentOps", "OpenInference"]
+    research_records: ["research/observability/execution-trace-recorder.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
     security: ""
     license: Apache-2.0
     provenance: original
-    last_reviewed: ""
-```
-
----
-
-*Next expected edits: when the first capability session runs, update that entry through RESEARCHED → UNDERSTOOD → DECIDED with a linked ADR, and add the studied projects to `docs/registry/RESEARCH_REGISTRY.md`.*
+    last_reviewed: "2026-09-15"

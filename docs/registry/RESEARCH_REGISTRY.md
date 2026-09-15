@@ -724,6 +724,258 @@ standards: []
 last_reviewed: 2026-09-15
 ```
 
+### OpenTelemetry GenAI semantic conventions
+
+```yaml
+project: OpenTelemetry GenAI semantic conventions
+repository: https://github.com/open-telemetry/semantic-conventions-genai
+authors: OpenTelemetry authors
+license: Apache-2.0
+version_studied: main branch, docs/gen-ai/{gen-ai-spans,gen-ai-agent-spans,gen-ai-events,gen-ai-metrics}.md and docs/registry/attributes/gen-ai.md (fetched 2026-09-15)
+capabilities: >
+  Vendor-neutral semantic conventions for generative-AI telemetry: span names,
+  attribute names, events, and metrics for model calls, agent invocations, tool
+  execution, retrieval, and memory.
+architecture: >
+  Not an implementation. A naming and requirement-level specification, generated
+  from YAML definitions via Weaver, layered on OpenTelemetry's core span model.
+  Node "type" is expressed as gen_ai.operation.name -- an operation verb -- rather
+  than a span-kind enum. Content attributes are Opt-In.
+strengths:
+  - "FACT: span naming is derived, not stored: `{gen_ai.operation.name} {gen_ai.request.model}` for inference, `execute_tool {gen_ai.tool.name}`, `invoke_agent {gen_ai.agent.name}`."
+  - "FACT: the model-facing content attributes (gen_ai.input.messages, gen_ai.output.messages, gen_ai.system_instructions, gen_ai.tool.definitions) are all Opt-In, with the explicit rule 'Instrumentations SHOULD NOT capture them by default, but SHOULD provide an option for users to opt in'."
+  - "FACT: a tool call is a span with the result as an ATTRIBUTE on the same span (gen_ai.tool.call.result, Opt-In) -- not a separate signal. `gen_ai.tool.name` is Required; `gen_ai.tool.call.id` is Recommended."
+  - "FACT: usage is modelled (gen_ai.usage.input_tokens / output_tokens, plus cache_read, cache_write, reasoning, and per-modality splits), with subset arithmetic specified."
+  - "FACT: retry semantics are stated -- a span SHOULD cover the logical operation including all retries, which agrees with ADR-0007's placement of retry policy at the caller."
+  - "FACT: the conventions address manually-instrumented tools explicitly, which is our exact situation (in-process dispatch)."
+weaknesses:
+  - >
+    FACT: everything is `Development`. Every span, event, metric, and attribute
+    carries the Development badge; the only Stable markers are borrowed core
+    attributes (error.type, server.address, server.port). There is no version or
+    date in the doc bodies, and the new repository's README declares its Schema URL
+    as `TODO`.
+  - >
+    FACT: the conventions MOVED repositories mid-survey. The pages in
+    open-telemetry/semantic-conventions now return HTTP 200 with a "this page has
+    moved" stub rather than a 404 -- a trap for any automated check that trusts a
+    status code.
+  - >
+    FACT: the content-capture policy REVERSED. `gen_ai.prompt` and
+    `gen_ai.completion` are marked Deprecated with "Removed, no replacement at
+    this time", replaced by Opt-In structured attributes and the Opt-In event
+    `gen_ai.client.inference.operation.details`. The date of the reversal could
+    not be determined (no git history fetched).
+  - "FACT: cost is not modelled at all -- no cost attribute and no cost metric exist."
+  - "OBSERVATION: invoke_agent exists as two spans (client and internal) distinguished only by Span kind, and every agent span carries a caveat that frameworks MAY override the span name format."
+patterns_worth_adopting:
+  - "Default-off content capture with explicit opt-in -- the only surveyed system to state this, and the only one with a privacy review."
+  - "Result-as-attribute on the tool span, not a second node."
+  - "Distinguishing a required identifier from an optional payload (tool.name Required, tool.call.arguments Opt-In)."
+  - "Stating the retry/span relationship explicitly."
+patterns_worth_avoiding:
+  - "Claiming compatibility with a Development-track specification that has no schema URL and has already reversed a decision. Study the vocabulary; do not assert conformance."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target, and deliberately no compatibility CLAIM. The
+  conventions are Development, have just moved repositories, and have no published
+  schema URL. We adopt two RULES from them -- default-off content capture and
+  result-as-attribute -- and record the correspondence, without asserting that any
+  artifact we produce conforms.
+standards: ["OpenTelemetry GenAI semantic conventions (Development)"]
+last_reviewed: 2026-09-15
+```
+
+### Langfuse
+
+```yaml
+project: Langfuse
+repository: https://github.com/langfuse/langfuse
+authors: Langfuse GmbH
+license: MIT (core; some enterprise features separately licensed)
+version_studied: main branch, packages/shared/src/domain/observations.ts, domain/traces.ts, server/ingestion/types.ts (fetched 2026-09-15)
+capabilities: >
+  An LLM observability platform: trace/observation ingestion, storage, and analysis,
+  with a first-class cost and usage model.
+architecture: >
+  Unit of record is the OBSERVATION, a single flat record with a `type`
+  discriminator and a nullable `parentObservationId`. A separate thinner
+  TraceDomain exists and does NOT embed its observations. Ingestion is a versioned
+  HTTP event union (trace-create, span-create, generation-create, ...) backed by
+  ClickHouse.
+strengths:
+  - "FACT: the taxonomy is a 10-value enum -- SPAN, EVENT, GENERATION, AGENT, TOOL, CHAIN, RETRIEVER, EVALUATOR, EMBEDDING, GUARDRAIL -- with levels DEBUG/DEFAULT/WARNING/ERROR."
+  - >
+    FACT, and the single most useful idea found in the whole survey: the schema
+    distinguishes caller-supplied numbers from derived ones --
+    `providedUsageDetails` vs `usageDetails`, and `providedCostDetails` vs
+    `costDetails`, with source comments "aggregated data from cost_details" and
+    "aggregated data from usage_details". A trace can therefore say whether a
+    number was reported or computed.
+  - "FACT: `endTime` is nullable, which is the honest model of a span that started and never finished."
+  - "FACT: EVENT is a first-class zero-duration type, which no other surveyed system has."
+weaknesses:
+  - >
+    FACT: no documented on-disk format. Ingestion is HTTP into ClickHouse, so a
+    zero-dependency emitter cannot produce a Langfuse-compatible artefact without
+    running a Langfuse server.
+  - "FACT: `latency` and `timeToFirstToken` carry no stated unit in the schema."
+  - "OBSERVATION: tool data is a flat set of nullable fields (toolDefinitions, toolCalls, toolCallNames) rather than a structured type."
+  - "OBSERVATION: the shared schema states no content-capture policy; the decision lives in the SDK, which was not read."
+patterns_worth_adopting:
+  - "The provided-vs-derived split for usage and cost. It composes directly with ADR-0007 D-5 (None is the absence of a measurement, 0 is a measurement)."
+  - "A nullable end time."
+  - "A point-in-time EVENT type alongside duration-bearing spans."
+patterns_worth_avoiding:
+  - "Leaving the time unit unstated in a numeric field name."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Studied for its provided/derived split and its nullable
+  end time. No code reused.
+standards: []
+last_reviewed: 2026-09-15
+```
+
+### LangSmith
+
+```yaml
+project: LangSmith (Python SDK)
+repository: https://github.com/langchain-ai/langsmith-sdk
+authors: LangChain, Inc.
+license: MIT
+version_studied: main branch, python/langsmith/schemas.py (fetched 2026-09-15)
+capabilities: >
+  Tracing and evaluation for LLM applications: runs, traces, sessions, datasets.
+architecture: >
+  Unit of record is the RUN. A trace is not a record; it is the set of runs sharing
+  a trace_id. Hierarchy is carried redundantly by parent_run_id, parent_run_ids, and
+  a sortable `dotted_order` string encoding execution order.
+strengths:
+  - "FACT: `dotted_order` is documented as '{time}{run-uuid}.* so that a trace can be sorted in the order it was executed' -- an explicit replay-ordering key, which no other surveyed system has."
+  - "FACT: `latency` is a derived property in SECONDS, computed from start_time/end_time, so the unit is unambiguous in code even though it is not in the field name."
+  - "FACT: token and cost details are modelled separately from totals (prompt_token_details, completion_token_details, prompt_cost_details, completion_cost_details) with the note that details 'Does *not* need to sum to full ... token count'."
+weaknesses:
+  - >
+    FACT: there is NO `agent` run type. The deprecated RunTypeEnum is tool, chain,
+    llm, retriever, embedding, prompt, parser -- a product dedicated to agent
+    tracing does not model "agent" as a run type.
+  - "FACT: cost-computation provenance is not stated in the schema -- whether the client or server computes it is unknown."
+  - "OBSERVATION: errors are a plain `error: Optional[str]` plus an optional `status: Optional[str]`, with no structured exception type."
+  - "OBSERVATION: no on-disk format; transport is an HTTP API."
+patterns_worth_adopting:
+  - "A sortable execution-order key (`dotted_order`) alongside parent ids -- it makes replay deterministic without re-sorting by timestamp."
+patterns_worth_avoiding:
+  - "A plain error string where a structured error type belongs."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Studied for its ordering key and its cost-detail model.
+  No code reused.
+standards: []
+last_reviewed: 2026-09-15
+```
+
+### MLflow (tracing)
+
+```yaml
+project: MLflow (GenAI tracing)
+repository: https://github.com/mlflow/mlflow
+authors: Databricks / MLflow contributors
+license: Apache-2.0
+version_studied: master branch, mlflow/entities/span.py, span_status.py, trace_info.py, tracing/constant.py (fetched 2026-09-15)
+capabilities: >
+  Experiment and model tracking, extended with an OpenTelemetry-shaped tracing
+  layer for GenAI applications, including client- or server-side cost computation.
+architecture: >
+  Unit of record is the SPAN, deliberately OTel-shaped: the Span class wraps an
+  OTelReadableSpan. Span, LiveSpan, NoOpSpan, and LazySpan variants exist. Trace-level
+  metadata lives in a separate TraceInfo. Parent linkage is an OTel context object
+  built from `parent_id`.
+strengths:
+  - >
+    FACT: the ONLY surveyed system with a documented serialized span JSON a
+    zero-dependency emitter could target without an HTTP ingest service --
+    `to_dict()` / `from_dict()`, schema-versioned at TRACE_SCHEMA_VERSION = 3, with
+    a `_is_span_v2_schema` discriminator, persisted as TRACKING_STORE spans.content.
+  - "FACT: truncation limits are stated explicitly -- MAX_CHARS_IN_TRACE_INFO_METADATA = 250, TRACE_REQUEST_RESPONSE_PREVIEW_MAX_LENGTH_OSS = 1000 / _DBX = 10000, suffix '...'. No other surveyed system documents its limits."
+  - >
+    FACT: cost provenance is stated outright, with its limitation: "The cost
+    tracking is calculated based on token usage and model pricing from LiteLLM.
+    Cost tracking is not supported for all LLM providers."
+  - "FACT: errors are a structured SpanStatus dataclass with SpanStatusCode UNSET/OK/ERROR -- documented as the same set as OpenTelemetry -- plus a description 'only set when the status is ERROR'. record_exception() adds a span event AND flips the status."
+  - "FACT: the taxonomy is a non-enum on purpose, with the reason in source: 'Not using enum as we want to allow custom span type string.'"
+weaknesses:
+  - >
+    OBSERVATION: the units disagree within one object -- span times are
+    NANOSECONDS (start_time_ns/end_time_ns) while trace execution_duration is
+    MILLISECONDS. A single implementation disagrees with itself.
+  - "FACT: cost computation depends on a LiteLLM price table, and the docstring concedes it is not supported for all providers. A price table is a maintenance burden and an accuracy risk."
+  - "UNVERIFIED: mlflow/tracing/sampling.py exists in the directory listing (1579 bytes) but was not read, so its sampling policy is unknown."
+patterns_worth_adopting:
+  - "A versioned, self-describing serialized span JSON."
+  - "Stated truncation limits with an explicit suffix."
+  - "A structured error status object rather than a string."
+  - "An open span-type taxonomy when custom types are genuinely expected."
+patterns_worth_avoiding:
+  - "Mixed time units within one object."
+  - "Computing cost from an embedded third-party price table."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Studied for its serialized span form, its stated
+  truncation limits, and its error-status object. No code reused. Note: MLflow's
+  default branch is `master`, not `main` -- any main-rooted raw URL 404s, which is a
+  retrieval trap, not a missing file.
+standards: []
+last_reviewed: 2026-09-15
+```
+
+### AgentOps
+
+```yaml
+project: AgentOps
+repository: https://github.com/AgentOps-AI/agentops
+authors: AgentOps AI
+license: MIT
+version_studied: main branch, agentops/sdk/README.md, sdk/types.py, sdk/attributes.py, sdk/exporters.py, semconv/span_kinds.py, semconv/span_attributes.py, semconv/core.py, semconv/status.py (fetched 2026-09-15)
+capabilities: >
+  Agent observability: session-scoped tracing of agents, tools, and LLM calls, with
+  cost and streaming metrics.
+architecture: >
+  Built directly on the OpenTelemetry trace SDK. Unit of record is the SPAN with an
+  `agentops.span.kind` attribute; a SESSION is the root and every span needs one, so
+  the trace root is itself a span. Transport is OTLP/HTTP with bearer JWT auth.
+strengths:
+  - "FACT: a documented migration away from an event model -- 'In AgentOps v0.4, we've transitioned from the Event concept to using Spans for all event tracking.'"
+  - "FACT: 12 span kinds including session, workflow, task, operation, agent, tool, llm, chain, text, guardrail, http, unknown."
+  - "FACT: the session-as-root model means no span can exist orphaned, which is a stronger integrity property than a nullable parent on every record."
+  - "FACT: streaming timing is named explicitly (gen_ai.streaming.time_to_first_token, time_to_generate, streaming_duration, chunk_count)."
+weaknesses:
+  - "FACT: cost is a single `gen_ai.usage.total_cost` with no input/output split, and its provenance is not stated in the files read."
+  - "OBSERVATION: core span start/end/latency field names are not present in the semconv files read; they rely on OTel natives, so the unit is implicit."
+  - "UNVERIFIED: numeric defaults for max_queue_size, max_wait_time, and export_flush_interval -- the comments say defaults exist but the values are not in the read files."
+  - "OBSERVATION: no documented on-disk format; transport is OTLP."
+patterns_worth_adopting:
+  - "A session root that every span must belong to, which prevents orphan records."
+  - "Naming streaming timing explicitly rather than leaving it to be derived."
+patterns_worth_avoiding:
+  - "A cost field with no stated provenance."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. Studied for its session-root integrity model and its
+  streaming timing names. No code reused.
+standards: []
+last_reviewed: 2026-09-15
+```
+
 
 ## License compatibility note
 

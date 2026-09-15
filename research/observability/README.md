@@ -1,6 +1,6 @@
 # Observability
 
-> **Status: no entries yet.** This directory is a declared research category (charter §2, ADR-0001). Nothing here has been studied or implemented.
+> **Status: 1 capability studied.** This directory is a declared research category (charter §2, ADR-0001).
 
 ## What it is
 
@@ -20,16 +20,32 @@ Not yet surveyed.
 
 ## Landscape
 
-Not yet surveyed. External projects studied will be registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
+Six sources were studied for [`execution-trace-recorder`](execution-trace-recorder.md), all
+registered in [`../../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md)
+with the charter §11 schema and `code_reused: false`:
+
+| Source | What it contributed |
+|---|---|
+| OpenTelemetry GenAI semantic conventions | The `execute_tool` span shape; the default-off content-capture rule; the finding that the conventions are `Development` and just moved repositories |
+| Langfuse | The provided-vs-derived split for usage and cost; a nullable end time |
+| LangSmith | A sortable execution-order key (`dotted_order`) |
+| MLflow (tracing) | The only documented serializable span JSON; stated truncation limits |
+| AgentOps | A session-root integrity model; explicit streaming-timing names |
+| OpenInference | A span-kind taxonomy; the Anthropic/OpenAI cache-token asymmetry |
+
+**The finding that shaped the design:** the six disagree on the taxonomy axis (OTel uses
+an operation *verb*, the others a kind *noun*), on whether the taxonomy is closed, and on
+what unit a duration is in. "Compatible with all six" is not a coherent goal.
 
 ## Our implementations
 
-None. See [`../TAXONOMY.md`](../../TAXONOMY.md) §4 for capabilities in this category and their honest lifecycle status.
+None yet — `execution-trace-recorder` is `RESEARCHED`. See
+[`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
 
 ## When to use / When not to use
 
-To be filled from evidence, not intuition.
+To be documented when the capability reaches `IMPLEMENTED`.
 
 ## References & citations
 
-None yet.
+See [`execution-trace-recorder.md`](execution-trace-recorder.md) §11 for sources, verification method, and the list of what could not be verified.
