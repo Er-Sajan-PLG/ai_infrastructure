@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+.env
+
+# Tooling
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Study pipeline local artifacts
+study_pipeline/studied_repos/*/checkout/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

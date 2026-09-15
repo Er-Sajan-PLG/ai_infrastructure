@@ -1,0 +1,36 @@
+# Roadmap
+
+## Current phase
+
+**Phase 1 — Seed** (charter §30). Establish taxonomy, registry, documentation standards, and the first handful of end-to-end capabilities.
+
+| Phase | Status |
+|---|---|
+| 1 — Seed | **In progress** — skeleton done, no capabilities implemented |
+| 2 — Study pipeline | Not started (machinery in `study_pipeline/` is a stub) |
+| 3 — Discover | Not started |
+| 4 — Compose | Not started |
+| 5 — Sustain | Not started |
+
+## Phase 1 queue
+
+Priority order per charter §24 (dependency + verifiability first). Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
+
+1. `tool-registry` (tools) — no dependencies, consumed by almost everything.
+2. `model-provider-abstraction` (models) — no dependencies, consumed by everything above.
+3. `react-agent-loop` (agents) — depends on 1+2; first end-to-end composition.
+4. `execution-trace-recorder` (observability) — enables honest evaluation of 3.
+5. `vector-memory-store` (memory), then `basic-rag-pipeline` (retrieval) — depends on 2/5.
+6. `mcp-client` (mcp) — COMPATIBILITY candidate; narrow stdio client.
+
+For each: RESEARCHED → UNDERSTOOD → DECIDED (ADR) → DESIGNED → IMPLEMENTED → TESTED — one stage at a time, no skipping (charter §4).
+
+## What's deliberately NOT in Phase 1
+
+- The study pipeline itself (Phase 2 machinery).
+- Distributed/durable execution, GPU/deployment infrastructure, fine-tuning.
+- Any external-service dependency (vector DBs, hosted eval platforms) — out of scope.
+
+## Latest session notes
+
+- **2026 (skeleton session):** Repository bootstrapped — charter, taxonomy with 7 seeded DISCOVERED capabilities, registry, ADR-0001/0002, category skeletons, catalog validator. Next session: begin `tool-registry` research (RESEARCHED stage): survey how LangChain, OpenAI function calling, MCP, and Semantic Kernel model tool schema/validation/invocation; register studies in `docs/registry/`; record the DECISION as ADR-0003 before any code.
