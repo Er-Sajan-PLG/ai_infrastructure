@@ -42,9 +42,112 @@ last_reviewed:              # YYYY-MM-DD
 
 ## Entries
 
-*None yet.* No external project has been studied in depth.
+Studied during session 6 for the `tool-registry` capability (charter §11).
 
-The taxonomy's seeded capabilities list `reference_projects: []` for all seven entries; the first real studies are expected in the `tool-registry` session (see `../roadmap.md`), likely covering LangChain tool abstractions, OpenAI function-calling schemas, MCP tool definitions, and Semantic Kernel plugins. Those projects are **not** yet registered because no study has actually happened — an empty registry is honest; a speculative one is not (charter §6, §28).
+---
+
+### OpenAI function calling / tools
+
+```yaml
+project: OpenAI function calling / tools
+relevant_categories: [tools]
+repository: https://github.com/openai/openai-openapi
+authors: OpenAI
+license: proprietary API (spec repository: MIT)
+version_studied: developers.openai.com docs as of 2026-09; openai-openapi openapi.yaml
+capabilities: >
+  Vendor-hosted tool-calling: declares tools with a JSON Schema, returns model-emitted
+  calls, accepts results back as messages. Both a wire format and a de-facto industry
+  convention for tool schema shape.
+architecture: >
+  Stateless HTTP API. Tools are declared per request in `tools`; the model emits
+  `tool_calls` (Chat Completions) or function-call items (Responses). Two surfaces
+  disagree on encoding: flat in Responses, nested under `function` in Chat Completions.
+  Call identity is `call_id` vs `id`. No server-side execution, no registry, no error channel.
+strengths:
+  - Universal adoption; the de-facto interchange shape for tool schemas
+  - strict:true gives schema-enforced argument generation
+  - Correlation ids support parallel calls
+  - Opaque result envelope keeps the protocol simple
+weaknesses:
+  - Restricted JSON Schema subset; unsupported keywords cause outright rejection
+  - Requested strictness can silently downgrade (response must be read back)
+  - No protocol-level error channel — errors ride inside result strings
+  - No registry, no discovery, no capability negotiation
+  - Wire format differs between the vendor's own two surfaces
+patterns_worth_adopting:
+  - Logical tool record kept separate from any wire encoding
+  - Unconditional caller-side argument validation (the vendor explicitly requires it)
+  - Correlation id pairing request to result, safe under parallelism
+  - Opaque, in-band result envelope that can carry errors
+  - Separating tool visibility (offered this turn) from tool existence
+patterns_worth_avoiding:
+  - Treating "JSON Schema" support as unbounded when it is a strict subset
+  - Trusting model-emitted tool names — resolve against the registry, fail closed
+  - Assuming the requested strictness was honoured
+  - Depending on deprecated compatibility fields (`functions`/`function_call`)
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  Not a compatibility target — a wire format. Future per-provider adapters will translate
+  between our registry and this shape. No code reused.
+standards: ["JSON Schema", "OpenAI tool calling"]
+last_reviewed: 2026-09-15
+```
+
+---
+
+### LangChain / LangGraph
+
+```yaml
+project: LangChain / LangGraph
+relevant_categories: [tools]
+repository: https://github.com/langchain-ai/langchain
+authors: LangChain, Inc.
+license: MIT
+version_studied: langchain-core 0.3/v1 line; langgraph prebuilt/tool_node.py (main, 2026-09)
+capabilities: >
+  Tool abstraction (`BaseTool`, `@tool`, `StructuredTool`), schema inference from Python
+  types and docstrings, tool binding to models, and graph-based dispatch via `ToolNode`.
+architecture: >
+  `BaseTool` requires a Pydantic `args_schema`. Schema is derived from type hints and
+  optionally the docstring. Dispatch is a plain name-keyed dict rebuilt per `ToolNode`;
+  there is no registry service. Injected arguments are excluded from the model-facing
+  schema and re-added after validation, with caller-supplied values stripped first.
+strengths:
+  - Injected-argument design, including an explicit defence against LLM forging
+  - Two distinct error channels (validation vs execution) with sensible defaults
+  - Rich ecosystem and model bindings
+  - Docstring-driven schema inference is ergonomic for simple cases
+weaknesses:
+  - No actual registry — no namespacing, collision policy, or versioning
+  - Hard Pydantic coupling; validation cannot be swapped
+  - Schema inference depends on a deprecated Pydantic code path
+  - Severe import-surface churn across 0.1 -> 0.2 -> 0.3 -> v1
+  - Inconsistent defaults between `@tool` and `StructuredTool.from_function`
+patterns_worth_adopting:
+  - The injected-argument concept (declared args the model can never populate)
+  - Stripping caller-supplied values for injected keys before adding trusted ones
+  - Splitting validation errors (model-fixable, return to model) from execution errors
+    (re-raise / handle out of band)
+patterns_worth_avoiding:
+  - Pydantic as a hard dependency of the tool primitive
+  - Docstring parsing as a hidden schema source, with inconsistent defaults
+  - A tool abstraction inseparable from a graph runtime
+  - Re-exporting a dependency's types as one's own public API
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. The injected-argument idea is adopted as a CONCEPT, re-designed
+  with an explicit declaration rather than an `Annotated[..., Marker]` convention. No code reused.
+standards: ["JSON Schema", "Pydantic (studied, not adopted)"]
+last_reviewed: 2026-09-15
+```
+
+> **Depth note.** LangGraph's `tool_node.py` was read directly (2030 lines) to verify the
+> injection-defence and error-handling claims rather than relying on documentation alone.
 
 ## License compatibility note
 
