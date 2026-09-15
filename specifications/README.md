@@ -21,4 +21,8 @@ A spec is not implementation (charter §10). Do not add code to this directory.
 
 ## Status
 
-Empty. No capability has reached DESIGNED yet.
+| Specification | Capability | Status |
+|---|---|---|
+| [`tool-registry.md`](tool-registry.md) | `tool-registry` | ✅ DESIGNED — decided by [ADR-0006](../docs/decisions/0006-tool-registry.md) |
+
+No other capability has reached DESIGNED.

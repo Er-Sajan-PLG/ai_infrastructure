@@ -98,7 +98,7 @@ capabilities:
   - id: tool-registry
     name: Tool Registry & Function Calling Primitive
     category: tools
-    status: UNDERSTOOD
+    status: DESIGNED
     maturity: experimental
     priority: high — a named call graph: model-agnostic tool schema/invocation/result handling; nearly every downstream capability (agents, harnesses, MCP) consumes it.
     depends_on: []
