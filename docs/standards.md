@@ -113,6 +113,45 @@ correctness.
 
 ---
 
+## 8. Planned rules — approved, not yet enforced
+
+**Nothing in this section is normative.** These rules were approved by
+[ADR-0012](decisions/0012-gate-architecture.md)–[ADR-0014](decisions/0014-governance-drift.md)
+and are scheduled in [Phase 1.5](phases/phase-1.5-hardening.md). They
+appear here, in a section labelled non-normative, for one reason: the rule at
+the top of this document says **a rule with no check is a preference**, and a
+preference that quietly sits in a normative table is exactly the drift this
+repository refuses (charter §4, §20).
+
+Each moves into the normative tables in the same change that adds its check.
+Until then it must not be cited as a standard, and a green pipeline does not
+indicate compliance.
+
+| # | Rule | Charter | Will be enforced by | ADR |
+|---|---|---|---|---|
+| V1 | Coverage must not fall below the recorded floor | §18 | `fail_under` in `pyproject.toml` | 0012 |
+| V2 | A gate defined locally must exist in CI, and vice versa | §4, §20 | equivalence test over `Makefile` + `ci.yml` | 0012 |
+| V3 | A catalog entry may not import another entry's production modules | §31 | AST import check in `validate_catalog` | 0012 |
+| V4 | A catalog entry's tests must be collectable by pytest | §13, §18 | `validate_catalog --strict` | 0012 |
+| V5 | Static analysis (bandit + ruff `S`) must pass | §18 | `make sast` in CI | 0013 |
+| V6 | No known-vulnerable dependency | §18 | `pip-audit` over pinned dev requirements | 0013 |
+| V7 | No copyleft dev dependency | §22 | licence deny-list check | 0013 |
+| V8 | Commit messages follow the conventional-commit header | §25 | `scripts/check_commit_msg.py` (hook + CI) | 0013 |
+| V9 | Workflows are linted and actions are SHA-pinned | §18, §22 | `actionlint` + `zizmor` | 0013 |
+| V10 | An accepted risk carries an owner and an unexpired review date | §4, §22 | `scripts/check_risks.py` | 0014 |
+
+Two corrections to the map below, both verified on 2026-09-16 and both filed as
+work item 1 of Phase 1.5:
+
+- **`CI (make ci)` was inaccurate.** `ci.yml` invokes no `make` target; it
+  hand-repeats the commands, and its mypy target list **omits `integrations/`**
+  while the Makefile's includes it. ADR-0012 makes CI run the Makefile's gates
+  and adds a test that fails when the two definitions diverge.
+- **`make check` did not include `status`.** Governance drift was therefore not
+  caught by the command `AGENTS.md` tells a session to run. ADR-0012 adds it.
+
+---
+
 ## Rule-to-check map
 
 ```text

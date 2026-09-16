@@ -15,6 +15,10 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0008](0008-react-agent-loop.md) | `react-agent-loop`: a bounded dispatcher, not a reasoner | Accepted |
 | [0009](0009-mcp-client.md) | `mcp-client`: implement the legacy era, and put the approval before the call | Accepted |
 | [0010](0010-execution-trace-recorder.md) | `execution-trace-recorder`: record flat, bound everything, capture nothing by default | Accepted |
+| [0011](0011-phase-1-5-hardening.md) | Name the pre-Phase-2 hardening work "Phase 1.5" | Accepted |
+| [0012](0012-gate-architecture.md) | Gate architecture: CI runs the same gates as local | Accepted |
+| [0013](0013-verification-breadth.md) | Verification breadth: which checks are added, deferred, or rejected | Accepted |
+| [0014](0014-governance-drift.md) | Governance drift: an accepted-risk register and scheduled reminders | Accepted |
 
 ## When an ADR is required
 

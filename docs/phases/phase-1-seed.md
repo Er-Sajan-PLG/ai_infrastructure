@@ -1,8 +1,9 @@
 # Phase 1 — Seed
 
-**Status:** 🔄 In progress (started session 6)
+**Status:** ✅ Complete (session 6 → 16; closed 2026-09-16)
 **Charter basis:** §30 — *"5–10 categories with foundational patterns; establish taxonomy, registry, documentation standards."*
 **Depends on:** [Phase 0](phase-0-foundation.md) ✅ complete
+**Followed by:** [Phase 1.5 — Hardening](phase-1.5-hardening.md) 📋 planned ([ADR-0011](../decisions/0011-phase-1-5-hardening.md))
 
 ## Goal
 
@@ -14,12 +15,12 @@ The emphasis is **narrow and complete**, not broad and half-designed (charter §
 
 Phase 1 is complete when:
 
-- [ ] **≥5 distinct categories** contain at least one `TESTED` capability
-- [ ] Each has: research record, ADR, specification, implementation, tests, `PROVENANCE.md`
-- [ ] Each image-level claim passes `make status` (no status exceeds artifacts)
-- [ ] At least **one end-to-end composition** works: model + tools + agent loop, demonstrated in `integrations/`
-- [ ] The registry contains real study records, not placeholders
-- [ ] Known limitations are documented per capability
+- [x] **≥5 distinct categories** contain at least one `TESTED` capability — 5 of 5 required (`tools`, `models`, `agents`, `mcp`, `observability`)
+- [x] Each has: research record, ADR, specification, implementation, tests, `PROVENANCE.md`
+- [x] Each image-level claim passes `make status` (no status exceeds artifacts)
+- [x] At least **one end-to-end composition** works: model + tools + agent loop, demonstrated in `integrations/`
+- [x] The registry contains real study records, not placeholders
+- [x] Known limitations are documented per capability
 
 **"TESTED" means tests exist and pass — not "it ran once on my machine."**
 
@@ -29,15 +30,19 @@ Phase 1 is complete when:
 
 | # | Capability | Category | Status | Session |
 |---|---|---|---|---|
-| 1 | `tool-registry` | tools | 🔄 in progress | 6 |
-| 2 | `model-provider-abstraction` | models | ⬜ not started | 7 |
-| 3 | `execution-trace-recorder` | observability | ⬜ not started | 8 |
-| 4 | `react-agent-loop` | agents | ⬜ not started | 9 |
-| 5 | `vector-memory-store` | memory | ⬜ not started | 10 |
-| 6 | `basic-rag-pipeline` | retrieval | ⬜ not started | 11 |
-| 7 | `mcp-client` | protocols | ⬜ not started | 12 |
+| 1 | `tool-registry` | tools | ✅ TESTED | 6 |
+| 2 | `model-provider-abstraction` | models | ✅ TESTED | 7 |
+| 3 | `execution-trace-recorder` | observability | ✅ TESTED | 8 |
+| 4 | `react-agent-loop` | agents | ✅ TESTED | 9 |
+| 5 | `vector-memory-store` | memory | ⬜ DISCOVERED | 10 |
+| 6 | `basic-rag-pipeline` | retrieval | ⬜ DISCOVERED | 11 |
+| 7 | `mcp-client` | protocols | ✅ TESTED | 12 |
 
 That is **7 categories**, satisfying the 5–10 target with margin for one to slip.
+
+**Outcome:** 5 of 7 capabilities reached `TESTED`, covering **5 of 5 required categories**. The exit criterion asked for ≥5 categories with a `TESTED` capability and that is met exactly. `vector-memory-store` and `basic-rag-pipeline` remain `DISCOVERED`; the second is blocked on the first, and both carry forward to the Phase 2 queue unchanged (ADR-0011 keeps them out of Phase 1.5, which adds no capability).
+
+Note: this table is a session-by-session plan written at the start of Phase 1 and its per-session numbering did not survive contact — `react-agent-loop` landed after `execution-trace-recorder`, and the session column above records the plan as written, not the order that occurred. The authoritative per-capability status is `TAXONOMY.md`, which `make status` checks against artifacts on disk.
 
 ## Dependency order (charter §24.1)
 
