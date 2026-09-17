@@ -6,8 +6,8 @@ Executable plans for each growth phase (charter §30). A phase plan is a **worki
 |---|---|---|---|
 | 0 | **Foundation** *(not in charter — added by ADR-0005)* | ✅ Complete | [phase-0](phase-0-foundation.md) |
 | 1 | Seed 5–10 categories with foundational patterns | ✅ Complete | [phase-1](phase-1-seed.md) |
-| 1.5 | **Hardening** *(not in charter — added by ADR-0011)* | 📋 Planned | [phase-1.5](phase-1.5-hardening.md) |
-| 2 | Build the study pipeline; 20–30 repos | Not started | [phase-2](phase-2-study.md) |
+| 1.5 | **Hardening** *(not in charter — added by ADR-0011)* | ✅ Complete | [phase-1.5](phase-1.5-hardening.md) |
+| 2 | Build the study pipeline; 20–30 repos | In progress | [phase-2](phase-2-study.md) |
 | 3 | Automate discovery of new patterns/categories | Not started | [phase-3](phase-3-discover.md) |
 | 4 | Compose into systems; benchmark vs monoliths | Not started | [phase-4](phase-4-compose.md) |
 | 5 | Sustain: community, re-study, deprecation | Not started | [phase-5](phase-5-sustain.md) |

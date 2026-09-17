@@ -25,6 +25,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0018](0018-security-tooling.md) | Security tooling: SAST, SCA, licences, workflow linting, and version pinning | Accepted |
 | [0019](0019-commit-message-validation.md) | Commit-message validation: header only, first-party, with a visible escape hatch | Accepted |
 | [0020](0020-deferral-register.md) | What is deferred to scale, and the register that holds it | Accepted |
+| [0021](0021-study-pipeline-architecture.md) | Study pipeline: static-only, never executes studied code, stdlib only, emits proposals not code | Accepted |
 
 ## When an ADR is required
 

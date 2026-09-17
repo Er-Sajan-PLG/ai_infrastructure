@@ -71,9 +71,13 @@ minversion = "9.0"
 # requires an end-to-end composition to live there WITH its own tests, so a
 # testpath that excludes it would let those tests never run. Sixth instance of
 # the same class of hole (docs/decisions/0004 is the first).
-testpaths = ["tests", "catalog", "integrations"]
+# study_pipeline/ joins them for Phase 2 (charter §29: "the pipeline is itself
+# infrastructure: tested, documented"). It was excluded while it was an empty
+# declared seam; now that it holds real modules, excluding it would reproduce
+# the exact hole 0004 describes -- pipeline tests that never run.
+testpaths = ["tests", "catalog", "integrations", "study_pipeline"]
 # Keep the skeleton valid when catalog/ has no test files yet.
-norecursedirs = [".venv", ".uv-cache", "study_pipeline"]
+norecursedirs = [".venv", ".uv-cache"]
 python_files = ["test_*.py"]
 # addopts keeps the summary readable and fails on unknown markers.
 addopts = "-q --strict-markers --strict-config"
@@ -85,14 +89,29 @@ markers = [
 filterwarnings = ["error"]
 
 [tool.coverage.run]
-# Include catalog so capability tests actually contribute measurement.
-source = ["catalog", "integrations", "scripts"]
+# Include catalog so capability tests actually contribute measurement, and
+# study_pipeline so the Phase 2 pipeline is held to the same standard as the
+# code it exists to evaluate.
+source = ["catalog", "integrations", "scripts", "study_pipeline"]
 branch = true
 
 [tool.coverage.report]
 show_missing = true
-# No threshold is enforced yet: there is no implementation to measure. Set
-# fail_under when the first catalog entry lands (charter §18).
+# The threshold is enforced on the COMMAND LINE (`--cov-fail-under` in the
+# Makefile's coverage target), not here, because it is a policy with a doctrine
+# comment beside it rather than a bare number in a config file. See
+# docs/decisions/0016 and the COVERAGE_FLOOR comment in the Makefile.
+exclude_also = [
+    # `if TYPE_CHECKING:` blocks are never executed at runtime, so measuring
+    # them as uncovered would report a permanent, unfixable miss.
+    "if TYPE_CHECKING:",
+    # `@overload` declarations are a type-only surface with no runtime body.
+    "@(typing\\.)?overload",
+    # A `__main__` guard does not run when the module is imported by a test.
+    "if __name__ == .__main__.:",
+    # `raise NotImplementedError` bodies that exist only to satisfy a Protocol.
+    "raise NotImplementedError",
+]
 skip_covered = false
 
 # ---------------------------------------------------------------------------
@@ -195,7 +214,7 @@ pretty = true
 # makes mypy fail with "no files in directory" whenever a category is empty,
 # which is the normal state of a category that declares itself but has no
 # entries yet (charter §4 honest-status rule).
-exclude = ["^\\.venv/", "^\\.uv-cache/", "^study_pipeline/"]
+exclude = ["^\\.venv/", "^\\.uv-cache/", "^study_pipeline/studied_repos/"]
 
 [[tool.mypy.overrides]]
 # Tests use fixtures and monkeypatching patterns that strict mode fights.
@@ -223,7 +242,7 @@ disallow_untyped_decorators = false
 # than one that plainly does not run. The Makefile additionally scopes bandit
 # to production paths, which is what removes the remaining false positives.
 [tool.bandit]
-exclude_dirs = [".venv", ".uv-cache", "study_pipeline"]
+exclude_dirs = [".venv", ".uv-cache", "study_pipeline/studied_repos"]
 skips = ["B101"]
 
 # ---------------------------------------------------------------------------

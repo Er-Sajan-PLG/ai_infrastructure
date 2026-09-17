@@ -24,6 +24,12 @@ htmlcov/
 # Study pipeline local artifacts
 study_pipeline/studied_repos/*/checkout/
 
+# Study pipeline throwaway clones (see ADR-0021).
+# Cloned third-party repositories are NEVER committed. They are large, they are
+# not ours, and committing one would silently add another project's content to
+# this repository. Nothing under this directory may ever be tracked.
+.study-workspace/
+
 # OS / editors
 .DS_Store
 .idea/
