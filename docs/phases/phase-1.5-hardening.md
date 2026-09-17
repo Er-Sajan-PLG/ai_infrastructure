@@ -22,10 +22,16 @@ Phase 2 multiplies the repositories and artifacts in play. Entering it with a fa
 
 ## Exit criteria
 
-> **Status 2026-09-17: substantially complete.** Items checked below are
-> demonstrated. Two criteria were deliberately changed from this plan's
-> original text; the changes are noted inline with the reason, because a plan
-> that is silently edited to match outcomes stops being a plan (charter §4).
+> **Status 2026-09-17: complete, except one deliberate refusal.** All criteria
+> below are demonstrated by a run. Two were deliberately changed from this
+> plan's original text, and two were **added** after the plan because items
+> marked done were not; the changes are noted inline with the reason, because a
+> plan that is silently edited to match outcomes stops being a plan (§4).
+>
+> The two additions are worth reading as a pair: the coverage gate measured the
+> phase's own new checkers at 0%, and the workflow gate was marked done while
+> never having executed an audit. Both were **phase items that passed
+> inspection and failed reality.**
 
 Phase 1.5 is complete when all of the following hold, each demonstrated by a run rather than asserted:
 
@@ -40,12 +46,14 @@ Phase 1.5 is complete when all of the following hold, each demonstrated by a run
 - [x] **Licence check runs, passing.** **CHANGED FROM THE PLAN:** an **allow-list with fail-on-unknown**, not a deny-list. GitHub deprecated `deny-licenses` in `dependency-review-action` (issue #938) because a deny-list only rejects what someone enumerated; and an unknown licence must fail rather than pass, since "we could not determine it" must not be indistinguishable from "we checked". The check resolves genuinely ambiguous metadata by reading the licence text the package ships — three packages (`Jinja2`, `colorama`, `prompt_toolkit`) declare only the clause-agnostic `License :: OSI Approved :: BSD License`.
 - [x] **Dependabot is configured** for `github-actions` (weekly) and `pip` (monthly), with a 7-day cooldown, grouped updates, `open-pull-requests-limit: 2`, and **no auto-merge**. The cooldown addresses the window CVE-2026-33634 and the Shai-Hulud worm both exploited.
 - [x] **Commit messages are validated** by `scripts/check_commit_msg.py`, wired as a `commit-msg` hook, and demonstrably rejecting a malformed header (verified against a real attempt). **CHANGED FROM THE PLAN:** it validates the **header only**. The specification is genuinely ambiguous about body and footer structure, so enforcing more would encode an interpretation; recorded as AR-003.
-- [x] **Workflows are linted**: `actionlint` + `zizmor` wired as `make workflows` and a CI step. An absent binary prints `SKIPPED (CI always runs it)` rather than passing silently.
+- [x] **Workflows are linted**: `actionlint` + `zizmor` wired as `make workflows` and a CI step. An absent binary prints `SKIPPED (CI always runs it)` rather than passing silently. **ADDED AFTER THE PLAN:** the tools were installed and the audit actually executed, which found **two real defects in this phase's own `ci.yml`** — a HIGH-confidence template injection (`${{ github.base_ref }}` expanded into a `run:` block, which actionlint cannot see because it is syntactically valid) and persisted credentials in `.git/config`. Both fixed; `make workflows` now reports "No findings to report."
 - [x] **All `uses:` are SHA-pinned** with the version as a trailing comment. **Extended beyond the plan:** tool versions are pinned *inside* the workflow too (`GITLEAKS_VERSION`, `ACTIONLINT_VERSION`), because CVE-2026-33634's compromise arrived through an unpinned `apt install` in a shell step — which SHA-pinning `uses:` would not have prevented.
 - [x] **Structural entry checks exist**: `import-linter` for independence and `scripts/check_collectability.py` for test collectability. **Both proven to bite** by introducing real violations (a leaf-to-leaf import; an entry with an empty `tests/`).
 - [x] **The accepted-risk register exists**, seeded with five real entries, and `scripts/check_risks.py` runs in `make check-strict`. Demonstrated failing on a past `review_by` **and** on a re-dated entry whose rationale did not change.
 - [ ] **The reminder workflow** — **NOT IMPLEMENTED, deliberately.** See "Deviation" below.
 - [x] **`docs/standards.md` is updated**: §8 is now normative with V1–V15, each mapped to its check, and a separate table lists the three rules that are deliberately *not* enforced.
+- [x] **The checkers are themselves tested.** **ADDED AFTER THE PLAN.** The coverage gate measured the four new `scripts/check_*.py` files at **0%** — coverage fell 90.03% → 77.47% on this phase's own work. Tests for all five checkers brought the suite 415 → **601 tests** and coverage back to **90.03%**. Writing them found three real bugs in code already marked done, the worst being a guard in `check_collectability.py` that short-circuited *before* itself and so did not cover total discovery collapse.
+- [x] **Every gate has been observed failing.** Each check in this phase was deliberately violated and confirmed to fail before being trusted: a leaf-to-leaf import, an entry with an empty `tests/`, a removed workflow step, a date-only re-date, a stub `trigger`, a disallowed licence, and a malformed commit header. A gate never seen to fail is a gate that cannot be trusted to be running.
 - [x] **`make check` and `make status` pass.**
 
 **Added beyond the original plan**, because the SOTA comparison surfaced it after the plan was written:
@@ -105,6 +113,30 @@ Ordered so that each item is verifiable on its own, and so that a failure early 
 | 16 | **Documentation close-out** — `docs/standards.md` normative tables, phase status, roadmap | 0011–0020 | all | No planned rule remains unenforced, and none is claimed that is not | **DONE** |
 | 17 | **Makefile shell hardening** (added after the plan) | 0015 | — | A failing recipe reports failure | **DONE** — reproduced both before and after |
 | 18 | **Deferred-work register** (added after the plan) | 0020 | — | Every entry has a fact, a trigger and a reversal; stubs refused | **DONE** — 12 entries |
+| 19 | **Unit tests for the checkers** (added after the plan) | — | 4, 6, 8, 10, 11, 14 | Each checker has tests; coverage floor still met | **DONE** — 415 → 601 tests, 77.47% → 90.03% |
+| 20 | **Run the workflow linters for real** (added after the plan) | 0018 | 12 | `make workflows` executes its audits, not SKIP | **DONE** — found and fixed 2 real defects |
+
+**Items 19 and 20 were added because items that were marked DONE were not.**
+
+Item 19 exists because the coverage gate — itself an item in this phase — measured
+the four checkers added by items 8, 10, 11 and 14 at **0% coverage**. They were
+runnable, reviewed and in the aggregate gate, and no test imported any of them.
+Writing the tests found three real bugs in code already marked done, including a
+guard in `check_collectability.py` that did not cover the case it was written for.
+The lesson generalises: **"the gate runs and passes" is not the same claim as
+"the gate is correct", and only a test of the gate distinguishes them.**
+
+Item 20 exists because item 12 was marked **DONE** while `make workflows` was
+printing `SKIPPED (CI always runs it)` — neither tool was installed, so the audit
+had never executed. Installing them produced two findings in the `ci.yml` written
+during this phase, one of them a **HIGH-confidence template injection** that
+actionlint does not detect because the code is syntactically valid. A phase item
+whose evidence is "the target exists" rather than "the check ran and its findings
+were resolved" is not done, and both items are recorded here rather than quietly
+folded into the ones they correct.
+
+Item 15 remains the only open item, and it is a deliberate refusal, not an
+omission — see "Deviation" above.
 
 **Item 1 is first deliberately.** It is the only work here that fixes a claim that is currently false, and it is small. Item 2 before item 3 so the guarantee exists before the refactor it protects.
 
