@@ -60,11 +60,11 @@ pipeline optimised against no fixed target.
 | 2 | **Workspace + clone module** — `git clone --depth 1`, `rev-parse`, prune, gitignore | 0021 | 1 | **DONE** — `22f0bdd`; 12 injection vectors refused |
 | 3 | **Inventory module** — layout, file counts, manifests, marker files | 0021 | 2 | **DONE** — `024dbfd`; 3 bugs found via known-shape repos |
 | 4 | **Pattern extraction** — candidate patterns and boundaries, statically | 0021 | 3 | **DONE** — `edc4db3`; 3 false positives fixed |
-| 5 | **Classification** — map to taxonomy categories; propose new ones | 0021 | 4 | ⬜ |
-| 6 | **Report generation** — the Markdown report, with provenance and §6 labels | 0021 | 5 | ⬜ |
-| 7 | **CLI + `make study`** — thin wrapper; opt-in network E2E | 0021 | 6 | ⬜ |
+| 5 | **Classification** — map to taxonomy categories; propose new ones | 0021 | 4 | **DONE** — `f33da59`; parses TAXONOMY.md, no hardcoded list |
+| 6 | **Report generation** — the Markdown report, with provenance and §6 labels | 0021 | 5 | **DONE** — `f33da59`; `code_reused: false` from a constant |
+| 7 | **CLI + `make study`** — thin wrapper; opt-in network E2E | 0021 | 6 | **DONE** — `f33da59`; `make study URL=…`, `make test-network` |
 | 8 | **The no-execution test** — the check that enforces Decision 1 | 0021 | 7 | **DONE** (early, with item 3) — proven to bite on 3 vectors |
-| 9 | **Study the first repository end-to-end** — proves 2A | 0021 | 8 | ⬜ |
+| 9 | **Study the first repository end-to-end** — proves 2A | 0021 | 8 | **DONE** — `3735057`; LlamaIndex @ `fd4a517a` |
 | 10 | **Track 2B**: study ≥20 repositories, register each | — | 9 | ⬜ |
 | 11 | **Propose ≥3 new patterns** as `DISCOVERED` entries + ADRs | — | 10 | ⬜ |
 
