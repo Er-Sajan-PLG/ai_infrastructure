@@ -181,3 +181,119 @@ exclude = ["^\\.venv/", "^\\.uv-cache/", "^study_pipeline/"]
 # Tests use fixtures and monkeypatching patterns that strict mode fights.
 module = "tests.*"
 disallow_untyped_decorators = false
+
+# ---------------------------------------------------------------------------
+# SAST — bandit (docs/decisions/0018)
+# ---------------------------------------------------------------------------
+#
+# bandit runs IN ADDITION to ruff's "S" rules, not instead of them: they are
+# not equivalent. ruff has not ported B614/B615, removed S320, and leaves
+# S401-S403 preview-only (so they silently never fire); its maintainers call
+# the gap deliberate.
+#
+# Measured on this repository: bandit reports 558 raw findings, of which 550
+# are B101 (assert) inside tests. The remaining 8 are forged attack payloads
+# and fake credentials in tests/examples that ASSERT those inputs are
+# rejected -- a scanner cannot tell a forged secret from a real one.
+#
+# B101 is therefore skipped wholesale. This is a deliberate trade-off recorded
+# as AR-001 in docs/risks/ACCEPTED_RISKS.md, not a silent suppression:
+# bandit's per-plugin `skips` accept globs but do not reliably apply to nested
+# test directories, and a rule that quietly does not do what it says is worse
+# than one that plainly does not run. The Makefile additionally scopes bandit
+# to production paths, which is what removes the remaining false positives.
+[tool.bandit]
+exclude_dirs = [".venv", ".uv-cache", "study_pipeline"]
+skips = ["B101"]
+
+# ---------------------------------------------------------------------------
+# Structural checks — import-linter (charter §31, docs/decisions/0017)
+# ---------------------------------------------------------------------------
+#
+# Charting entry independence with a real import GRAPH, not a per-file scan,
+# is what makes transitive leakage detectable: `entry_a -> shared_helper ->
+# entry_b` is invisible to an AST walk over entry_a's files. import-linter is
+# a DEV dependency, so the zero-runtime-dependency property still holds.
+#
+# CONFIGURATION LOCATION IS LOAD-BEARING: import-linter reads `setup.cfg` and
+# `.importlinter` as INI and only `pyproject.toml` as TOML. Putting this TOML
+# block in a `.importlinter` file fails with the opaque error
+# "section '' already exists". That mistake was made and diagnosed here.
+
+[tool.importlinter]
+root_packages = [
+    "model_provider",
+    "tool_registry",
+    "execution_trace_recorder",
+    "mcp_client",
+    "react_agent_loop",
+]
+# Required by contract 3 below, which names `agent_loop_end_to_end` as a
+# forbidden module. That package lives under integrations/ rather than in the
+# root_packages list, so the graph builder must be told to follow imports out
+# of the declared roots -- otherwise it cannot see the edge it is being asked
+# to forbid, and the contract would silently pass by never being evaluated.
+include_external_packages = true
+
+# --- 1. Leaf entries stay mutually independent --------------------------
+#
+# Measured, not assumed: react_agent_loop -> {model_provider, tool_registry}
+# and mcp_client -> tool_registry are the ONLY cross-entry edges, and all of
+# them go through public interfaces. model_provider, tool_registry and
+# execution_trace_recorder are leaves today. This contract is what keeps the
+# leaves leaves.
+[[tool.importlinter.contracts]]
+name = "Independent entries stay independent (charter §31)"
+type = "independence"
+modules = [
+    "model_provider",
+    "tool_registry",
+    "execution_trace_recorder",
+]
+
+# --- 2. Composing entries: no mutual entanglement -----------------------
+#
+# react_agent_loop and mcp_client legitimately compose other capabilities
+# through their PUBLIC interfaces (`from tool_registry import ToolId`). The
+# rule is that they must not reach past that interface into a submodule
+# (`from tool_registry.registry import ToolRegistry`), which would couple the
+# importer to a private layout decision the owner must stay free to change.
+#
+# WHY THIS IS `independence` AND NOT `forbidden`:
+# A `forbidden` contract on submodule names does NOT express this rule, and
+# fails on correct code. import-linter builds the real import GRAPH, so
+# forbidding `tool_registry.registry` also flags the legitimate
+# `from tool_registry import X`, because tool_registry's own `__init__`
+# imports `.registry` internally and the graph walk follows that edge. The
+# reported chain is real, but it is not a violation -- the caller did not
+# reach in; the package did. This was reproduced here before the contract was
+# changed, and the reproduction is why the contract reads as it does.
+#
+# The "no reaching into internals" half therefore remains a REVIEW rule,
+# stated in CONTRIBUTING.md. Per charter §20 it is recorded as a known
+# non-enforceable rule (AR-004) rather than silently dropped.
+[[tool.importlinter.contracts]]
+name = "react_agent_loop stays independent of mcp_client (charter §31)"
+type = "independence"
+modules = [
+    "react_agent_loop",
+    "mcp_client",
+]
+
+# --- 3. No entry may depend on an integration ---------------------------
+#
+# The dependency direction is one-way: an integration composes entries; an
+# entry must never know an integration exists. This is the contract that keeps
+# the catalog relocatable -- an entry that imported the end-to-end integration
+# could not be lifted out of this repository and still work.
+[[tool.importlinter.contracts]]
+name = "Catalog entries never depend on an integration"
+type = "forbidden"
+source_modules = [
+    "model_provider",
+    "tool_registry",
+    "execution_trace_recorder",
+    "mcp_client",
+    "react_agent_loop",
+]
+forbidden_modules = ["agent_loop_end_to_end"]
