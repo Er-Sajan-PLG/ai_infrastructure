@@ -416,3 +416,79 @@ def test_licence_dataclass_is_frozen() -> None:
     licence = Licence("MIT", LicenceConfidence.DECLARED, ("x",))
     with pytest.raises(dataclasses.FrozenInstanceError):
         licence.spdx_id = "GPL-3.0"  # type: ignore[misc]
+
+
+# ---------------------------------------------------------------------------
+# The notice block: more than one line, still bounded
+# ---------------------------------------------------------------------------
+
+
+def test_apache_with_a_copyright_first_line(tmp_path: Path) -> None:
+    """vercel/ai's real shape: copyright on line 1, licence named on line 2.
+
+    Reported "not determined" until the notice block was widened past the first
+    line. Refusing was the correct direction, but it was still a miss.
+    """
+    _write(
+        tmp_path,
+        "LICENSE",
+        "Copyright 2023 Vercel, Inc.\n\n"
+        'Licensed under the Apache License, Version 2.0 (the "License");\n'
+        "you may not use this file except in compliance with the License.\n",
+    )
+    result = detect_licence(tmp_path)
+    assert result.spdx_id == "Apache-2.0"
+    assert result.confidence is LicenceConfidence.HEADER
+
+
+def test_mit_with_a_copyright_first_line(tmp_path: Path) -> None:
+    """crewAI's real shape: a bare copyright line, then MIT's grant."""
+    _write(
+        tmp_path,
+        "LICENSE",
+        "Copyright (c) 2025 crewAI, Inc.\n\n"
+        "Permission is hereby granted, free of charge, to any person obtaining a copy\n"
+        'of this software and associated documentation files (the "Software"), to deal\n',
+    )
+    # Line 2 is the grant, not a licence NAME, so nothing matches -- correctly.
+    # A grant phrase is not an identifier, and matching it would be the prose
+    # guessing this module refuses. The file still exists, so it is
+    # UNIDENTIFIED rather than ABSENT.
+    result = detect_licence(tmp_path)
+    assert result.confidence is LicenceConfidence.UNIDENTIFIED
+    assert result.spdx_id == ""
+
+
+def test_notice_block_does_not_extend_into_the_body(tmp_path: Path) -> None:
+    """The bound must still hold: a later mention cannot override the title.
+
+    A licence body saying "previously released under the MIT License" is a
+    compatibility note, not a declaration of MIT.
+    """
+    _write(
+        tmp_path,
+        "LICENSE",
+        "Some Custom Public License\n"
+        "Version 1.0\n"
+        "Copyright (c) 2024\n"
+        "\n"
+        "This software was previously released under the MIT License.\n"
+        "It is now distributed under the terms above.\n",
+    )
+    assert detect_licence(tmp_path).spdx_id == ""
+
+
+def test_notice_block_window_is_three_lines(tmp_path: Path) -> None:
+    """A licence named on line 4 is outside the block and must not match."""
+    _write(
+        tmp_path,
+        "LICENSE",
+        "Line one\nLine two\nLine three\n\nMIT License\n\nbody\n",
+    )
+    assert detect_licence(tmp_path).spdx_id == ""
+
+
+def test_blank_lines_do_not_consume_the_notice_block(tmp_path: Path) -> None:
+    """The block counts non-blank lines, so leading whitespace is harmless."""
+    _write(tmp_path, "LICENSE", "\n\n\n   \nMIT License\n\nbody\n")
+    assert detect_licence(tmp_path).spdx_id == "MIT"

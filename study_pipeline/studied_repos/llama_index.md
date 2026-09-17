@@ -10,6 +10,7 @@
 |---|---|
 | Repository | https://github.com/run-llama/llama_index |
 | Commit | `fd4a517ad6490f0c8464a13fdf133760b696434a` |
+| Licence | MIT (declared) |
 | Studied | 2026-09-17 |
 | Clone size | 835.1 MiB |
 | Files | 9842 |

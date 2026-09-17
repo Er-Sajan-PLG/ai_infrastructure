@@ -277,6 +277,12 @@ _LICENCE_HEADERS: Final[tuple[tuple[str, str], ...]] = (
     ("the mit license", "MIT"),
     ("apache license", "Apache-2.0"),
     ("apache 2.0", "Apache-2.0"),
+    # The standard Apache preamble, which names the licence mid-sentence rather
+    # than as a title. vercel/ai's LICENSE line 2 is exactly this, and omitting
+    # it left that repository's licence undetermined until the real file was
+    # inspected.
+    ("licensed under the apache license", "Apache-2.0"),
+    ("licensed under the mit license", "MIT"),
     ("bsd 3-clause", "BSD-3-Clause"),
     ("bsd 2-clause", "BSD-2-Clause"),
     ("gnu affero general public license", "AGPL-3.0"),
@@ -291,32 +297,53 @@ _LICENCE_HEADERS: Final[tuple[tuple[str, str], ...]] = (
 )
 
 
-def _spdx_from_header(licence_file: Path) -> tuple[str, str]:
-    """Return `(spdx_id, header_line)` from a licence file's title line.
+#: How many leading non-blank lines count as the `notice block`. Apache-style
+#: licences put a copyright line first and the licence name second; MIT files
+#: sometimes do the same. Scanning only the very first line missed both.
+_NOTICE_BLOCK_LINES: Final = 3
 
-    Returns `("", "")` when the first non-blank line does not name a licence.
-    Only the first non-blank line is consulted, so a licence body mentioning
-    another licence in a compatibility note cannot override its own title.
+
+def _spdx_from_header(licence_file: Path) -> tuple[str, str]:
+    """Return `(spdx_id, matched_line)` from a licence file's notice block.
+
+    The notice block is the first few non-blank lines, not the whole file. That
+    bound is the entire point: a licence body can *mention* another licence in a
+    compatibility note ("previously released under the MIT License"), and
+    searching the whole file would let that override the real title. Two real
+    cases forced the block to be more than one line:
+
+      * `vercel/ai` — line 1 is `Copyright 2023 Vercel, Inc.`, line 2 is
+        `Licensed under the Apache License, Version 2.0 (the "License");`
+      * `crewAI` — line 1 is a copyright notice, line 2 carries MIT's grant.
+
+    Both were reported as "not determined" until the block was widened, which is
+    the correct failure direction (refusing rather than guessing) but still a
+    miss. A licence name is a *declaration*; anywhere in the notice block it is
+    as explicit as on line 1.
+
+    Only exact allowlist entries match, so widening the window does not weaken
+    the guarantee: an unrecognised string still yields `("", "")`.
     """
     try:
         text = licence_file.read_text(encoding="utf-8", errors="replace")
     except OSError:
         return ("", "")
 
-    first_line = ""
+    checked = 0
     for raw in text.splitlines():
         stripped = raw.strip().strip("#").strip()
-        if stripped:
-            first_line = stripped
+        if not stripped:
+            continue
+
+        lowered = stripped.lower()
+        for needle, spdx_id in _LICENCE_HEADERS:
+            if lowered.startswith(needle):
+                return (spdx_id, stripped)
+
+        checked += 1
+        if checked >= _NOTICE_BLOCK_LINES:
             break
 
-    if not first_line:
-        return ("", "")
-
-    lowered = first_line.lower()
-    for needle, spdx_id in _LICENCE_HEADERS:
-        if lowered.startswith(needle):
-            return (spdx_id, first_line)
     return ("", "")
 
 

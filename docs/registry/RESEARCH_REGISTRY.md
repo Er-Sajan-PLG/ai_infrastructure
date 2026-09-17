@@ -1200,6 +1200,991 @@ The full report is committed at
 [`study_pipeline/studied_repos/llama_index.md`](../../study_pipeline/studied_repos/llama_index.md).
 
 
+## Phase 2 Track 2B — whole-repository structural studies
+
+Twenty-five repositories studied by the automated pipeline at pinned commits
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)), the exit
+evidence for Phase 2 Track 2B. Each entry records what the pipeline **observed
+at that commit**: file counts, structure, and candidate patterns with an
+evidence-based confidence. None of them claim a session read the source, because
+the pipeline never executes studied code and does not read every file
+(ADR-0021 Decision 1).
+
+Two of the 26 licence determinations could not be made and say so rather than
+guessing: `crewAI` ships MIT text behind a copyright-first line, which is
+stylistically identical to BSD-3-Clause at the clause level, so no bounded
+match can separate them; and one entry's licence genuinely requires a human
+read. Undetermined is recorded as undetermined.
+
+**What these entries do not contain**, and why: trade-offs, what to adopt or
+avoid, and how each pattern is implemented. All three require reading the
+source and are labelled `not assessed` rather than filled with a plausible
+inference. That gap is the recorded ceiling of structural detection (DW-013).
+
+### OpenHands — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: OpenHands
+relevant_categories: [agent-loop, config, evaluation, model-provider, protocol-client, tool-registry]
+repository: https://github.com/All-Hands-AI/OpenHands
+license: MIT
+version_studied: commit 9737f713616a1e452f822c2967f0e2c8bf2dc308
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (INFERENCE), `config` (INFERENCE), `evaluation` (INFERENCE), `model-provider` (INFERENCE), `protocol-client` (INFERENCE), `tool-registry` (INFERENCE).
+  FACT: 2300 files, TypeScript dominant, 48 in 2 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/OpenHands.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 9737f713616a, so every claim is reproducible at that revision."
+  - "OBSERVATION: proposes `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "None at STRONG confidence. Absence is a finding: this target does not exhibit the structural signatures the detector knows."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### SWE-agent — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: SWE-agent
+relevant_categories: [agent-loop, config, evaluation, model-provider, rate-limiting, tool-registry]
+repository: https://github.com/SWE-agent/SWE-agent
+license: MIT
+version_studied: commit 3ea751c087f32b16e039a2233dd6eefecef325d5
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `config` (FACT), `tool-registry` (FACT), `model-provider` (OBSERVATION), `rate-limiting` (OBSERVATION), `evaluation` (INFERENCE).
+  FACT: 407 files, Python dominant, 84 in 1 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/SWE-agent.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 3ea751c087f3, so every claim is reproducible at that revision."
+  - "OBSERVATION: 3 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `config`, `rate-limiting` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`config` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### agno — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: agno
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, guardrails, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/agno-agi/agno
+license: Apache-2.0
+version_studied: commit a71c4d0c607260d2483d73644a60dc49d036148c
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `evaluation` (FACT), `memory` (FACT), `protocol-client` (FACT), `retrieval` (FACT), `tool-registry` (FACT), `guardrails` (OBSERVATION), `model-provider` (OBSERVATION), `observability` (OBSERVATION), `caching` (INFERENCE), `chunking` (INFERENCE), `config` (INFERENCE).
+  FACT: 5859 files, Python dominant, 1465 in 4 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/agno.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit a71c4d0c6072, so every claim is reproducible at that revision."
+  - "OBSERVATION: 6 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `guardrails`, `caching`, `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+  - "`protocol-client` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### ai — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: ai
+relevant_categories: [agent-loop, chunking, config, evaluation, guardrails, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/vercel/ai
+license: Apache-2.0
+version_studied: commit 6dcd923799d2c663dff348927790c7967ce597dc
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `model-provider` (FACT), `tool-registry` (OBSERVATION), `chunking` (INFERENCE), `config` (INFERENCE), `evaluation` (INFERENCE), `guardrails` (INFERENCE), `memory` (INFERENCE), `observability` (INFERENCE), `protocol-client` (INFERENCE), `retrieval` (INFERENCE).
+  FACT: 8730 files, TypeScript dominant, 351 in 11 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/ai.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 6dcd923799d2, so every claim is reproducible at that revision."
+  - "OBSERVATION: 2 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `config`, `guardrails` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### autogen — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: autogen
+relevant_categories: [agent-loop, caching, config, evaluation, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/microsoft/autogen
+license: CC-BY-4.0
+version_studied: commit 027ecf0a379bcc1d09956d46d12d44a3ad9cee14
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (OBSERVATION), `caching` (INFERENCE), `config` (INFERENCE), `evaluation` (INFERENCE), `memory` (INFERENCE), `model-provider` (INFERENCE), `observability` (INFERENCE), `protocol-client` (INFERENCE), `retrieval` (INFERENCE), `tool-registry` (INFERENCE).
+  FACT: 1837 files, Python dominant, 303 in 7 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/autogen.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 027ecf0a379b, so every claim is reproducible at that revision."
+  - "OBSERVATION: proposes `caching`, `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "None at STRONG confidence. Absence is a finding: this target does not exhibit the structural signatures the detector knows."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### crewAI — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: crewAI
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/crewAIInc/crewAI
+license: not determined — see LICENSE
+version_studied: commit 5c33fe4c713aa52df359359ad2a39a1ba4ca83f5
+capabilities: >
+  Candidate patterns detected statically: `tool-registry` (FACT), `agent-loop` (INFERENCE), `caching` (INFERENCE), `chunking` (INFERENCE), `config` (INFERENCE), `evaluation` (INFERENCE), `memory` (INFERENCE), `model-provider` (INFERENCE), `observability` (INFERENCE), `protocol-client` (INFERENCE), `retrieval` (INFERENCE).
+  FACT: 31074 files, Python dominant, 1052 in 6 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/crewAI.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 5c33fe4c713a, so every claim is reproducible at that revision."
+  - "OBSERVATION: 1 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching`, `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### dspy — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: dspy
+relevant_categories: [agent-loop, caching, evaluation, model-provider, protocol-client, rate-limiting, retrieval, tool-registry]
+repository: https://github.com/stanfordnlp/dspy
+license: MIT
+version_studied: commit 9675ed0798181201c55bfdd7165d114403af3eb2
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `model-provider` (FACT), `protocol-client` (FACT), `retrieval` (FACT), `tool-registry` (FACT), `caching` (OBSERVATION), `evaluation` (OBSERVATION), `rate-limiting` (OBSERVATION).
+  FACT: 703 files, Python dominant, 168 in 1 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/dspy.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 9675ed079818, so every claim is reproducible at that revision."
+  - "OBSERVATION: 5 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching`, `rate-limiting` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+  - "`protocol-client` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### haystack-experimental — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: haystack-experimental
+relevant_categories: [retrieval]
+repository: https://github.com/deepset-ai/haystack-experimental
+license: Apache-2.0
+version_studied: commit ee2d80726f098e06af696a49a5b194031071b1e5
+capabilities: >
+  Candidate patterns detected statically: `retrieval` (FACT).
+  FACT: 76 files, Python dominant, 17 in 1 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/haystack-experimental.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit ee2d80726f09, so every claim is reproducible at that revision."
+  - "OBSERVATION: 1 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### haystack — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: haystack
+relevant_categories: [agent-loop, caching, chunking, evaluation, guardrails, memory, model-provider, observability, rate-limiting, retrieval, tool-registry]
+repository: https://github.com/deepset-ai/haystack
+license: Apache-2.0
+version_studied: commit ef9c9bba27dc40dd6d7854040c72283cbed326ec
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `evaluation` (FACT), `memory` (FACT), `observability` (FACT), `retrieval` (FACT), `tool-registry` (FACT), `caching` (OBSERVATION), `guardrails` (OBSERVATION), `model-provider` (OBSERVATION), `rate-limiting` (OBSERVATION), `chunking` (INFERENCE).
+  FACT: 10868 files, Python dominant, 338 in 2 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/haystack.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit ef9c9bba27dc, so every claim is reproducible at that revision."
+  - "OBSERVATION: 6 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching`, `guardrails`, `rate-limiting` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+  - "`observability` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### langchain — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: langchain
+relevant_categories: [agent-loop, chunking, evaluation, memory, model-provider, observability, protocol-client, rate-limiting, retrieval, tool-registry]
+repository: https://github.com/langchain-ai/langchain
+license: MIT
+version_studied: commit 5c1f28271295bb13034f4cf8964f74c117357d40
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `chunking` (FACT), `model-provider` (FACT), `retrieval` (FACT), `tool-registry` (FACT), `evaluation` (OBSERVATION), `memory` (OBSERVATION), `observability` (OBSERVATION), `protocol-client` (OBSERVATION), `rate-limiting` (OBSERVATION).
+  FACT: 3126 files, Python dominant, 1060 in 22 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/langchain.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 5c1f28271295, so every claim is reproducible at that revision."
+  - "OBSERVATION: 5 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `rate-limiting` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`chunking` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### langfuse — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: langfuse
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, guardrails, memory, model-provider, observability, protocol-client, rate-limiting, retrieval, tool-registry]
+repository: https://github.com/langfuse/langfuse
+license: MIT
+version_studied: commit 845bd05aa8223ec4c1139cb66827b32b343e7dd9
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (OBSERVATION), `chunking` (OBSERVATION), `caching` (INFERENCE), `config` (INFERENCE), `evaluation` (INFERENCE), `guardrails` (INFERENCE), `memory` (INFERENCE), `model-provider` (INFERENCE), `observability` (INFERENCE), `protocol-client` (INFERENCE), `rate-limiting` (INFERENCE), `retrieval` (INFERENCE), `tool-registry` (INFERENCE).
+  FACT: 6067 files, TypeScript dominant, 13 in 3 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/langfuse.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 845bd05aa822, so every claim is reproducible at that revision."
+  - "OBSERVATION: proposes `caching`, `config`, `guardrails`, `rate-limiting` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "None at STRONG confidence. Absence is a finding: this target does not exhibit the structural signatures the detector knows."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### langgraph — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: langgraph
+relevant_categories: [agent-loop, caching, config, memory, protocol-client]
+repository: https://github.com/langchain-ai/langgraph
+license: MIT
+version_studied: commit 230927fb3a9ac9b2893a30322b4dfea7cdea9a8f
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `config` (FACT), `memory` (FACT), `caching` (INFERENCE), `protocol-client` (INFERENCE).
+  FACT: 673 files, Python dominant, 223 in 10 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/langgraph.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 230927fb3a9a, so every claim is reproducible at that revision."
+  - "OBSERVATION: 3 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `config`, `caching` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`config` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### letta — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: letta
+relevant_categories: []
+repository: https://github.com/letta-ai/letta
+license: Apache-2.0
+version_studied: commit 5bcdd177d70fa2b31a754cfcd801e77b2e1ab16a
+capabilities: >
+  No candidate infrastructure pattern detected at this commit. Recorded as a
+  finding: absence is information, not a gap to fill.
+  FACT: 12 files, unknown dominant, 0 in 0 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/letta.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 5bcdd177d70f, so every claim is reproducible at that revision."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "None at STRONG confidence. Absence is a finding: this target does not exhibit the structural signatures the detector knows."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### litellm — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: litellm
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, guardrails, memory, model-provider, observability, protocol-client, rate-limiting, retrieval, tool-registry]
+repository: https://github.com/BerriAI/litellm
+license: MIT
+version_studied: commit 4b368bf0669cfd3268b780eea6c69497b9a51850
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `caching` (FACT), `chunking` (FACT), `config` (FACT), `evaluation` (FACT), `guardrails` (FACT), `memory` (FACT), `model-provider` (FACT), `observability` (FACT), `protocol-client` (FACT), `rate-limiting` (FACT), `retrieval` (FACT), `tool-registry` (FACT).
+  FACT: 10582 files, Python dominant, 3876 in 17 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/litellm.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 4b368bf0669c, so every claim is reproducible at that revision."
+  - "OBSERVATION: 13 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching`, `config`, `guardrails`, `rate-limiting` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`caching` at STRONG confidence — see the report for the evidence paths."
+  - "`chunking` at STRONG confidence — see the report for the evidence paths."
+  - "`config` at STRONG confidence — see the report for the evidence paths."
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`guardrails` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+  - "`observability` at STRONG confidence — see the report for the evidence paths."
+  - "`protocol-client` at STRONG confidence — see the report for the evidence paths."
+  - "`rate-limiting` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### llama_index — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: llama_index
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, guardrails, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/run-llama/llama_index
+license: MIT
+version_studied: commit fd4a517ad6490f0c8464a13fdf133760b696434a
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `chunking` (FACT), `config` (FACT), `memory` (FACT), `model-provider` (FACT), `observability` (FACT), `protocol-client` (FACT), `retrieval` (FACT), `tool-registry` (FACT), `evaluation` (OBSERVATION), `guardrails` (OBSERVATION), `caching` (INFERENCE).
+  FACT: 9842 files, Python dominant, 1654 in 554 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/llama_index.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit fd4a517ad649, so every claim is reproducible at that revision."
+  - "OBSERVATION: 9 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `config`, `guardrails`, `caching` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`chunking` at STRONG confidence — see the report for the evidence paths."
+  - "`config` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+  - "`observability` at STRONG confidence — see the report for the evidence paths."
+  - "`protocol-client` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### mastra — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: mastra
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, guardrails, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/mastra-ai/mastra
+license: Apache-2.0
+version_studied: commit cf7105aa09d678b74dfa3273b5a5ea9fc45a5f3b
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `tool-registry` (FACT), `evaluation` (OBSERVATION), `caching` (INFERENCE), `chunking` (INFERENCE), `config` (INFERENCE), `guardrails` (INFERENCE), `memory` (INFERENCE), `model-provider` (INFERENCE), `observability` (INFERENCE), `protocol-client` (INFERENCE), `retrieval` (INFERENCE).
+  FACT: 16316 files, TypeScript dominant, 268 in 11 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/mastra.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit cf7105aa09d6, so every claim is reproducible at that revision."
+  - "OBSERVATION: 2 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching`, `config`, `guardrails` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### openai-python — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: openai-python
+relevant_categories: [agent-loop, evaluation, guardrails, memory, model-provider, retrieval, tool-registry]
+repository: https://github.com/openai/openai-python
+license: Apache-2.0
+version_studied: commit b77076d23b6f3e34453b0fadd8cd2a001627e365
+capabilities: >
+  Candidate patterns detected statically: `evaluation` (FACT), `guardrails` (FACT), `retrieval` (FACT), `tool-registry` (FACT), `model-provider` (OBSERVATION), `agent-loop` (INFERENCE), `memory` (INFERENCE).
+  FACT: 2275 files, Python dominant, 279 in 1 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/openai-python.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit b77076d23b6f, so every claim is reproducible at that revision."
+  - "OBSERVATION: 4 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `guardrails` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`guardrails` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### phidata — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: phidata
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, guardrails, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/phidatahq/phidata
+license: Apache-2.0
+version_studied: commit a71c4d0c607260d2483d73644a60dc49d036148c
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `evaluation` (FACT), `memory` (FACT), `protocol-client` (FACT), `retrieval` (FACT), `tool-registry` (FACT), `guardrails` (OBSERVATION), `model-provider` (OBSERVATION), `observability` (OBSERVATION), `caching` (INFERENCE), `chunking` (INFERENCE), `config` (INFERENCE).
+  FACT: 5859 files, Python dominant, 1465 in 4 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/phidata.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit a71c4d0c6072, so every claim is reproducible at that revision."
+  - "OBSERVATION: 6 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `guardrails`, `caching`, `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+  - "`protocol-client` at STRONG confidence — see the report for the evidence paths."
+  - "`retrieval` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### phoenix — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: phoenix
+relevant_categories: [agent-loop, caching, chunking, config, evaluation, memory, model-provider, observability, protocol-client, tool-registry]
+repository: https://github.com/Arize-ai/phoenix
+license: Elastic-2.0
+version_studied: commit 829f1163fd898d6711fd97d7cc6b5c78fafca87c
+capabilities: >
+  Candidate patterns detected statically: `caching` (FACT), `config` (FACT), `evaluation` (FACT), `memory` (FACT), `model-provider` (FACT), `observability` (FACT), `protocol-client` (FACT), `tool-registry` (FACT), `agent-loop` (OBSERVATION), `chunking` (INFERENCE).
+  FACT: 7367 files, TypeScript dominant, 844 in 20 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/phoenix.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 829f1163fd89, so every claim is reproducible at that revision."
+  - "OBSERVATION: 8 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching`, `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`caching` at STRONG confidence — see the report for the evidence paths."
+  - "`config` at STRONG confidence — see the report for the evidence paths."
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+  - "`observability` at STRONG confidence — see the report for the evidence paths."
+  - "`protocol-client` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### pydantic-ai — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: pydantic-ai
+relevant_categories: [agent-loop, evaluation, model-provider, retrieval, tool-registry]
+repository: https://github.com/pydantic/pydantic-ai
+license: MIT
+version_studied: commit 9e9fdc4ba18da5b277822dadbf2ab6e2af4ee070
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `evaluation` (FACT), `model-provider` (FACT), `tool-registry` (FACT), `retrieval` (OBSERVATION).
+  FACT: 2775 files, Python dominant, 1828 in 1 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/pydantic-ai.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 9e9fdc4ba18d, so every claim is reproducible at that revision."
+  - "OBSERVATION: 4 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### python-sdk — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: python-sdk
+relevant_categories: [caching, memory, model-provider, observability, protocol-client, tool-registry]
+repository: https://github.com/modelcontextprotocol/python-sdk
+license: MIT
+version_studied: commit 6affe5c0d3588fd1705713b3703dc68015cfe3eb
+capabilities: >
+  Candidate patterns detected statically: `observability` (FACT), `protocol-client` (FACT), `caching` (OBSERVATION), `memory` (OBSERVATION), `model-provider` (OBSERVATION), `tool-registry` (OBSERVATION).
+  FACT: 1676 files, Python dominant, 278 in 2 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/python-sdk.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 6affe5c0d358, so every claim is reproducible at that revision."
+  - "OBSERVATION: 2 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`observability` at STRONG confidence — see the report for the evidence paths."
+  - "`protocol-client` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### ragas — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: ragas
+relevant_categories: [agent-loop, caching, chunking, evaluation, model-provider, observability, retrieval, tool-registry]
+repository: https://github.com/explodinggradients/ragas
+license: Apache-2.0
+version_studied: commit 298b68274234c060deacab3cf5fb52aa3a20e885
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `chunking` (FACT), `evaluation` (FACT), `model-provider` (FACT), `observability` (FACT), `tool-registry` (FACT), `caching` (OBSERVATION), `retrieval` (OBSERVATION).
+  FACT: 694 files, Python dominant, 113 in 1 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/ragas.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 298b68274234, so every claim is reproducible at that revision."
+  - "OBSERVATION: 6 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `caching` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`chunking` at STRONG confidence — see the report for the evidence paths."
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`model-provider` at STRONG confidence — see the report for the evidence paths."
+  - "`observability` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### semantic-kernel — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: semantic-kernel
+relevant_categories: [agent-loop, config, memory, model-provider, observability, protocol-client, retrieval, tool-registry]
+repository: https://github.com/microsoft/semantic-kernel
+license: MIT
+version_studied: commit ca40aa7226531d28a721d0ca0e451d0aaf86dafc
+capabilities: >
+  Candidate patterns detected statically: `agent-loop` (FACT), `memory` (FACT), `tool-registry` (FACT), `model-provider` (OBSERVATION), `observability` (OBSERVATION), `protocol-client` (OBSERVATION), `config` (INFERENCE), `retrieval` (INFERENCE).
+  FACT: 4849 files, Python dominant, 373 in 4 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/semantic-kernel.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit ca40aa722653, so every claim is reproducible at that revision."
+  - "OBSERVATION: 3 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`agent-loop` at STRONG confidence — see the report for the evidence paths."
+  - "`memory` at STRONG confidence — see the report for the evidence paths."
+  - "`tool-registry` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### swarm — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: swarm
+relevant_categories: []
+repository: https://github.com/openai/swarm
+license: MIT
+version_studied: commit 6af0b4caf37dca4526dfd98e9fbd8ce36e7eeb22
+capabilities: >
+  No candidate infrastructure pattern detected at this commit. Recorded as a
+  finding: absence is information, not a gap to fill.
+  FACT: 288 files, Python dominant, 7 in 2 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/swarm.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 6af0b4caf37d, so every claim is reproducible at that revision."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "None at STRONG confidence. Absence is a finding: this target does not exhibit the structural signatures the detector knows."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
+### trulens — whole-repository structural study (Phase 2 Track 2B)
+
+Studied by the automated pipeline at a single pinned commit
+([ADR-0021](../decisions/0021-study-pipeline-architecture.md)). This entry records
+**what the pipeline observed at that commit**; it is not a claim that a session
+read the source. The pipeline never executes studied code and does not read every
+file (ADR-0021 Decision 1), so claims are structural unless a label says otherwise
+(charter §6).
+
+```yaml
+project: trulens
+relevant_categories: [agent-loop, config, evaluation, guardrails, model-provider, observability, protocol-client, tool-registry]
+repository: https://github.com/truera/trulens
+license: MIT
+version_studied: commit 33e4f66126decd9db4161e6fc29b7e542106149a
+capabilities: >
+  Candidate patterns detected statically: `evaluation` (FACT), `observability` (FACT), `guardrails` (OBSERVATION), `agent-loop` (INFERENCE), `config` (INFERENCE), `model-provider` (INFERENCE), `protocol-client` (INFERENCE), `tool-registry` (INFERENCE).
+  FACT: 1474 files, Python dominant, 309 in 2 directory(ies).
+architecture: >
+  Not summarised here. The structural evidence is in
+  [the report](../../study_pipeline/studied_repos/trulens.md); asserting an
+  architecture from file counts would present an inference as a fact, which is
+  the failure this registry exists to prevent.
+strengths:
+  - "FACT: recorded at commit 33e4f66126de, so every claim is reproducible at that revision."
+  - "OBSERVATION: 2 pattern(s) at STRONG confidence, meaning a design directory or structural signal, not merely a filename fragment."
+  - "OBSERVATION: proposes `guardrails`, `config` as categories absent from the taxonomy."
+weaknesses:
+  - "INFERENCE: structure does not establish how components compose, what the trade-offs are, or what the authors rejected. Those need reading the source."
+  - "The detector has a recorded ceiling (DW-013): it finds what a path and filename can reveal, and nothing else."
+patterns_worth_adopting:
+  - "`evaluation` at STRONG confidence — see the report for the evidence paths."
+  - "`observability` at STRONG confidence — see the report for the evidence paths."
+patterns_worth_avoiding:
+  - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
+```
+
 ## License compatibility note
 
 All identified Phase-2 study targets are permissive and compatible with this repository's Apache-2.0 license:
