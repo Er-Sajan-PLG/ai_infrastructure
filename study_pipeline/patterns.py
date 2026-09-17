@@ -375,11 +375,14 @@ _RULES: Final[tuple[_Rule, ...]] = (
         pattern_id="caching",
         name="Caching layer",
         category="performance",
-        fragments=("cache", "caching", "memoize", "store"),
+        fragments=("cache", "caching", "memoize"),
         evidence_kind="directory or manifest evidence",
         limitations=(
-            "'store' collides with data stores generally, so this rule "
-            "over-triggers. Confirm from the modules."
+            "A caching module is frequently small and inlined into a client "
+            "rather than given its own directory, so absence means little. "
+            "Deliberately does NOT match a bare `store`: `vector_stores/` and "
+            "`graph_stores/` are data stores, not caches, and matching them "
+            "reported LlamaIndex's storage layers as a caching layer."
         ),
         manifest_hints=("diskcache", "cachetools", "redis"),
     ),

@@ -160,6 +160,32 @@ def test_test_trees_are_not_subsystems(tmp_path: Path) -> None:
     assert "retrieval" not in candidates
 
 
+def test_data_stores_are_not_caching_layers(tmp_path: Path) -> None:
+    """Regression: `vector_stores/` and `graph_stores/` matched the cache rule.
+
+    Found by reading a generated LlamaIndex report: its storage layers were
+    listed as evidence of a caching layer, because the rule matched a bare
+    `store` fragment. A vector store holds embeddings for retrieval; it is not
+    a cache, and a reader following that evidence would have been misled.
+    """
+    repo = tmp_path / "target"
+    _write(repo, "src/pkg/vector_stores/__init__.py")
+    _write(repo, "src/pkg/vector_stores/store.py", "x = 1\n")
+    _write(repo, "src/pkg/graph_stores/__init__.py")
+    _write(repo, "src/pkg/graph_stores/store.py", "x = 1\n")
+    candidates = {c.pattern_id for c in extract_candidates(build_inventory(repo))}
+    assert "caching" not in candidates
+
+
+def test_a_real_cache_directory_is_still_found(tmp_path: Path) -> None:
+    # The fix must not have removed the signal along with the false positive.
+    repo = tmp_path / "target"
+    _write(repo, "src/pkg/cache/__init__.py")
+    _write(repo, "src/pkg/cache/store.py", "x = 1\n")
+    candidates = {c.pattern_id for c in extract_candidates(build_inventory(repo))}
+    assert "caching" in candidates
+
+
 def test_vendored_code_is_not_the_projects_design(tmp_path: Path) -> None:
     repo = tmp_path / "target"
     _write(repo, "vendor/otherlib/tools/__init__.py")
