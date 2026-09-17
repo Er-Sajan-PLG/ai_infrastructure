@@ -5,7 +5,7 @@ Utility and maintenance scripts (charter §13).
 | Script | Purpose | Status |
 |---|---|---|
 | [`validate_catalog.py`](validate_catalog.py) | Enforce the catalog entry contract (README + PROVENANCE present, required sections, category docs) | **Working** — tested by `../tests/test_validate_catalog.py` |
-| `study_repo.sh` | Study-pipeline entry point: `./scripts/study_repo.sh <github_url>` (charter §29) | Not implemented — Phase 2 |
+| `study_repo.sh` | Study-pipeline entry point (charter §29) | **Superseded** — implemented as `make study URL=…` over the `study_pipeline` package, not a shell script; see [ADR-0021](../docs/decisions/0021-study-pipeline-architecture.md) Decision 4 |
 
 ## Usage
 

@@ -406,6 +406,36 @@ def _parse_cargo(path: Path) -> Manifest:
     return Manifest(path=path.name, kind="cargo", requirements=tuple(requirements))
 
 
+def _count_nested_manifests(root: Path, directories: tuple[str, ...]) -> int:
+    """Count recognised manifests that exist BELOW the repository root.
+
+    Uses the already-computed directory list, so this costs one `is_file` per
+    directory plus the root, rather than a second walk of the tree.
+
+    The root-only parsing policy in :func:`_read_manifests` is unchanged: a
+    nested manifest describes its own package, and folding 620 of them into one
+    dependency list would misstate the project. This exists so the report can
+    say the count is root-only rather than leaving a reader to conclude the
+    project has four dependencies.
+    """
+    return sum(
+        1
+        for directory in directories
+        for name in _manifest_filenames()
+        if (root / directory / name).is_file()
+    )
+
+
+def _manifest_filenames() -> tuple[str, ...]:
+    """Every filename this module knows how to parse."""
+    return (
+        "pyproject.toml",
+        "requirements.txt",
+        "requirements-dev.txt",
+        "package.json",
+    )
+
+
 def _read_manifests(root: Path) -> tuple[Manifest, ...]:
     """Read every recognised manifest present at the repository root.
 
@@ -543,6 +573,23 @@ def build_inventory(root: Path) -> Inventory:
         notes.append(
             f"walk stopped at {MAX_FILES_WALKED} files; counts below are a lower "
             "bound, not a total"
+        )
+
+    nested = _count_nested_manifests(root, directories)
+    if nested:
+        # A monorepo is not a root-only project, and reporting "4 declared
+        # dependencies" for one is confidently misleading rather than merely
+        # incomplete. Found by studying LlamaIndex: it has 620 nested
+        # `pyproject.toml` files (one per integration package) and the root
+        # manifest names four. Root-only reading is still correct for the
+        # DEPENDENCY LIST -- a nested manifest describes its own package, not
+        # the project -- but the report must not then imply the project has
+        # almost no components.
+        notes.append(
+            f"{nested} manifest(s) exist below the root (this is a monorepo or "
+            "multi-package repository). Only root manifests are parsed, so the "
+            "declared-dependency count is that of the root project alone, not "
+            "the total across packages."
         )
 
     return Inventory(

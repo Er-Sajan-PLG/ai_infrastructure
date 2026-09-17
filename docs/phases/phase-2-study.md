@@ -1,6 +1,6 @@
 # Phase 2 — Study
 
-**Status:** 🟨 In progress
+**Status:** 🟨 In progress — **Track 2A complete**, Track 2B not started
 **Charter basis:** §29 (automated study system), §30 — *"Build the study pipeline; point it at 20–30 major repos."*
 **Depends on:** [Phase 1](phase-1-seed.md) complete; [Phase 1.5](phase-1.5-hardening.md) complete (the pipeline lands under the hardened gates)
 **Architecture:** [ADR-0021](../decisions/0021-study-pipeline-architecture.md)
@@ -36,13 +36,13 @@ pipeline optimised against no fixed target.
 ### Track 2A — the pipeline
 
 - [x] `study_pipeline/` is importable, type-hinted (mypy strict), stdlib only — no runtime dependency added
-- [ ] Components exist as tested modules: clone/inventory, pattern extraction, classification, report generation
-- [ ] `make study` (thin wrapper over `scripts/study_repo.sh`) studies a real repository end-to-end
+- [x] Components exist as tested modules: clone/inventory, pattern extraction, classification, report generation (plus the CLI)
+- [x] `make study URL=…` (thin CLI over the `study_pipeline` package — ADR-0021 Decision 4 allowed either) studies a real repository end-to-end
 - [x] **The no-execution guarantee is enforced by a test**, not a comment (ADR-0021 Decision 1): static AST scan plus a behavioural fixture, each proven to fail on an injected violation
-- [ ] Unit tests cover every pure function with on-disk fixtures; `make check` passes **with no network access**
+- [x] Unit tests cover every pure function with on-disk fixtures; the default gate run is offline — `network`/`external` marked tests are deselected in `addopts`, opt in with `make test-network`
 - [x] `study_pipeline/tests/` collects — `make structural` now reports 7 units, and the floor rose 5 → 7 so discovery cannot silently stop finding it
 - [x] `.study-workspace/` is gitignored and pruned; cleanup verified on the crash path, the refusal path and the success path
-- [ ] Provenance records the exact studied commit and `code_reused: false`
+- [x] Provenance records the exact studied commit and `code_reused: false` (emitted from a constant, so no caller can claim otherwise)
 
 ### Track 2B — breadth and discovery
 

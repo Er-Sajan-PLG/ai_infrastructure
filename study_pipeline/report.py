@@ -123,7 +123,12 @@ def _render_header(report: StudyReport) -> list[str]:
         f"| Dominant language | {report.inventory.primary_language} |",
         f"| Test files | {report.inventory.test_file_count} in "
         f"{len(report.inventory.test_dirs)} directory(ies) |",
-        f"| Declared dependencies | {len(report.inventory.declared_dependencies)} |",
+        (
+            f"| Declared dependencies | {len(report.inventory.declared_dependencies)} "
+            "(root manifest only — see notes) |"
+            if report.inventory.notes
+            else f"| Declared dependencies | {len(report.inventory.declared_dependencies)} |"
+        ),
         f"| Pipeline version | {__version__} |",
         f"| `code_reused` | `{str(CODE_REUSED).lower()}` |",
         "",

@@ -15,7 +15,7 @@
 | Files | 9842 |
 | Dominant language | Python |
 | Test files | 1654 in 554 directory(ies) |
-| Declared dependencies | 4 |
+| Declared dependencies | 4 (root manifest only — see notes) |
 | Pipeline version | 0.1.0 |
 | `code_reused` | `false` |
 
@@ -48,6 +48,10 @@ before drawing conclusions from the sections below.
   missed entirely. Confidence labels the evidence, not the importance.
 - **Nothing here is a judgement of quality.** A directory being present
   says nothing about whether the code inside it is good.
+
+### Notes from this run
+
+- 725 manifest(s) exist below the root (this is a monorepo or multi-package repository). Only root manifests are parsed, so the declared-dependency count is that of the root project alone, not the total across packages.
 
 ## Structure
 

@@ -97,11 +97,14 @@ def study_one(url: str, *, dry_run: bool, quiet: bool) -> int:
         with study_workspace(url) as clone:
             _stage(quiet, f"cloned {clone.slug} at {clone.commit[:8]}")
             inventory = build_inventory(clone.path)
+            # "4 declared dependencies" for a 620-package monorepo is
+            # misleading, so the qualifier travels with the number.
+            dependency_note = " (root only)" if inventory.notes else ""
             _stage(
                 quiet,
                 f"  {inventory.total_files} files, "
-                f"{len(inventory.declared_dependencies)} declared dependencies, "
-                f"{inventory.primary_language}",
+                f"{len(inventory.declared_dependencies)} declared dependencies"
+                f"{dependency_note}, {inventory.primary_language}",
             )
 
             candidates = extract_candidates(inventory)

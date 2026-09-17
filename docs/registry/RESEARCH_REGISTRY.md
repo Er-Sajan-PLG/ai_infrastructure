@@ -1131,6 +1131,75 @@ last_reviewed: 2026-09-16
 ```
 
 
+---
+
+### LlamaIndex — whole-repository structural study (Phase 2, study pipeline)
+
+The entry above studies LlamaIndex's **LLM interface**. This entry is a
+different study: the **whole repository at one commit**, produced by the
+automated pipeline ([ADR-0021](../decisions/0021-study-pipeline-architecture.md)).
+It exists because the two answer different questions — the first asks "how is a
+model interface designed", the second "what infrastructure does this framework
+consider worth building". It is registered separately rather than merged,
+because merging would present pipeline output as if a session had verified it.
+
+```yaml
+project: LlamaIndex (monorepo, run-llama/llama_index)
+relevant_categories: [retrieval, agents, tools, models, memory, observability, evaluation, safety]
+repository: https://github.com/run-llama/llama_index
+authors: LlamaIndex, Inc.
+license: MIT
+version_studied: commit fd4a517ad6490f0c8464a13fdf133760b696434a
+capabilities: >
+  FACT (from the clone at that commit): 9,842 files, 835 MiB, Python dominant,
+  1,654 test files across 554 test directories, one root pyproject.toml and 725
+  further manifests below the root. The repository is a monorepo of integration
+  packages around a core.
+architecture: >
+  OBSERVATION (from paths and structure, not from reading the modules): a core
+  package surrounded by per-integration packages under
+  `llama-index-integrations/<kind>/<vendor>`, plus `llama-index-instrumentation`
+  as a standalone observability package. Structure alone does not establish how
+  these compose; that requires reading the source.
+strengths:
+  - "FACT: the core is separated from ~620 integration packages, so a vendor integration can be added without touching the core."
+  - "OBSERVATION: instrumentation is its own package rather than a module inside the core, which makes it independently adoptable."
+  - "FACT: 1,654 test files -- the test surface is large relative to the source."
+weaknesses:
+  - "FACT: 725 nested manifests mean the root declares four dependencies while the repository contains far more. Any tool that reads only the root manifest (including this pipeline, before it was fixed) understates this project's dependency weight by orders of magnitude."
+  - "INFERENCE: the monorepo shape taxes a reader. Structure cannot show whether the integration split is principled or accreted."
+patterns_worth_adopting:
+  - "Separating observability into a standalone package rather than a core module -- makes it independently adoptable and testable."
+  - "A per-integration package directory naming convention that makes the supported vendors enumerable from the tree."
+patterns_worth_avoiding:
+  - "Do not infer dependency weight from a root manifest in a monorepo. This study's own first report did exactly that and reported four dependencies for a project with hundreds of packages."
+code_reused: false
+attribution_requirements: ""
+our_implementation: ""
+compatibility_status: >
+  No compatibility target. The study's purpose was to exercise the pipeline
+  end-to-end against a large real repository (Track 2A exit evidence) and to
+  test whether structural detection generalises beyond synthetic fixtures. No
+  code reused.
+standards: []
+last_reviewed: 2026-09-17
+```
+
+**Evidence classification.** The `capabilities` and `strengths`/`weaknesses`
+above are labelled because they are non-obvious claims (charter §6). The
+`patterns_worth_adopting` entries are **DESIGN OPINIONS** derived from
+structure; no module was read to produce them, and a session must read the
+source before acting on either.
+
+**What this study did NOT do.** It did not read every source file, did not
+execute or import anything, and did not resolve dependencies. It is a structural
+map. Its value is as Track 2A exit evidence and as a worked example of what the
+pipeline can and cannot conclude.
+
+The full report is committed at
+[`study_pipeline/studied_repos/llama_index.md`](../../study_pipeline/studied_repos/llama_index.md).
+
+
 ## License compatibility note
 
 All identified Phase-2 study targets are permissive and compatible with this repository's Apache-2.0 license:

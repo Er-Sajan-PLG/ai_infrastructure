@@ -494,3 +494,68 @@ def test_studies_a_real_repository() -> None:
         assert "src/requests" in inventory.packages
         # A test directory must never be reported as a shipped package.
         assert not any(pkg == "tests" for pkg in inventory.packages)
+
+
+# ---------------------------------------------------------------------------
+# Nested manifests — a monorepo must not look like a four-dependency project
+# ---------------------------------------------------------------------------
+
+
+def test_monorepo_with_nested_manifests_is_flagged(tmp_path: Path) -> None:
+    """Regression from studying LlamaIndex.
+
+    It has 620 nested `pyproject.toml` files and a root manifest naming four
+    dependencies. The report said "Declared dependencies | 4" with no hint that
+    hundreds of packages exist, which a reader would take as "this project is
+    nearly dependency-free". Root-only parsing stays correct; the silence was
+    the bug.
+    """
+    repo = tmp_path / "target"
+    _write(repo, "pyproject.toml", '[project]\nname="root"\nversion="1"\n')
+    for index in range(3):
+        _write(
+            repo,
+            f"pkg{index}/pyproject.toml",
+            f'[project]\nname="pkg{index}"\nversion="1"\ndependencies=["dep{index}"]\n',
+        )
+    inventory = build_inventory(repo)
+
+    assert inventory.total_files > 0
+    assert any("below the root" in note for note in inventory.notes), inventory.notes
+    assert any("monorepo" in note for note in inventory.notes)
+
+
+def test_nested_manifests_are_not_parsed_into_the_dependency_list(
+    tmp_path: Path,
+) -> None:
+    # The root-only policy is unchanged: a nested manifest describes its own
+    # package, and folding them in would misstate what the project depends on.
+    repo = tmp_path / "target"
+    _write(repo, "pyproject.toml", '[project]\nname="root"\nversion="1"\n')
+    _write(
+        repo,
+        "pkg/pyproject.toml",
+        '[project]\nname="pkg"\nversion="1"\ndependencies=["nested-only-dep"]\n',
+    )
+    inventory = build_inventory(repo)
+    assert "nested-only-dep" not in inventory.declared_dependencies
+
+
+def test_a_flat_repository_gets_no_monorepo_note(tmp_path: Path) -> None:
+    # The note must mean something. If it fired on every repository it would be
+    # noise a reader learns to skip.
+    repo = tmp_path / "target"
+    _write(repo, "pyproject.toml", '[project]\nname="flat"\nversion="1"\n')
+    _write(repo, "src/pkg/__init__.py")
+    _write(repo, "src/pkg/mod.py", "x = 1\n")
+    inventory = build_inventory(repo)
+    assert not any("monorepo" in note for note in inventory.notes), inventory.notes
+
+
+def test_nested_manifest_inside_a_skipped_dir_is_not_counted(tmp_path: Path) -> None:
+    # `node_modules` and vendored trees are not the project's packages.
+    repo = tmp_path / "target"
+    _write(repo, "pyproject.toml", '[project]\nname="root"\nversion="1"\n')
+    _write(repo, "node_modules/dep/package.json", "{}")
+    inventory = build_inventory(repo)
+    assert not any("monorepo" in note for note in inventory.notes), inventory.notes

@@ -291,7 +291,9 @@ Insufficient evidence → research first. Unclear architecture → research firs
 
 ## §29. Automated Repository Study System
 
-`study_pipeline/` automates discovery and extraction: clone → analyze → extract → understand → recreate → classify → cite → log. Entry point (planned): `./scripts/study_repo.sh <github_url>`. The pipeline itself is infrastructure — tested, documented, versioned.
+`study_pipeline/` automates discovery and extraction: clone → analyze → extract → understand → recreate → classify → cite → log. Entry point: `make study URL=<github_url>`, backed by `python -m study_pipeline`. The pipeline itself is infrastructure — tested, documented, versioned.
+
+The pipeline **never executes, imports or installs the code it studies**, and it writes Markdown reports only — never into `catalog/`. Both are structural properties enforced by tests, not conventions; see [ADR-0021](docs/decisions/0021-study-pipeline-architecture.md). A study report is a *proposal*: adopting anything from it is a session decision that requires its own ADR.
 
 ## §30. Growth Model & Phases
 
