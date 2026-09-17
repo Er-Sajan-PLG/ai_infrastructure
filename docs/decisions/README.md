@@ -26,6 +26,9 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0019](0019-commit-message-validation.md) | Commit-message validation: header only, first-party, with a visible escape hatch | Accepted |
 | [0020](0020-deferral-register.md) | What is deferred to scale, and the register that holds it | Accepted |
 | [0021](0021-study-pipeline-architecture.md) | Study pipeline: static-only, never executes studied code, stdlib only, emits proposals not code | Accepted |
+| [0022](0022-configuration-taxonomy-category.md) | New taxonomy category `config/` — configuration and settings infrastructure (15/25 studied repos) | Accepted |
+| [0023](0023-caching-taxonomy-category.md) | New taxonomy category `caching/` — response caching, AI-specific form (14/25 studied repos) | Accepted |
+| [0024](0024-agent-repository-configuration.md) | New taxonomy category `agent-config/` — agent instruction files in repositories (18/25 studied repos) | Accepted |
 
 ## When an ADR is required
 

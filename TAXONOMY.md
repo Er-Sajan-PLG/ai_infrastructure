@@ -30,6 +30,9 @@ deployment/            Deployment
 application/           AI Application Infrastructure (research/ only, for now)
 prompt-engineering/    Prompt Engineering Primitives (catalog: prompt_engineering naming TBD on first entry)
 finetuning/            Fine-tuning Infrastructure
+config/                Configuration & Settings Infrastructure (added Phase 2, ADR-0022)
+caching/               Caching Infrastructure (added Phase 2, ADR-0023)
+agent-config/          Agent Repository Configuration (added Phase 2, ADR-0024)
 emerging/              Emerging / Other (research/ only)
 frameworks/            Distilled essence of full frameworks (catalog/ only)
 primitives/            Shared low-level building blocks (catalog/ only)
@@ -273,3 +276,90 @@ capabilities:
     provenance: original
     compatibility: "No conformance to any standard claimed: the OTel GenAI conventions are Development, moved repositories, have no published schema URL, and reversed one content-capture decision. specifications/execution-trace-recorder.md s4 publishes a correspondence table instead."
     last_reviewed: "2026-09-16"
+
+  # ---------------------------------------------------------------------
+  # Discovered in Phase 2 Track 2B (25 repositories studied at pinned
+  # commits). Each of these categories was ABSENT from the taxonomy tree
+  # before this phase. Each is recorded with decision: pending, because
+  # being found in many repositories is evidence that the pattern EXISTS,
+  # not that it is worth building here (charter §24).
+  # ---------------------------------------------------------------------
+
+  - id: config-and-settings
+    name: Configuration & Settings Infrastructure
+    category: config
+    status: DISCOVERED
+    maturity: experimental
+    priority: low — proposed by 15 of 25 studied repositories, but ubiquity is partly a Python packaging convention rather than an AI-infrastructure signal. Re-derive from evidence before acting (charter §24).
+    depends_on: []
+    decision: pending
+    description: Settings objects and their validation, environment-variable loading and precedence, layered/overridden configuration, per-environment profiles, and secret referencing (not secret storage).
+    problem: Every service needs configuration resolved from several sources with a defined precedence, and hand-rolled os.environ lookups scattered through a codebase make failure modes untraceable.
+    inputs: ["environment variables", "config files", "defaults"]
+    outputs: ["validated settings object"]
+    interfaces: []
+    dependencies: []
+    standards: []
+    reference_projects: []
+    research_records: ["study_pipeline/studied_repos/ (15 of 25 reports propose this category)"]
+    implementation: ""
+    tests: ""
+    benchmarks: ""
+    security: "Referencing a secret is in scope; storing or rotating one is not. A configuration layer that logs resolved values leaks credentials — that risk is stated rather than assumed away."
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-09-17"
+
+  - id: response-cache
+    name: Response Caching
+    category: caching
+    status: DISCOVERED
+    maturity: experimental
+    priority: low — proposed by 14 of 25; the weakest of the three Phase 2 categories, since caching is general software infrastructure and only its AI-specific form (keyed on prompt + model + parameters, avoiding a metered API call) is in scope here.
+    depends_on: []
+    decision: pending
+    description: Caching of model responses, embeddings and tool results; cache-key derivation, eviction policy, TTL and invalidation, in-process vs persistent storage.
+    problem: An identical request billed twice is pure waste, but a cache keyed on the wrong inputs silently returns a wrong answer for a different prompt.
+    inputs: ["request (prompt, model, parameters)"]
+    outputs: ["cached response, or a miss"]
+    interfaces: []
+    dependencies: []
+    standards: []
+    reference_projects: []
+    research_records: ["study_pipeline/studied_repos/ (14 of 25 reports propose this category, after the vector_stores false positive was fixed)"]
+    implementation: ""
+    tests: ""
+    benchmarks: ""
+    security: "A cache is a data-retention boundary: a prompt cached across tenants leaks one tenant's content to another. Key derivation must include every input that changes the answer — that is the correctness and the security property alike."
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-09-17"
+
+  - id: agent-instruction-files
+    name: Agent Repository Configuration
+    category: agent-config
+    status: DISCOVERED
+    maturity: experimental
+    priority: medium — the clearest new finding of Phase 2: AGENTS.md appears in 18 of 25 studied repositories (72%), and unlike configuration this practice is both common and recent, which is what a taxonomy extension should look like.
+    depends_on: []
+    decision: pending
+    description: In-repository declarations of how AI agents should work: instruction files (AGENTS.md, CLAUDE.md and equivalents), in-repo skill and prompt definitions for external agents, agent-facing ignore and scope rules, and the conventions between them.
+    problem: An agent working in a repository has no standard way to learn its conventions, so every project invents a layout and every agent must be taught each one.
+    inputs: ["repository conventions"]
+    outputs: ["agent behaviour inside the repository", "cross-tool interoperability"]
+    interfaces: []
+    dependencies: []
+    standards: []
+    reference_projects: []
+    research_records: ["study_pipeline/studied_repos/ (AGENTS.md in 18/25; CLAUDE.md 14/25; .claude/ or .cursor/ 10/25)"]
+    implementation: ""
+    tests: ""
+    benchmarks: ""
+    security: "These files are instructions an agent follows. An untrusted repository shipping them is an instruction-injection surface — the file is data from outside that changes agent behaviour, and it must be read as such."
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-09-17"
+

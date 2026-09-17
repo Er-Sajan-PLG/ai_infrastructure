@@ -56,18 +56,62 @@ def _cap(**overrides: object) -> Capability:
 
 
 def test_real_taxonomy_parses_all_capabilities() -> None:
-    """The committed TAXONOMY.md parses into the expected capability set."""
+    """The committed TAXONOMY.md parses into a complete, well-formed set.
+
+    This asserted an exact hardcoded id set until Phase 2. That made every
+    legitimate taxonomy addition a test failure, which trains a session to
+    update the expectation rather than to ask whether the addition was right --
+    the assertion stops being a check and becomes a speed bump.
+
+    What matters is not which ids exist but that the file parses completely and
+    every entry is well-formed, so the properties below are asserted instead,
+    plus a floor that catches a parse that silently returns almost nothing.
+    """
     caps = _parse_capabilities((REPO / "TAXONOMY.md").read_text(encoding="utf-8"))
-    ids = {c.id for c in caps}
-    assert ids == {
-        "tool-registry",
-        "model-provider-abstraction",
-        "react-agent-loop",
-        "vector-memory-store",
-        "basic-rag-pipeline",
-        "mcp-client",
-        "execution-trace-recorder",
-    }
+
+    # A floor, not an exact count: a parser that stopped early would return a
+    # short list and every property below would still hold vacuously.
+    assert len(caps) >= 7, f"only {len(caps)} capabilities parsed; the file has more"
+
+    ids = [cap.id for cap in caps]
+    assert len(ids) == len(set(ids)), f"duplicate capability ids: {ids}"
+
+    for cap in caps:
+        assert cap.id, "a capability has an empty id"
+        assert cap.id == cap.id.lower(), f"{cap.id} is not lower-case"
+        assert " " not in cap.id, f"{cap.id} contains a space"
+        assert cap.category, f"{cap.id} has no category"
+        assert cap.status, f"{cap.id} has no status"
+
+
+def test_every_capability_category_is_in_the_taxonomy_tree() -> None:
+    """No capability may be filed under a category the tree does not list.
+
+    Phase 2 Track 2B added three categories and three entries; this is the
+    check that the two halves of the file agree, which is the failure a
+    hardcoded id list could never catch.
+    """
+    text = (REPO / "TAXONOMY.md").read_text(encoding="utf-8")
+    tree_categories: set[str] = set()
+    in_tree = False
+    for line in text.splitlines():
+        if line.strip().startswith("```text"):
+            in_tree = True
+            continue
+        if in_tree and line.strip() == "```":
+            in_tree = False
+            continue
+        if in_tree and "/" in line:
+            names = line.split("/", 1)[0].strip()
+            tree_categories.update(part.strip() for part in names.split("|"))
+
+    assert tree_categories, "the taxonomy tree parsed to nothing"
+
+    for cap in _parse_capabilities(text):
+        assert cap.category in tree_categories, (
+            f"{cap.id} is filed under category {cap.category!r}, which the "
+            f"taxonomy tree does not list"
+        )
 
 
 def test_parsed_capabilities_have_valid_statuses() -> None:
