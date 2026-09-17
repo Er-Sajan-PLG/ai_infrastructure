@@ -35,13 +35,13 @@ pipeline optimised against no fixed target.
 
 ### Track 2A — the pipeline
 
-- [ ] `study_pipeline/` is importable, type-hinted (mypy strict), stdlib only — no runtime dependency added
+- [x] `study_pipeline/` is importable, type-hinted (mypy strict), stdlib only — no runtime dependency added
 - [ ] Components exist as tested modules: clone/inventory, pattern extraction, classification, report generation
 - [ ] `make study` (thin wrapper over `scripts/study_repo.sh`) studies a real repository end-to-end
-- [ ] **The no-execution guarantee is enforced by a test**, not a comment (ADR-0021 Decision 1): a test asserts nothing in a studied tree is imported, executed, or installed
+- [x] **The no-execution guarantee is enforced by a test**, not a comment (ADR-0021 Decision 1): static AST scan plus a behavioural fixture, each proven to fail on an injected violation
 - [ ] Unit tests cover every pure function with on-disk fixtures; `make check` passes **with no network access**
-- [ ] `study_pipeline/tests/` collects — the Phase 1.5 `collectability` gate must accept it
-- [ ] `.study-workspace/` is gitignored and pruned; no clone content is ever committed
+- [x] `study_pipeline/tests/` collects — `make structural` now reports 7 units, and the floor rose 5 → 7 so discovery cannot silently stop finding it
+- [x] `.study-workspace/` is gitignored and pruned; cleanup verified on the crash path, the refusal path and the success path
 - [ ] Provenance records the exact studied commit and `code_reused: false`
 
 ### Track 2B — breadth and discovery
@@ -57,13 +57,13 @@ pipeline optimised against no fixed target.
 | # | Work | ADR | Depends on | Status |
 |---|---|---|---|---|
 | 1 | **ADR-0021** — architecture, no-execution rule, stdlib-only | 0021 | — | **DONE** |
-| 2 | **Workspace + clone module** — `git clone --depth 1`, `rev-parse`, prune, gitignore | 0021 | 1 | ⬜ |
-| 3 | **Inventory module** — layout, file counts, manifests, marker files | 0021 | 2 | ⬜ |
+| 2 | **Workspace + clone module** — `git clone --depth 1`, `rev-parse`, prune, gitignore | 0021 | 1 | **DONE** — `22f0bdd`; 12 injection vectors refused |
+| 3 | **Inventory module** — layout, file counts, manifests, marker files | 0021 | 2 | **DONE** — `024dbfd`; 3 bugs found via known-shape repos |
 | 4 | **Pattern extraction** — candidate patterns and boundaries, statically | 0021 | 3 | ⬜ |
 | 5 | **Classification** — map to taxonomy categories; propose new ones | 0021 | 4 | ⬜ |
 | 6 | **Report generation** — the Markdown report, with provenance and §6 labels | 0021 | 5 | ⬜ |
 | 7 | **CLI + `make study`** — thin wrapper; opt-in network E2E | 0021 | 6 | ⬜ |
-| 8 | **The no-execution test** — the check that enforces Decision 1 | 0021 | 7 | ⬜ |
+| 8 | **The no-execution test** — the check that enforces Decision 1 | 0021 | 7 | **DONE** (early, with item 3) — proven to bite on 3 vectors |
 | 9 | **Study the first repository end-to-end** — proves 2A | 0021 | 8 | ⬜ |
 | 10 | **Track 2B**: study ≥20 repositories, register each | — | 9 | ⬜ |
 | 11 | **Propose ≥3 new patterns** as `DISCOVERED` entries + ADRs | — | 10 | ⬜ |
