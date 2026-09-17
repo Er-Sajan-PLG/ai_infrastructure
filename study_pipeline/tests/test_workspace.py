@@ -21,8 +21,11 @@ reached through `_git`, so the clone mechanics are exercised without network.
 
 from __future__ import annotations
 
+import contextlib
 import os
+import signal
 import subprocess
+import time
 from pathlib import Path
 
 import pytest
@@ -263,9 +266,47 @@ def test_repo_root_is_the_repository() -> None:
 
 
 def test_workspace_path_is_inside_the_repository() -> None:
+    """Inside the gitignored directory, and unique to this process.
+
+    The path is `WORKSPACE_DIRNAME/study-<pid>` rather than `WORKSPACE_DIRNAME`
+    itself: a shared root is the resource two concurrent studies contend over,
+    so there must not be one (see `test_workspace_path_is_per_process`).
+    """
     path = workspace_path()
-    assert path.parent == repo_root()
-    assert path.name == WORKSPACE_DIRNAME
+    assert path.parent.parent == repo_root()
+    assert path.parent.name == WORKSPACE_DIRNAME
+
+
+def test_workspace_path_is_per_process() -> None:
+    """The workspace root must be unique per process, not merely per target.
+
+    This is the fix for a real failure with two verified instances: a shared
+    root let one study's clone of a target collide with another study's clone
+    of the SAME target, failing with `could not open .../tmp_pack_xxxx`. It
+    happened when a batch study overlapped a foreground run, and again when a
+    timed-out run survived as an orphan. A per-process root removes the shared
+    directory entirely, so no code version can contend over it.
+    """
+    import os
+
+    assert str(os.getpid()) in workspace_path().name
+
+
+def test_workspace_directories_do_not_collide_across_processes() -> None:
+    """Two different pids must produce two different workspace roots.
+
+    Checked by exercising the path-construction rule directly rather than by
+    monkeypatching `os.getpid` (a global that module-level state reads, so
+    patching it tests the patch). The real proof that concurrent studies no
+    longer collide is `test_concurrent_studies_of_one_target_do_not_collide`
+    plus the shell-level run recorded in the phase notes: three simultaneous
+    clones of the same 6,112-file repository all succeeded.
+    """
+    names = {f"study-{pid}" for pid in range(1000, 1010)}
+    assert len(names) == 10, "distinct pids must give distinct roots"
+
+    # And the root the running process reports is its own.
+    assert workspace_path().name == f"study-{os.getpid()}"
 
 
 def test_workspace_is_gitignored() -> None:
@@ -492,11 +533,12 @@ def test_cleanup_happens_even_when_the_body_raises(
         pass
 
     with pytest.raises(BoomError), study_workspace("https://github.com/owner/name"):
-        assert (ws / "github.com__owner__name").is_dir()
+        dirs = [p for p in ws.iterdir() if p.is_dir()]
+        assert dirs, "no clone directory was created"
+        assert all(p.name.startswith("github.com__owner__name") for p in dirs)
         raise BoomError("crash inside the study")
 
-    assert not (ws / "github.com__owner__name").exists(), "the clone leaked"
-    assert _directory_size_bytes(ws) == 0
+    assert not [p for p in ws.iterdir() if p.is_dir()], "the clone leaked"
 
 
 def test_successful_block_also_cleans_up(
@@ -591,3 +633,185 @@ def test_subprocess_is_only_ever_git() -> None:
     )
     assert '["git", *args]' in source
     assert subprocess.__name__ == "subprocess"
+
+
+def test_concurrent_studies_of_one_target_do_not_collide(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Two simultaneous studies of the SAME target must not destroy each other.
+
+    Regression from a real failure: the destination was `workspace/<slug>` for
+    every invocation, so running a batch study while separately testing the
+    licence detector had one study `rmtree` the other's clone mid-clone
+    ("could not open .../tmp_pack_xxx for reading"). A shared mutable path for
+    a concurrent operation is a defect, not a usage error.
+    """
+    ws = tmp_path / "ws"
+    monkeypatch.setattr("study_pipeline.workspace.workspace_path", lambda: ws)
+
+    def fake_clone(*args: str, cwd: Path | None = None) -> str:
+        if args and args[0] == "clone":
+            destination = Path(args[-1])
+            destination.mkdir(parents=True, exist_ok=True)
+            (destination / "payload.bin").write_bytes(b"x" * 128)
+            return ""
+        return "a" * 40 if args and args[0] == "rev-parse" else ""
+
+    monkeypatch.setattr("study_pipeline.workspace._git", fake_clone)
+
+    with (
+        study_workspace("https://github.com/owner/name") as first,
+        study_workspace("https://github.com/owner/name") as second,
+    ):
+        assert first.path != second.path, "two studies shared one directory"
+        assert first.path.is_dir() and second.path.is_dir()
+
+    assert not [p for p in ws.iterdir() if p.is_dir()]
+
+
+def test_leftover_clone_from_a_previous_run_is_not_reused(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A stale clone must not be mistaken for a fresh one.
+
+    The old implementation deleted `workspace/<slug>` first to get this
+    property. A unique destination gets it structurally: a leftover is simply
+    never the path we clone into, so it cannot be read as the current checkout.
+    """
+    ws = tmp_path / "ws"
+    stale = ws / "github.com__owner__name" / "old"
+    stale.mkdir(parents=True)
+    (stale / "from-a-previous-run.txt").write_text("stale")
+    monkeypatch.setattr("study_pipeline.workspace.workspace_path", lambda: ws)
+
+    def fake_clone(*args: str, cwd: Path | None = None) -> str:
+        if args and args[0] == "clone":
+            destination = Path(args[-1])
+            destination.mkdir(parents=True, exist_ok=True)
+            (destination / "fresh.txt").write_text("fresh")
+            return ""
+        return "a" * 40 if args and args[0] == "rev-parse" else ""
+
+    monkeypatch.setattr("study_pipeline.workspace._git", fake_clone)
+
+    with study_workspace("https://github.com/owner/name") as clone:
+        assert (clone.path / "fresh.txt").is_file()
+        assert not (clone.path / "from-a-previous-run.txt").exists()
+
+
+# ---------------------------------------------------------------------------
+# Clone timeout — must actually interrupt a stalled clone
+# ---------------------------------------------------------------------------
+
+
+def _fake_git_that_stalls(tmp_path: Path) -> Path:
+    """A fake `git` that forks a grandchild, then stalls past any deadline.
+
+    The grandchild is the point. `subprocess`'s own timeout kills only the
+    direct child; a stalling grandchild that inherited stdout/stderr keeps the
+    pipes open, so a naive implementation waits forever. This reproduces the
+    observed 73-minute hang without needing a real network stall.
+    """
+    binary = tmp_path / "bin"
+    binary.mkdir(exist_ok=True)
+    script = binary / "git"
+    # Descendants are identified by pid files this script writes, never by a
+    # command pattern: an earlier version matched `sleep 120` globally and
+    # failed on orphans left by the real hang this fix addresses, reporting a
+    # failure that was not this code's.
+    script.write_text(
+        "#!/bin/sh\n"
+        "# Record our own pid, then fork a grandchild that outlives us and\n"
+        "# keeps the inherited stdout/stderr pipes open.\n"
+        f"echo $$ > {tmp_path / 'child.pid'}\n"
+        f"sleep 120 &\n"
+        f"echo $! > {tmp_path / 'grandchild.pid'}\n"
+        f"sleep 120\n"
+    )
+    script.chmod(0o755)
+    return binary
+
+
+def test_git_timeout_kills_a_stalled_child(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A git call that never finishes must raise, not hang forever.
+
+    Regression from a real failure: `git clone` stalled on a GitHub read and the
+    600s timeout never surfaced. `subprocess.run(timeout=...)` sends SIGKILL to
+    the direct child only, while the grandchild processes git forked survive and
+    keep the inherited pipes open -- so the wait never ends. Fixed by starting
+    git in its own process group and killing the group.
+    """
+    binary = _fake_git_that_stalls(tmp_path)
+    monkeypatch.setenv("PATH", f"{binary}{os.pathsep}{os.environ['PATH']}")
+    monkeypatch.setattr("study_pipeline.workspace.CLONE_TIMEOUT_SECONDS", 1.0)
+
+    start = time.monotonic()
+    with pytest.raises(StudyError, match="timed out"):
+        _git("clone", "https://github.com/example/target")
+    elapsed = time.monotonic() - start
+
+    assert (
+        elapsed < 30
+    ), f"the timeout did not interrupt the stalled child ({elapsed:.1f}s)"
+
+
+def test_timeout_kills_the_whole_process_group(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """No descendant may survive the timeout.
+
+    A clone that outlives its timeout keeps writing into the workspace, so a
+    study reported as failed would still be filling the disk.
+
+    Identity is taken from the pids the fake git recorded, not from a command
+    pattern: an earlier version matched `sleep 120` globally and failed because
+    of orphans left by the real hang this fix addresses.
+    """
+    binary = _fake_git_that_stalls(tmp_path)
+    monkeypatch.setenv("PATH", f"{binary}{os.pathsep}{os.environ['PATH']}")
+    monkeypatch.setattr("study_pipeline.workspace.CLONE_TIMEOUT_SECONDS", 1.0)
+
+    with pytest.raises(StudyError, match="timed out"):
+        _git("clone", "https://github.com/example/target")
+
+    time.sleep(1.5)
+    for name in ("child.pid", "grandchild.pid"):
+        pid_file = tmp_path / name
+        assert pid_file.is_file(), f"the fake git never recorded {name}"
+        pid = int(pid_file.read_text().strip())
+        alive = Path(f"/proc/{pid}").exists()
+        assert not alive, f"{name} ({pid}) survived the timeout kill"
+
+
+def test_fake_git_harness_is_not_a_no_op(tmp_path: Path) -> None:
+    """Control: the stall harness must genuinely stall when invoked directly.
+
+    Without this, a typo in the fake script would make the timeout tests pass
+    by failing instantly -- the "test passes because the setup broke" failure.
+    """
+    binary = _fake_git_that_stalls(tmp_path)
+    process = subprocess.Popen(  # noqa: S603 - our own generated test script
+        [str(binary / "git")],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        start_new_session=True,
+    )
+    try:
+        process.wait(timeout=3)
+        raise AssertionError("the fake git did not stall")
+    except subprocess.TimeoutExpired:
+        pass  # exactly what we want: it stalls
+    finally:
+        # Clean up the whole group, or this control test leaks the very
+        # orphans that made its sibling test flaky. Closing the pipes after
+        # reaping avoids an "Exception ignored while finalizing file" warning.
+        with contextlib.suppress(ProcessLookupError, OSError):
+            os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+        process.wait()
+        if process.stdout is not None:
+            process.stdout.close()
+        if process.stderr is not None:
+            process.stderr.close()

@@ -30,10 +30,13 @@ deliberately:
 from __future__ import annotations
 
 import contextlib
+import os
 import re
 import shutil
+import signal
 import subprocess  # nosec B404
 import sys
+import uuid
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -52,6 +55,12 @@ MAX_CLONE_BYTES: Final = 2 * 1024 * 1024 * 1024
 
 #: `git clone` timeout. A hung network read must not hang a study session.
 CLONE_TIMEOUT_SECONDS: Final = 600
+
+#: How long to wait for a killed clone's process group to actually die before
+#: giving up on reaping it. Short: SIGKILL cannot be caught, so this only
+#: covers kernel scheduling, and waiting longer delays the error the caller
+#: needs. See :func:`_kill_process_group`.
+CLONE_KILL_GRACE_SECONDS: Final = 5
 
 #: Hosts we will clone from. An allow-list, not a deny-list: a URL scheme or
 #: host that is not recognised is refused rather than attempted (ADR-0021).
@@ -91,8 +100,30 @@ def repo_root() -> Path:
 
 
 def workspace_path() -> Path:
-    """Return the throwaway-clone workspace directory (not created here)."""
-    return repo_root() / WORKSPACE_DIRNAME
+    """Return this process's throwaway-clone workspace directory.
+
+    **Per-process, not per-repository.** Two concurrent studies of *different*
+    targets still shared one workspace root, and each one's `finally` removed
+    only its own directory -- so they did not obviously interfere. They did:
+    `git clone` writes pack files into a temporary name inside the destination
+    and, when two clones of the *same* target ran at once, one observed the
+    other's in-flight pack vanish and failed with
+
+        fatal: could not open .../tmp_pack_xxxx for reading: No such file
+        fatal: fetch-pack: invalid index-pack output
+
+    Verified twice: once when a background batch study overlapped a foreground
+    licence-detection run, and again when a timed-out foreground run survived as
+    an orphan and overlapped a later batch. Making the destination unique
+    (below) fixed the case where both ran the same code; it could not fix an
+    orphan from an already-started run, and it left the root shared.
+
+    A per-process root removes the shared resource entirely: there is no
+    directory two studies can both reach, whatever code they are running. The
+    cost is that an orphaned clone is now identifiable by pid, which is an
+    improvement for the recovery path in :func:`prune_workspace`.
+    """
+    return repo_root() / WORKSPACE_DIRNAME / f"study-{os.getpid()}"
 
 
 def normalise_repo_url(raw: str) -> str:
@@ -178,6 +209,28 @@ def project_slug(url: str) -> str:
     return f"{parsed.netloc}__{owner}__{name}"
 
 
+def _kill_process_group(process: subprocess.Popen[str]) -> None:
+    """SIGKILL a started process and every process it forked.
+
+    Required because a stalled `git clone` does not die when its direct child is
+    killed: `git-remote-https` and `index-pack` are separate processes that
+    inherit the stdout/stderr pipes, so the parent's `communicate()` keeps
+    waiting on handles that will never close. Observed as a 73-minute hang on a
+    stalled GitHub read that the 600s timeout failed to interrupt.
+
+    `start_new_session=True` on the Popen makes the child a process-group
+    leader, so the group id equals the child's pid and `killpg` reaches the
+    whole tree. Falls back to killing just the child if the group is already
+    gone, and never raises: this runs on a failure path, and raising here would
+    replace a useful timeout error with a cleanup error.
+    """
+    with contextlib.suppress(ProcessLookupError, PermissionError, OSError):
+        os.killpg(os.getpgid(process.pid), signal.SIGKILL)
+        return
+    with contextlib.suppress(ProcessLookupError, PermissionError, OSError):
+        process.kill()
+
+
 def _git(*args: str, cwd: Path | None = None) -> str:
     """Run git with a fixed argv and no shell. Returns stripped stdout.
 
@@ -193,22 +246,44 @@ def _git(*args: str, cwd: Path | None = None) -> str:
     against is a PATH hijack, which is a compromise of the *host* and therefore
     outside what this module can defend. Recorded as AR-006.
     """
+    # `start_new_session=True` puts git in its own process group so a timeout
+    # can kill the WHOLE tree. Without it a stalled clone hangs forever despite
+    # the timeout, which was observed for real: `git clone` of crewAI sat for
+    # 73 minutes on a stalled GitHub read. `subprocess.run(timeout=...)` sends
+    # SIGKILL to the direct child only -- here `git clone` -- while
+    # `git-remote-https` and `index-pack` (its own children) survive and keep
+    # the inherited stdout/stderr pipes open. `subprocess.run` then blocks
+    # reading those pipes and never returns, so the timeout never surfaced as
+    # an exception at all. Killing the process group is what makes the timeout
+    # mean what it says.
     try:
-        completed = subprocess.run(  # noqa: S603 - fixed argv, no shell
+        process = subprocess.Popen(  # noqa: S603 - fixed argv, no shell
             ["git", *args],  # noqa: S607 - resolved from PATH; see docstring, AR-006
             cwd=cwd,
-            capture_output=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
             text=True,
-            timeout=CLONE_TIMEOUT_SECONDS,
-            check=False,
+            start_new_session=True,
         )
     except FileNotFoundError as exc:  # pragma: no cover - git is a hard dep
         raise StudyError("git is not installed or not on PATH") from exc
+
+    try:
+        stdout, stderr = process.communicate(timeout=CLONE_TIMEOUT_SECONDS)
     except subprocess.TimeoutExpired as exc:
+        _kill_process_group(process)
+        # Reap so the child does not linger as a zombie, and close the pipes.
+        with contextlib.suppress(subprocess.TimeoutExpired):
+            # pragma: no cover - SIGKILL is final; this only bounds the reap
+            process.communicate(timeout=CLONE_KILL_GRACE_SECONDS)
         raise StudyError(
             f"git {args[0]} timed out after {CLONE_TIMEOUT_SECONDS}s. "
             "A slow network is not a reason to leave a partial clone behind."
         ) from exc
+
+    completed = subprocess.CompletedProcess(
+        args=["git", *args], returncode=process.returncode, stdout=stdout, stderr=stderr
+    )
 
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout or "").strip()
@@ -286,14 +361,23 @@ def study_workspace(
 
     The yielded path is inside a repository that is never on `sys.path` and is
     never imported from (ADR-0021 Decision 1).
+
+    **Concurrency.** Each invocation clones into a uniquely-named directory
+    under the workspace. An earlier version always used `workspace/<slug>`,
+    which is fine for one study at a time and destroys a concurrent one: two
+    studies of the same target had one `rmtree` the other's clone mid-clone,
+    failing with `could not open .../tmp_pack_xxx for reading`. Found by
+    running a batch study while separately testing the licence detector. The
+    unique directory makes concurrent studies safe and is what lets a batch
+    runner be parallel at all.
     """
     url = normalise_repo_url(raw_url)
     slug = project_slug(url)
     base = workspace if workspace is not None else workspace_path()
-    destination = base / slug
+    # Per-invocation: see the concurrency note above. The slug stays as the
+    # prefix so a leftover directory is still identifiable by eye.
+    destination = base / f"{slug}.{os.getpid()}.{uuid.uuid4().hex[:8]}"
 
-    if destination.exists():
-        shutil.rmtree(destination, ignore_errors=True)
     destination.parent.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -329,6 +413,13 @@ def study_workspace(
         )
     finally:
         shutil.rmtree(destination, ignore_errors=True)
+        # The per-process root is deliberately NOT removed here. It is shared
+        # by every study this process runs (a batch runs many), so a study that
+        # finished first would delete the root a sibling was still cloning
+        # into -- the same class of bug as the shared destination this
+        # addressed. Ownership of the root belongs to the process, not to one
+        # study within it; `_stage` cleans it once at the end of a batch.
+        _ = base
 
 
 def prune_workspace(workspace: Path | None = None) -> int:
@@ -337,6 +428,10 @@ def prune_workspace(workspace: Path | None = None) -> int:
     Provided as an explicit recovery path: a study interrupted by a power loss
     or a `SIGKILL` cannot run its `finally`, so an orphaned clone is possible
     and needs a documented way out that is not `rm -rf` typed from memory.
+
+    Clears **this process's** workspace: a concurrent study in another process
+    owns a different directory and is not touched. Callers wanting to clear
+    everything must remove `WORKSPACE_DIRNAME` themselves, deliberately.
 
     This clears the workspace **completely**, including loose files. An earlier
     version removed only directories, which left the workspace non-empty: after
@@ -394,3 +489,21 @@ def main_guard() -> None:  # pragma: no cover - trivial introspection helper
                 f"sys.path[{index}] is inside the study workspace ({resolved}). "
                 "Cloned code must never be importable (ADR-0021)."
             )
+
+
+def cleanup_workspace_root() -> None:
+    """Remove this process's workspace root if it is empty.
+
+    Called once at the end of a run rather than by each :func:`study_workspace`
+    block, because the root is shared by every study in the process: a study
+    that finished first would otherwise delete the directory a sibling was
+    still cloning into.
+
+    Best-effort and silent. A non-empty root means a concurrent study is
+    mid-flight, which is a legitimate state and not an error; `rmdir` refuses
+    it, and that refusal is the correct outcome rather than something to
+    report.
+    """
+    base = workspace_path()
+    with contextlib.suppress(OSError):
+        base.rmdir()
