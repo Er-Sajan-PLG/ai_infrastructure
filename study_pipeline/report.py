@@ -34,6 +34,7 @@ from typing import Final
 from study_pipeline import __version__
 from study_pipeline.classify import Classification, Taxonomy
 from study_pipeline.inventory import Inventory
+from study_pipeline.licence import Licence
 from study_pipeline.patterns import Candidate, Confidence
 
 #: Emitted verbatim in every report. A constant, not a parameter, so no caller
@@ -76,6 +77,11 @@ class StudyReport:
     candidates: tuple[Candidate, ...]
     classifications: tuple[Classification, ...]
     taxonomy: Taxonomy
+    #: Licence as declared at the studied commit. Recorded before any reuse,
+    #: per charter §22 (a human-review gate) and §11 (cite what was studied).
+    #: Determined from declared metadata or an explicit title line, never by
+    #: matching licence prose -- see `licence.py` for why.
+    licence: Licence
     #: Set when the study could not complete, so a partial report is honest
     #: about being partial rather than looking like a thin result.
     incomplete_reason: str = ""
@@ -117,6 +123,7 @@ def _render_header(report: StudyReport) -> list[str]:
         "|---|---|",
         f"| Repository | {report.url} |",
         f"| Commit | `{report.commit}` |",
+        f"| Licence | {report.licence.summary} |",
         f"| Studied | {report.studied_on} |",
         f"| Clone size | {_human_bytes(report.size_bytes)} |",
         f"| Files | {report.inventory.total_files} |",
@@ -453,6 +460,7 @@ def build_report(
     candidates: tuple[Candidate, ...],
     classifications: tuple[Classification, ...],
     taxonomy: Taxonomy,
+    licence: Licence,
     studied_on: str | None = None,
     incomplete_reason: str = "",
 ) -> StudyReport:
@@ -471,6 +479,7 @@ def build_report(
         candidates=candidates,
         classifications=classifications,
         taxonomy=taxonomy,
+        licence=licence,
         incomplete_reason=incomplete_reason,
     )
 

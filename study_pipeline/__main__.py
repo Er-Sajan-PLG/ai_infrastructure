@@ -23,11 +23,13 @@ from typing import Final
 from study_pipeline import __version__
 from study_pipeline.classify import classify_all, load_taxonomy, proposal_summary
 from study_pipeline.inventory import build_inventory
+from study_pipeline.licence import detect_licence
 from study_pipeline.patterns import extract_candidates, summarise
 from study_pipeline.report import build_report as assemble_report
 from study_pipeline.report import render_report, report_path
 from study_pipeline.workspace import (
     StudyError,
+    cleanup_workspace_root,
     repo_root,
     study_workspace,
     workspace_size_bytes,
@@ -116,6 +118,12 @@ def study_one(url: str, *, dry_run: bool, quiet: bool) -> int:
                 f"{counts['moderate']} moderate, {counts['weak']} weak",
             )
 
+            # Read the licence at the studied commit, before anything is
+            # reused anywhere (charter §22; the plan's "license contamination"
+            # risk). This reads a local file and never executes anything.
+            licence = detect_licence(clone.path)
+            _stage(quiet, f"  licence: {licence.summary}")
+
             report = assemble_report(
                 slug=clone.slug,
                 url=clone.url,
@@ -125,6 +133,7 @@ def study_one(url: str, *, dry_run: bool, quiet: bool) -> int:
                 candidates=candidates,
                 classifications=classifications,
                 taxonomy=taxonomy,
+                licence=licence,
             )
             text = render_report(report)
 
@@ -164,10 +173,17 @@ def main(argv: list[str] | None = None) -> int:
         return EXIT_USAGE
 
     failures = 0
-    for url in args.urls:
-        code = study_one(url, dry_run=args.dry_run, quiet=args.quiet)
-        if code != EXIT_OK:
-            failures += 1
+    try:
+        for url in args.urls:
+            code = study_one(url, dry_run=args.dry_run, quiet=args.quiet)
+            if code != EXIT_OK:
+                failures += 1
+    finally:
+        # The process owns its workspace root; a batch is when that ownership
+        # ends, so this is where the now-empty root is removed. A single
+        # `study_workspace` call deliberately does NOT remove it, because a
+        # sibling study in the same process may still be cloning into it.
+        cleanup_workspace_root()
 
     if failures and not args.quiet:
         print(

@@ -20,6 +20,7 @@ import pytest
 
 from study_pipeline.classify import Taxonomy, TaxonomyCategory, classify_all
 from study_pipeline.inventory import Inventory, Manifest, build_inventory
+from study_pipeline.licence import Licence, LicenceConfidence
 from study_pipeline.patterns import Candidate, Confidence, extract_candidates
 from study_pipeline.report import (
     CODE_REUSED,
@@ -105,6 +106,11 @@ def _report(
         "candidates": candidates,
         "classifications": classify_all(candidates, taxonomy),
         "taxonomy": taxonomy,
+        "licence": Licence(
+            spdx_id="MIT",
+            confidence=LicenceConfidence.DECLARED,
+            evidence=("pyproject.toml: license = 'MIT'",),
+        ),
         "studied_on": "2026-01-01",
     }
     kwargs.update(overrides)
@@ -451,3 +457,65 @@ def test_generated_report_has_no_unfilled_placeholders() -> None:
     text = render_report(_report(candidates=(_candidate(),)))
     for marker in ("TODO", "FIXME", "None", "{}"):
         assert marker not in text.split("## Structure")[0], marker
+
+
+# ---------------------------------------------------------------------------
+# Licence in the report header
+# ---------------------------------------------------------------------------
+
+
+def test_licence_is_rendered_in_the_header() -> None:
+    """The plan requires the licence at the studied version in each record.
+
+    It sits next to the commit, because a licence is only true of the commit it
+    was read at -- the same reason the commit is recorded at all (charter §11).
+    """
+    text = render_report(_report())
+    assert "| Licence | MIT (declared) |" in text
+
+
+def test_licence_appears_next_to_the_commit() -> None:
+    text = render_report(_report())
+    commit_at = text.index("| Commit |")
+    licence_at = text.index("| Licence |")
+    studied_at = text.index("| Studied |")
+    assert commit_at < licence_at < studied_at
+
+
+def test_undetermined_licence_is_reported_not_omitted() -> None:
+    """A report with no licence must SAY so, not silently drop the row.
+
+    A missing row reads as "not checked"; an explicit one reads as "checked and
+    not determinable", which is the truthful description and tells the reader a
+    human must look at the LICENSE file before any reuse.
+    """
+    report = _report(
+        licence=Licence(
+            spdx_id="",
+            confidence=LicenceConfidence.UNIDENTIFIED,
+            evidence=("LICENSE exists",),
+            licence_file="LICENSE",
+        )
+    )
+    text = render_report(report)
+    assert "| Licence |" in text
+    assert "not determined" in text
+    assert "LICENSE" in text
+
+
+def test_conflicting_licence_is_surfaced_in_the_report() -> None:
+    report = _report(
+        licence=Licence(
+            spdx_id="",
+            confidence=LicenceConfidence.DECLARED,
+            evidence=("both",),
+            conflicts=("MIT", "Apache-2.0"),
+        )
+    )
+    text = render_report(report)
+    assert "CONFLICT" in text
+    assert "needs review" in text
+
+
+def test_reports_stay_deterministic_with_a_licence() -> None:
+    assert render_report(_report()) == render_report(_report())

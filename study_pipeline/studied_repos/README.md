@@ -18,7 +18,7 @@ cannot do them honestly:
 
 | Required here | Why the pipeline cannot supply it |
 |---|---|
-| **License at the studied version** | Reading a licence file and deciding compatibility is a human review gate (charter §22). The pipeline does not read `LICENSE`. |
+| **A verified license determination** | The pipeline now records a licence **identifier** read from declared metadata or an exact licence title line (see `study_pipeline/licence.py`), and reports `not determined` rather than guessing when it cannot. Deciding *compatibility* remains a human review gate (charter §22) — an identifier is not a legal judgement, and the detector deliberately does not match licence prose. |
 | **Trade-offs — what to adopt or avoid** | This is a `DESIGN OPINION` requiring someone to read the code and understand the problem it solves (charter §6). |
 | **What was deliberately skipped, and why** | The pipeline skips nothing by choice; it reports what it found. |
 | **How the original implements each pattern** | Establishing that requires reading the source. The pipeline establishes only that a directory or dependency is present. |
@@ -34,6 +34,13 @@ research registry under `docs/registry/RESEARCH_REGISTRY.md` — licence, trade-
 adopt/avoid, §6 evidence labels — and the report is linked from that entry. This
 keeps verified claims separate from generated ones instead of blending them into
 one document where a reader cannot tell which is which.
+
+A report's `Licence` row states how the identifier was established — `declared`
+(an SPDX field in `pyproject.toml`/`package.json`), `header` (the licence file's
+title line, matched against an exact allowlist), `tagged`
+(`SPDX-License-Identifier:`), `reuse-filename` (`LICENSES/<id>`), `unidentified`
+(a licence file exists but was not identified), or `not declared`. A `CONFLICT`
+means several sources disagreed, which is reported rather than resolved.
 
 Each report should record:
 
