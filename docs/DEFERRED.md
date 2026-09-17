@@ -345,6 +345,44 @@ deferred:
     source: "docs/audits/2026-09-17-phase-1-5-sota-comparison.md (security)"
     review_by: 2027-03-17
     adr: ADR-0020
+
+  - id: DW-013
+    title: "Semantic pattern detection in the study pipeline (AST or tree-sitter)"
+    category: quality
+    current_fact: >-
+      Pattern extraction matches directory names and declared dependencies only.
+      Measured on this repository it recovers all five real capabilities, and on
+      LlamaIndex it recovers 10 strong categories, but it finds NOTHING in
+      requests or Flask -- correctly, since those are HTTP libraries with no
+      retrieval or tool-registry convention to find.
+    why_now_wrong: >-
+      The structural detector recognises AI-infrastructure CONVENTIONS and is
+      blind to a project that names the same machinery differently, or that
+      implements a pattern across files without a directory named after it.
+      Closing that needs real parsing: either a hand-rolled AST walk, which
+      would be silently wrong on the first non-trivial file and is the specific
+      failure mode ADR-0021 rejects, or tree-sitter, which would add the first
+      runtime dependency to a zero-dependency repository (charter §22) plus a
+      parser surface fed the least trusted input available. Both costs are
+      real; neither is justified while the reports are read by an agent session
+      that can open the files itself.
+    trigger: >-
+      Two or more study reports are materially WRONG or unhelpful because the
+      detector missed a pattern that reading the source would have found, OR
+      the study target list shifts to projects whose layouts are not
+      conventional Python packaging.
+    reversal: >-
+      Prefer the cheap step first: extend the fragment lists and add detectors
+      for layouts the reports actually missed, since that is a data change in
+      _RULES and costs nothing. Only add parsing if that proves insufficient,
+      and if so prefer a hand-rolled ast walk over the STANDARD LIBRARY for
+      Python targets, which are the majority of the target list, rather than a
+      tree-sitter dependency. Re-open ADR-0021 Decision 3 if a third-party
+      dependency is genuinely required.
+    effort: large
+    source: "ADR-0021 Decision 3; measured against llama_index, requests and flask"
+    review_by: 2027-03-17
+    adr: ADR-0021
 ```
 
 ---

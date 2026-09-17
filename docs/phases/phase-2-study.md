@@ -59,7 +59,7 @@ pipeline optimised against no fixed target.
 | 1 | **ADR-0021** — architecture, no-execution rule, stdlib-only | 0021 | — | **DONE** |
 | 2 | **Workspace + clone module** — `git clone --depth 1`, `rev-parse`, prune, gitignore | 0021 | 1 | **DONE** — `22f0bdd`; 12 injection vectors refused |
 | 3 | **Inventory module** — layout, file counts, manifests, marker files | 0021 | 2 | **DONE** — `024dbfd`; 3 bugs found via known-shape repos |
-| 4 | **Pattern extraction** — candidate patterns and boundaries, statically | 0021 | 3 | ⬜ |
+| 4 | **Pattern extraction** — candidate patterns and boundaries, statically | 0021 | 3 | **DONE** — `edc4db3`; 3 false positives fixed |
 | 5 | **Classification** — map to taxonomy categories; propose new ones | 0021 | 4 | ⬜ |
 | 6 | **Report generation** — the Markdown report, with provenance and §6 labels | 0021 | 5 | ⬜ |
 | 7 | **CLI + `make study`** — thin wrapper; opt-in network E2E | 0021 | 6 | ⬜ |
