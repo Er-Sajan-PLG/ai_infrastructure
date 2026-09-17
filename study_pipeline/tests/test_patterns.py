@@ -27,7 +27,6 @@ import pytest
 
 from study_pipeline.inventory import Inventory, Manifest, build_inventory
 from study_pipeline.patterns import (
-    KNOWN_CATEGORIES,
     MAX_EVIDENCE_PATHS,
     Confidence,
     _directory_has_modules,
@@ -261,12 +260,18 @@ def test_every_candidate_states_its_limitations(tmp_path: Path) -> None:
         assert len(candidate.limitations) > 40, candidate.pattern_id
 
 
-def test_candidate_categories_are_known_or_explicit(tmp_path: Path) -> None:
+def test_candidate_categories_are_non_empty(tmp_path: Path) -> None:
+    # The pattern module does NOT validate categories against the taxonomy --
+    # that is the classifier's job, because only it reads TAXONOMY.md. This
+    # module was briefly carrying a hardcoded category set and it was wrong in
+    # both directions (omitted `mcp`, invented `performance`/`reliability`).
+    # See test_classify.py for the check that consults the real file.
     repo = tmp_path / "target"
     _write(repo, "src/pkg/tools/__init__.py")
     _write(repo, "src/pkg/tools/registry.py", "x = 1\n")
     for candidate in extract_candidates(build_inventory(repo)):
-        assert candidate.category in KNOWN_CATEGORIES, candidate.pattern_id
+        assert candidate.category, candidate.pattern_id
+        assert candidate.category == candidate.category.lower()
 
 
 def test_evidence_paths_are_capped(tmp_path: Path) -> None:

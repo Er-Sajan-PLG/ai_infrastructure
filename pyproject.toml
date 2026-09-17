@@ -80,7 +80,16 @@ testpaths = ["tests", "catalog", "integrations", "study_pipeline"]
 norecursedirs = [".venv", ".uv-cache"]
 python_files = ["test_*.py"]
 # addopts keeps the summary readable and fails on unknown markers.
-addopts = "-q --strict-markers --strict-config"
+#
+# `-m "not network and not external"` is what makes the marker descriptions
+# below TRUE. They already said "never run in CI by default", but nothing
+# enforced it: `network`-marked tests were collected and run by the default
+# gate, so on a runner without outbound access they would fail a build for a
+# reason unrelated to the change. It was found by noticing that the documented
+# behaviour and the executed behaviour disagreed.
+#
+# Opt in explicitly: `make test-network` (see the Makefile).
+addopts = "-q --strict-markers --strict-config -m 'not network and not external'"
 markers = [
     "slow: takes more than a couple of seconds",
     "network: requires outbound network access (never run in CI by default)",
@@ -159,8 +168,18 @@ ignore = [
 # Tests assert deliberately hostile inputs. The /tmp paths below are forged
 # attack payloads in injection-boundary tests, not temp-file handling.
 "tests/**" = ["S101", "ARG", "T20", "S108"]
+# The study pipeline's tests are held to the same rules as tests/** above, and
+# for the same reasons: tests assert deliberately hostile inputs (S101, S108 --
+# a forged `--upload-pack=` payload is not temp-file handling), monkeypatched
+# callables legitimately ignore the arguments they stand in for (ARG), and a
+# probe test prints to show its finding (T20).
+"study_pipeline/tests/**" = ["S101", "ARG", "T20", "S108"]
 "catalog/**/tests/**" = ["S101", "ARG", "T20", "S108", "TID252", "INP001"]
 "scripts/**" = ["T20"]  # CLI scripts legitimately print
+# The study pipeline's CLI is a thin entry point over the library (ADR-0021
+# Decision 4); printing progress and report paths is its purpose, not a stray
+# debug leftover. The library modules it drives contain no prints at all.
+"study_pipeline/__main__.py" = ["T20"]
 # Catalog entries are standalone, importable capabilities (charter §31): a
 # consumer adds catalog/<category>/ to sys.path and imports the package by name.
 # Relative imports *inside* an entry are what make it relocatable and

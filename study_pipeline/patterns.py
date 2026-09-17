@@ -609,27 +609,16 @@ def summarise(candidates: tuple[Candidate, ...]) -> dict[str, int]:
     return counts
 
 
-#: Category names the taxonomy already has. Used by the classifier to decide
-#: whether a candidate maps onto an existing category or proposes a new one.
-#: Kept here as a constant rather than parsed from TAXONOMY.md because the
-#: classifier is given the taxonomy explicitly (see study_pipeline.classify) —
-#: this is only the fallback set for a candidate whose category is unknown.
-KNOWN_CATEGORIES: Final[frozenset[str]] = frozenset(
-    {
-        "agents",
-        "evaluation",
-        "guardrails",
-        "memory",
-        "models",
-        "observability",
-        "performance",
-        "protocols",
-        "reliability",
-        "retrieval",
-        "tooling",
-        "tools",
-    }
-)
+# NOTE ON CATEGORIES: pattern rules above declare a `category` string, and the
+# classifier (study_pipeline/classify) is what checks it against the REAL
+# taxonomy by parsing TAXONOMY.md. This module deliberately does not carry a
+# list of valid categories.
+#
+# It did, briefly, and the list was wrong in both directions: it omitted `mcp`,
+# which the taxonomy has, and it invented `performance` and `reliability`,
+# which it does not. A constant that duplicates the taxonomy drifts from it,
+# and a classifier consulting a stale constant produces confident, authoritative
+# output that is incorrect. Read the taxonomy from the file (ADR-0021).
 
 _SLUG_RE: Final = re.compile(r"[^a-z0-9]+")
 

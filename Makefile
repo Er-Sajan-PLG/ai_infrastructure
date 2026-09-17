@@ -182,6 +182,12 @@ typecheck: ## Run mypy in strict mode
 test: ## Run the test suite
 	$(PYTEST)
 
+.PHONY: test-network
+test-network: ## Run the tests that need outbound network (excluded by default)
+	@# The default `addopts` deselects `network` and `external` so the gate run
+	@# stays offline and deterministic. This target is the explicit opt-in.
+	$(PYTEST) -m "network or external"
+
 .PHONY: coverage
 coverage: ## Run tests with coverage, enforced at the recorded floor
 	@# See the COVERAGE_FLOOR definition above for why this is an integer
@@ -192,6 +198,42 @@ coverage: ## Run tests with coverage, enforced at the recorded floor
 .PHONY: validate
 validate: links phase-plan ## Check the catalog entry contract + doc links (charter §13)
 	$(PY) scripts/validate_catalog.py
+
+# ---------------------------------------------------------------------------
+# Study pipeline (charter §29/§30; ADR-0021)
+# ---------------------------------------------------------------------------
+#
+# `make study URL=...` clones a repository and writes a structural report. It
+# EXECUTES NOTHING from the studied code: no import, no install, no subprocess
+# inside the clone (ADR-0021 Decision 1). Reports land in
+# study_pipeline/studied_repos/ and nothing is written to catalog/ or
+# integrations/ (Decision 2).
+#
+# Defaults for the study target. `study` is interactive-by-intent: it always
+# needs an explicit URL, and STUDY_FLAGS is empty unless a caller sets it.
+URL        ?=
+STUDY_FLAGS ?=
+
+# The URL is passed as a Make variable rather than a positional argument so
+# that `make study` with no URL prints this help instead of silently cloning
+# nothing.
+.PHONY: study
+study: ## Study a repository: make study URL=https://github.com/owner/repo
+	@if [ -z "$(URL)" ]; then \
+		echo "usage: make study URL=https://github.com/owner/repo"; \
+		echo "       make study URL=... STUDY_FLAGS=--dry-run"; \
+		echo; \
+		echo "Clones and statically maps a repository. Executes nothing from it."; \
+		exit 2; \
+	fi
+	$(PY) -m study_pipeline $(STUDY_FLAGS) "$(URL)"
+
+.PHONY: study-clean
+study-clean: ## Remove the clone workspace (never touches written reports)
+	$(PY) -c "from study_pipeline.workspace import prune_workspace, workspace_size_bytes; \
+	before = workspace_size_bytes(); \
+	prune_workspace(); \
+	print(f'workspace: {before} -> {workspace_size_bytes()} bytes')"
 
 .PHONY: links
 links: ## Verify relative Markdown links resolve

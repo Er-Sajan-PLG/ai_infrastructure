@@ -29,6 +29,7 @@ deliberately:
 
 from __future__ import annotations
 
+import contextlib
 import re
 import shutil
 import subprocess  # nosec B404
@@ -331,11 +332,25 @@ def study_workspace(
 
 
 def prune_workspace(workspace: Path | None = None) -> int:
-    """Remove every clone in the workspace. Returns the number removed.
+    """Remove everything in the workspace. Returns the number of clones removed.
 
     Provided as an explicit recovery path: a study interrupted by a power loss
     or a `SIGKILL` cannot run its `finally`, so an orphaned clone is possible
     and needs a documented way out that is not `rm -rf` typed from memory.
+
+    This clears the workspace **completely**, including loose files. An earlier
+    version removed only directories, which left the workspace non-empty: after
+    `prune_workspace()` the size still read 1 byte from a stray file, so a
+    cleanup path could never actually reach zero. A cleanup function that
+    cannot report a clean workspace is worse than none, because the operator
+    concludes the disk is in use when it is not.
+
+    The workspace directory itself is left in place — it is cheap, and removing
+    it would race a concurrent study for no benefit.
+
+    `ignore_errors=True` on removal: a clone containing a file that resists
+    deletion (mode bits, a stale NFS handle) must not abort the cleanup and
+    leave the rest behind.
     """
     base = workspace if workspace is not None else workspace_path()
     if not base.is_dir():
@@ -343,12 +358,15 @@ def prune_workspace(workspace: Path | None = None) -> int:
 
     removed = 0
     for entry in base.iterdir():
-        if not entry.is_dir():
-            continue
-        before = entry.stat().st_mtime_ns
-        shutil.rmtree(entry, ignore_errors=True)
-        if not entry.exists() or entry.stat().st_mtime_ns != before:
-            removed += 1
+        if entry.is_dir() and not entry.is_symlink():
+            shutil.rmtree(entry, ignore_errors=True)
+            removed += not entry.exists()
+        else:
+            # A loose file, or a symlink. Never follow a symlink: deleting
+            # through one would remove the link target, which may be outside
+            # the workspace entirely.
+            with contextlib.suppress(OSError):
+                entry.unlink()
     return removed
 
 

@@ -182,22 +182,80 @@ def test_shell_is_never_enabled(source: Path) -> None:
                 ), f"{source.name}:{node.lineno} passes shell=True"
 
 
+#: Filesystem-mutating methods. A call to one of these with a path that names
+#: `catalog` or `integrations` would violate ADR-0021 Decision 2.
+_MUTATING_METHODS: frozenset[str] = frozenset(
+    {
+        "write_text",
+        "write_bytes",
+        "unlink",
+        "rmdir",
+        "mkdir",
+        "touch",
+        "replace",
+        "rename",
+        "symlink_to",
+        "hardlink_to",
+        "chmod",
+    }
+)
+
+#: Paths the pipeline must never mutate. It writes reports under
+#: `study_pipeline/studied_repos/` and nothing else.
+_FORBIDDEN_TARGETS: frozenset[str] = frozenset({"catalog", "integrations"})
+
+
 @pytest.mark.parametrize("source", _pipeline_sources(), ids=lambda p: p.name)
 def test_pipeline_never_writes_outside_studied_repos(source: Path) -> None:
-    """No write, unlink or mkdir against a path derived from the taxonomy.
+    """No filesystem mutation targeting `catalog/` or `integrations/`.
 
     ADR-0021 Decision 2: the pipeline writes Markdown reports and nothing else,
     which is what makes `code_reused: false` structurally true rather than a
-    promise. A write into `catalog/` would break that guarantee silently.
+    promise.
+
+    **This check inspects CALLS, not text.** Its first version searched each
+    file's raw source for the substring `catalog/`, which flagged this module's
+    own docstrings — the pipeline documents *why* it must not write there, and
+    explaining a prohibition is not violating it. A checker that fails on the
+    documentation of the rule it enforces would have been "fixed" by deleting
+    the explanation, which is the opposite of the intent.
+
+    Matching on the AST also makes the check STRONGER than the text search: a
+    write whose target is built at runtime from a variable still has to name a
+    mutating method, and the method subset is small enough to enumerate.
     """
-    text = source.read_text(encoding="utf-8")
-    # Only the modules that touch the filesystem are checked for write calls;
-    # the string is searched because the target is frequently a variable.
-    for forbidden in ("catalog/", 'catalog" ,', "integrations/"):
-        assert forbidden not in text.replace("catalog/observability", ""), (
-            f"{source.name} references {forbidden!r}. The study pipeline must not "
-            "write into catalog/ or integrations/ (ADR-0021 Decision 2)."
-        )
+    tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
+
+    offenders: list[str] = []
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        name = _call_name(node.func)
+        method = name.rsplit(".", 1)[-1]
+        if method not in _MUTATING_METHODS:
+            continue
+        # Inspect every string literal anywhere in the call's arguments: the
+        # target is frequently `root / "catalog" / entry`, so a direct-argument
+        # check would miss it.
+        for literal in _string_literals(node):
+            if literal.strip("/") in _FORBIDDEN_TARGETS:
+                offenders.append(
+                    f"{source.name}:{node.lineno} {method}(...) targets {literal!r}"
+                )
+
+    assert offenders == [], (
+        "The study pipeline must not write into catalog/ or integrations/ "
+        "(ADR-0021 Decision 2). Offending calls:\\n  " + "\\n  ".join(offenders)
+    )
+
+
+def _string_literals(node: ast.AST) -> list[str]:
+    """Every string constant appearing anywhere beneath `node`."""
+    return [
+        child.value
+        for child in ast.walk(node)
+        if isinstance(child, ast.Constant) and isinstance(child.value, str)
+    ]
 
 
 # ---------------------------------------------------------------------------
