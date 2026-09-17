@@ -41,6 +41,7 @@ from check_collectability import (  # noqa: E402
     _SELECTED_RE,
     _SUMMARY_RE,
     MIN_EXPECTED_ENTRIES,
+    SUBSYSTEM_DIRS,
     _configured_python_files,
     _entry_dirs,
     main,
@@ -119,21 +120,31 @@ def test_entry_dirs_finds_the_real_entries() -> None:
     assert len(entries) >= MIN_EXPECTED_ENTRIES, entries
     for entry in entries:
         assert (entry / "tests").is_dir(), entry
-        # Entries live under catalog/<category>/<entry>/, and the end-to-end
-        # INTEGRATION under integrations/<name>/ is checked the same way: it
-        # has its own tests/ and a suite that collected nothing there would be
-        # just as invisible.
-        assert entry.parent.name in {
-            "tools",
-            "models",
-            "agents",
-            "protocols",
-            "observability",
-            "integrations",
-        } or entry.parent.parent.name in {
-            "catalog",
-            "integrations",
-        }, entry
+
+        # Three shapes are collected, and all three exist to close the same
+        # hole: a suite that collects nothing while every gate stays green.
+        #
+        #   catalog/<category>/<entry>/   a capability entry
+        #   integrations/<name>/          an end-to-end composition
+        #   <subsystem>/                  a repository-level subsystem,
+        #                                 e.g. study_pipeline (charter §29)
+        #
+        # Asserted by shape rather than by a hard-coded list so that a fourth
+        # shape cannot be added without this test being updated deliberately.
+        is_entry = entry.parent.parent.name == "catalog"
+        is_integration = entry.parent.name == "integrations"
+        is_subsystem = entry.parent == REPO_ROOT and entry.name in SUBSYSTEM_DIRS
+        assert is_entry or is_integration or is_subsystem, entry
+
+
+def test_subsystems_are_discovered_not_hard_coded() -> None:
+    # study_pipeline holds its own suite; it must be checked like any entry.
+    entries = {entry.name for entry in _entry_dirs()}
+    for subsystem in SUBSYSTEM_DIRS:
+        assert subsystem in entries, (
+            f"{subsystem}/ has a tests/ directory but discovery did not find it, "
+            "so its suite could collect zero while every gate stayed green."
+        )
 
 
 def test_entry_dirs_are_absolute_and_unique() -> None:

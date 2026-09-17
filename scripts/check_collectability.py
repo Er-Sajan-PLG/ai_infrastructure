@@ -83,7 +83,16 @@ _SUMMARY_RE = re.compile(r"^(?P<count>\d+)\s+tests?\s+collected", re.MULTILINE)
 # Lower bound on how many entries discovery must find. See the comment at its
 # use site: without a floor, a broken discovery loop expands to nothing and the
 # check passes having verified nothing.
-MIN_EXPECTED_ENTRIES = 5
+#
+# Raised from 5 to 7 in Phase 2: study_pipeline/tests/ added a seventh
+# collected unit. Keeping the floor at the OLD value would let discovery stop
+# finding the new one and still report success.
+MIN_EXPECTED_ENTRIES = 7
+
+# Repository-level subsystems holding their own suite, checked the same way an
+# integration is. A subsystem whose tests collected zero would otherwise be
+# invisible to every gate.
+SUBSYSTEM_DIRS = ("study_pipeline",)
 
 _SELECTED_RE = re.compile(r"^(?P<count>\d+)/\d+\s+tests?\s+collected", re.MULTILINE)
 
@@ -114,6 +123,16 @@ def _entry_dirs() -> list[Path]:
                 continue
             if (entry / "tests").is_dir():
                 found.append(entry)
+
+    # Repository-level subsystems that hold their own suite. `study_pipeline/`
+    # joined this list in Phase 2 (charter §29: the pipeline is itself
+    # infrastructure). It is discovered from the OUTER directory the same way
+    # an integration is, so a subsystem added later is covered by adding a name
+    # here rather than by remembering to check it.
+    for name in SUBSYSTEM_DIRS:
+        subsystem = REPO_ROOT / name
+        if subsystem.is_dir() and (subsystem / "tests").is_dir():
+            found.append(subsystem)
 
     return found
 

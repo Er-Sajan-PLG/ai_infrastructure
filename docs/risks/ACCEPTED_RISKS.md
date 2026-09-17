@@ -165,6 +165,28 @@ risks:
     accepted_on: 2026-09-17
     review_by: 2027-09-17
     tool: import-linter
+
+  - id: AR-006
+    title: "The study pipeline resolves git from PATH rather than an absolute path"
+    kind: normative
+    scope: "study_pipeline/workspace.py - the only subprocess in the pipeline"
+    rationale: accepted_cost
+    rationale_ref: ADR-0021
+    statement: >-
+      ruff's S607 asks for an absolute executable path; the study pipeline
+      invokes `git` as resolved from PATH. Hardcoding /usr/bin/git would break
+      wherever git lives elsewhere - a Homebrew macOS install, a Nix profile,
+      a CI image - and the threat it guards against is a PATH hijack, which
+      means the host is already compromised and is outside what a library can
+      defend. The exposure is bounded: this is the only subprocess the
+      pipeline runs, its argv is fixed, shell=False, and the sole
+      caller-supplied element (the URL) is validated against an allow-list
+      before it reaches git. Accepted deliberately rather than suppressed
+      silently; the noqa comment cites this entry.
+    accepted_by: maintainer
+    accepted_on: 2026-09-17
+    review_by: 2027-09-17
+    tool: ruff S607
 ```
 
 ---
