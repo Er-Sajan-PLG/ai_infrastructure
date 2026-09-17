@@ -301,6 +301,13 @@ that basis alone.
 |---|---|---|
 | `guardrails` | `guardrails` | category `guardrails` is not in the taxonomy tree |
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: The lowest test-file ratio among the large Python targets (266 of 2,162 files, 12%) while being a widely depended-upon client. A low *file* ratio is not a low test count: this project generates much of its code and tests differently from the frameworks here.
+- INFERENCE: Do not compare test-file ratios across projects of different kinds as though they measured the same thing.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

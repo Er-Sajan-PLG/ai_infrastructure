@@ -400,6 +400,13 @@ that basis alone.
 | `config` | `config` | category `tooling` is not in the taxonomy tree |
 | `guardrails` | `guardrails` | category `guardrails` is not in the taxonomy tree |
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: TypeScript, 16,316 files, zero Python. A Python-centric understanding of "an agent framework" does not transfer: the same concepts appear with different names and different module boundaries.
+- INFERENCE: Do not generalise conventions observed in Python targets to a TypeScript one. The detector's rules were written against Python and JavaScript conventions alike, which limits what its absence here means.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

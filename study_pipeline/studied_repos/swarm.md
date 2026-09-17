@@ -128,6 +128,13 @@ nothing. Read the structure above and the source directly.
 
 Nothing to map.
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: The smallest studied target by source (62 Python files) with the lowest test-file ratio measured here (4 files, 6%). openai/swarm was published as an educational reference and later superseded by the Agents SDK; the low ratio is consistent with that intent.
+- INFERENCE: Do not read a low test ratio as poor practice without knowing what the project claims to be. A reference implementation and a production framework are not measured the same way.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

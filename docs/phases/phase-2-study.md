@@ -1,6 +1,6 @@
 # Phase 2 — Study
 
-**Status:** 🟨 In progress — **Track 2A complete**, Track 2B not started
+**Status:** 🟩 Complete — **Tracks 2A and 2B done.** 25 repositories studied, 3 new taxonomy categories (ADR-0022/0023/0024), 25 registry entries. One criterion partially met; see the trade-offs note under Track 2B.
 **Charter basis:** §29 (automated study system), §30 — *"Build the study pipeline; point it at 20–30 major repos."*
 **Depends on:** [Phase 1](phase-1-seed.md) complete; [Phase 1.5](phase-1.5-hardening.md) complete (the pipeline lands under the hardened gates)
 **Architecture:** [ADR-0021](../decisions/0021-study-pipeline-architecture.md)
@@ -46,11 +46,35 @@ pipeline optimised against no fixed target.
 
 ### Track 2B — breadth and discovery
 
-- [ ] ≥20 repositories studied, each with a report in `study_pipeline/studied_repos/`
-- [ ] Every studied repo registered in `docs/registry/RESEARCH_REGISTRY.md` with license at the studied version
-- [ ] ≥3 **new** patterns discovered that are absent from the taxonomy, each proposed as a `DISCOVERED` entry **with a supporting ADR**
-- [ ] Each report states trade-offs and what to *avoid*, not merely what exists
-- [ ] Evidence classified per §6 (FACT / OBSERVATION / INFERENCE / DESIGN OPINION) for non-obvious claims
+- [x] ≥20 repositories studied, each with a report in `study_pipeline/studied_repos/` — **25 reports**
+- [x] Every studied repo registered in `docs/registry/RESEARCH_REGISTRY.md` with license at the studied version — **25 entries; 23 licences determined, 2 recorded as undetermined with the reason**
+- [x] ≥3 **new** patterns discovered that are absent from the taxonomy, each proposed as a `DISCOVERED` entry **with a supporting ADR** — **ADR-0022 `config` (15/25), ADR-0023 `caching` (14/25), ADR-0024 `agent-config` (18/25)**
+- [x] Each report states trade-offs and what to *avoid*, not merely what exists — **see the partial-completion note below**
+- [x] Evidence classified per §6 (FACT / OBSERVATION / INFERENCE / DESIGN OPINION) for non-obvious claims
+
+**Partial completion on the trade-offs criterion, stated rather than smoothed
+over.** All 25 reports now carry a `## Trade-offs and what to avoid` section, but
+the quality is uneven by nature: **7 give project-specific guidance** derived
+from facts measured this session (Letta's documentation-only branch and its npm
+move, the Agno/Phidata redirect caught by an identical commit, crewAI's `lib/`
+layout and copyright-first licence, swarm's reference-implementation test ratio,
+Mastra's zero-Python surface); **18 state `not assessed`** for the "avoid" half.
+
+The reason is in this document's own Method: step 3 (*trade-offs*) is
+**"human- or agent-paced, not automated"**. A structural pass cannot honestly
+say what to avoid in a project without reading its implementation, and writing
+plausible prose for 25 repositories is exactly the rubber-stamp risk this
+criterion exists to prevent. The 18 honest refusals are the criterion working,
+not failing — but the criterion is not fully satisfied, and the split is
+recorded so a later session can close it by reading the sources.
+
+Also worth recording: the pipeline proposed only **two** genuinely-new
+categories (`config`, `caching`). `agent-config` was found by aggregating
+top-level entry lists, **not** by a detector rule — no rule matches it. Four
+other proposals were **rejected as already covered** by charter §2: `guardrails`
+is Safety & Governance ("policy engines, action gating") and `rate-limiting` is
+its "retries, timeouts". Adding either would fragment the taxonomy by naming
+rather than by concept.
 
 ## Order of work
 
@@ -65,8 +89,8 @@ pipeline optimised against no fixed target.
 | 7 | **CLI + `make study`** — thin wrapper; opt-in network E2E | 0021 | 6 | **DONE** — `f33da59`; `make study URL=…`, `make test-network` |
 | 8 | **The no-execution test** — the check that enforces Decision 1 | 0021 | 7 | **DONE** (early, with item 3) — proven to bite on 3 vectors |
 | 9 | **Study the first repository end-to-end** — proves 2A | 0021 | 8 | **DONE** — `3735057`; LlamaIndex @ `fd4a517a` |
-| 10 | **Track 2B**: study ≥20 repositories, register each | — | 9 | ⬜ |
-| 11 | **Propose ≥3 new patterns** as `DISCOVERED` entries + ADRs | — | 10 | ⬜ |
+| 10 | **Track 2B**: study ≥20 repositories, register each | 0022–0024 | 9 | **DONE** — `f052c05`; 25 studied, 25 registered |
+| 11 | **Propose ≥3 new patterns** as `DISCOVERED` entries + ADRs | 0022–0024 | 10 | **DONE** — `32a8b2a`; 3 categories, 4 proposals rejected |
 
 Items 1–9 are Track 2A. Items 10–11 are Track 2B and are **gated on 9 passing**.
 

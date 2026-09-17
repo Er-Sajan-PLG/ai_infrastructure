@@ -2185,6 +2185,23 @@ patterns_worth_avoiding:
   - "Not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it."
 ```
 
+## Findings that change how earlier entries should be read
+
+Two results from the Track 2B batch affect entries elsewhere in this file.
+Both were caught **because the study pins a commit**, and neither would have
+been visible from a URL:
+
+- **Letta has restructured.** At commit `5bcdd177d70fa2b31a754cfcd801e77b2e1ab16a`
+  the default branch contains **documentation only** — 11 top-level entries, no
+  source in any language — and the README installs from npm
+  (`@letta-ai/letta-code`). The Python codebase previously studied under this
+  registry is no longer on `main`. **Any earlier Letta entry should be treated
+  as describing a revision that is no longer the default branch.**
+- **`agno-agi/agno` and `phidatahq/phidata` are the same repository.**
+  `phidatahq/phidata` redirects to `agno-agi/agno`, and both studies resolved to
+  the identical commit `a71c4d0c`. They are **one project under two names** and
+  must not be counted as independent evidence.
+
 ## License compatibility note
 
 All identified Phase-2 study targets are permissive and compatible with this repository's Apache-2.0 license:

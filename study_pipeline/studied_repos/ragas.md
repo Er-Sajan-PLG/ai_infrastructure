@@ -332,6 +332,13 @@ that basis alone.
 |---|---|---|
 | `caching` | `caching` | category `performance` is not in the taxonomy tree |
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- FACT: 142 of 387 Python files are test files (37%), in the middle band for this batch.
+- INFERENCE: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

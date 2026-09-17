@@ -365,6 +365,13 @@ that basis alone.
 | `caching` | `caching` | category `performance` is not in the taxonomy tree |
 | `config` | `config` | category `tooling` is not in the taxonomy tree |
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: Identical commit `a71c4d0c` and identical file counts to the `phidata` study: `phidatahq/phidata` redirects to `agno-agi/agno`. These two registry entries are one repository under two names.
+- INFERENCE: Do not count a renamed project twice as independent evidence. The duplicate was caught only because the study records the resolved commit, so a redirect is visible as two identical revisions.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

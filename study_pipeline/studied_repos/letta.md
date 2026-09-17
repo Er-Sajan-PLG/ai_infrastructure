@@ -102,6 +102,13 @@ nothing. Read the structure above and the source directly.
 
 Nothing to map.
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: The default branch at this commit contains **documentation only** (11 top-level entries, 12 files, no source of any language). The README installs from npm (`@letta-ai/letta-code`), so the Python codebase this registry previously studied is no longer on `main`. This is a FACT about the commit, not a pipeline failure: pinning the revision is what made the restructuring visible.
+- INFERENCE: Do not treat a repository as a stable reference by URL alone. Letta moved its implementation; anything citing "letta-ai/letta" without a commit may now describe a different project.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

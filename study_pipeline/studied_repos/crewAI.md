@@ -317,6 +317,13 @@ that basis alone.
 | `caching` | `caching` | category `performance` is not in the taxonomy tree |
 | `config` | `config` | category `tooling` is not in the taxonomy tree |
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: Places package code in `lib/` rather than the more common `src/`, and the licence file leads with a copyright line before the licence text. Both are conventions a tool relying on defaults will miss -- as this pipeline did, reporting the layout as `flat` and the licence as undetermined until the real file was read.
+- INFERENCE: Do not assume `src/` is where a Python package lives, and do not read a licence from its first line alone.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

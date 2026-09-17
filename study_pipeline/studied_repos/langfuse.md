@@ -387,6 +387,13 @@ that basis alone.
 | `guardrails` | `guardrails` | category `guardrails` is not in the taxonomy tree |
 | `rate-limiting` | `rate-limiting` | category `reliability` is not in the taxonomy tree |
 
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: TypeScript monorepo (6,067 files, 11 nested manifests) with a small Python SDK surface (6 files). Reading only the root manifest understates its dependency weight, and reading only its file counts understates its Python surface relative to its actual size.
+- INFERENCE: Do not judge a multi-language monorepo from its dominant language alone; the secondary surface is where integrations often live.
+
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They
