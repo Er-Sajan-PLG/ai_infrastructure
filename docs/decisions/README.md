@@ -19,6 +19,12 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0012](0012-gate-architecture.md) | Gate architecture: CI runs the same gates as local | Accepted |
 | [0013](0013-verification-breadth.md) | Verification breadth: which checks are added, deferred, or rejected | Accepted |
 | [0014](0014-governance-drift.md) | Governance drift: an accepted-risk register and scheduled reminders | Accepted |
+| [0015](0015-makefile-shell-hardening.md) | Makefile shell hardening and the parity contract with CI | Accepted |
+| [0016](0016-coverage-policy.md) | Coverage measurement: a regression floor plus change-scoped gating | Accepted |
+| [0017](0017-structural-checks.md) | Structural checks: import-linter and a first-party collectability gate | Accepted |
+| [0018](0018-security-tooling.md) | Security tooling: SAST, SCA, licences, workflow linting, and version pinning | Accepted |
+| [0019](0019-commit-message-validation.md) | Commit-message validation: header only, first-party, with a visible escape hatch | Accepted |
+| [0020](0020-deferral-register.md) | What is deferred to scale, and the register that holds it | Accepted |
 
 ## When an ADR is required
 

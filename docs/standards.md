@@ -113,57 +113,94 @@ correctness.
 
 ---
 
-## 8. Planned rules — approved, not yet enforced
+## 8. Verification rules (Phase 1.5 — now enforced)
 
-**Nothing in this section is normative.** These rules were approved by
-[ADR-0012](decisions/0012-gate-architecture.md)–[ADR-0014](decisions/0014-governance-drift.md)
-and are scheduled in [Phase 1.5](phases/phase-1.5-hardening.md). They
-appear here, in a section labelled non-normative, for one reason: the rule at
-the top of this document says **a rule with no check is a preference**, and a
-preference that quietly sits in a normative table is exactly the drift this
-repository refuses (charter §4, §20).
+**This section is normative as of 2026-09-17.** Every rule below has a check,
+and each check was proven to fail on a real violation before being adopted —
+a gate that has never been seen to fail is a gate that cannot be trusted.
 
-Each moves into the normative tables in the same change that adds its check.
-Until then it must not be cited as a standard, and a green pipeline does not
-indicate compliance.
+Recorded here as a distinct group because they were approved together by
+[ADR-0012](decisions/0012-gate-architecture.md)–[ADR-0020](decisions/0020-deferral-register.md)
+and implemented in [Phase 1.5](phases/phase-1.5-hardening.md). They were
+previously listed as *planned*; that section existed because a rule with no
+check is a preference (charter §20), and a preference sitting quietly in a
+normative table is exactly the drift this repository refuses.
 
-| # | Rule | Charter | Will be enforced by | ADR |
+| # | Rule | Charter | Enforced by | ADR |
 |---|---|---|---|---|
-| V1 | Coverage must not fall below the recorded floor | §18 | `fail_under` in `pyproject.toml` | 0012 |
-| V2 | A gate defined locally must exist in CI, and vice versa | §4, §20 | equivalence test over `Makefile` + `ci.yml` | 0012 |
-| V3 | A catalog entry may not import another entry's production modules | §31 | AST import check in `validate_catalog` | 0012 |
-| V4 | A catalog entry's tests must be collectable by pytest | §13, §18 | `validate_catalog --strict` | 0012 |
-| V5 | Static analysis (bandit + ruff `S`) must pass | §18 | `make sast` in CI | 0013 |
-| V6 | No known-vulnerable dependency | §18 | `pip-audit` over pinned dev requirements | 0013 |
-| V7 | No copyleft dev dependency | §22 | licence deny-list check | 0013 |
-| V8 | Commit messages follow the conventional-commit header | §25 | `scripts/check_commit_msg.py` (hook + CI) | 0013 |
-| V9 | Workflows are linted and actions are SHA-pinned | §18, §22 | `actionlint` + `zizmor` | 0013 |
-| V10 | An accepted risk carries an owner and an unexpired review date | §4, §22 | `scripts/check_risks.py` | 0014 |
+| V1 | Coverage must not fall below the recorded floor | §18 | `--cov-fail-under=85` via `make coverage` | 0016 |
+| V2 | Lines a change touches must be covered | §18 | `make diff-coverage` (PRs only) | 0016 |
+| V3 | A gate defined locally must exist in CI, and vice versa | §4, §20 | `tests/test_ci_parity.py` over `Makefile` + `ci.yml` | 0015 |
+| V4 | A Make recipe that fails must not report success | §20, §28 | hardened `SHELL`/`.SHELLFLAGS` preamble | 0015 |
+| V5 | Independent catalog entries stay independent | §31 | `import-linter` (`make independence`) | 0017 |
+| V6 | No catalog entry depends on an integration | §31 | `import-linter` (`make independence`) | 0017 |
+| V7 | A catalog entry's tests must be collectable by pytest | §13, §18 | `scripts/check_collectability.py` | 0017 |
+| V8 | Static analysis (bandit **and** ruff `S`) must pass | §18 | `make sast` | 0018 |
+| V9 | No known-vulnerable dependency, checked against two sources | §18 | `pip-audit -s pypi` + `-s osv` (`make sca`) | 0018 |
+| V10 | Every dependency licence is on an allow-list; UNKNOWN fails | §22 | `scripts/check_licenses.py` | 0018 |
+| V11 | Secrets must not exist anywhere in git history | §22 | `gitleaks git` over full history (`make secrets`) | 0018 |
+| V12 | Workflows are linted; actions are SHA-pinned; in-workflow tools are version-pinned | §18, §22 | `actionlint` + `zizmor` (`make workflows`) | 0018 |
+| V13 | Commit messages follow the conventional-commit header | §25 | `scripts/check_commit_msg.py` (hook) | 0019 |
+| V14 | An accepted risk carries a real rationale reference and an unexpired review date | §4, §22 | `scripts/check_risks.py` | 0014 |
+| V15 | A deferred item records the fact that defers it, a trigger, and a reversal | §8 | `scripts/check_deferred.py` | 0020 |
 
-Two corrections to the map below, both verified on 2026-09-16 and both filed as
-work item 1 of Phase 1.5:
+### Corrections to previously claimed checks
 
-- **`CI (make ci)` was inaccurate.** `ci.yml` invokes no `make` target; it
-  hand-repeats the commands, and its mypy target list **omits `integrations/`**
-  while the Makefile's includes it. ADR-0012 makes CI run the Makefile's gates
-  and adds a test that fails when the two definitions diverge.
+Both verified on 2026-09-16 and fixed by Phase 1.5:
+
+- **`CI (make ci)` was inaccurate.** `ci.yml` invoked no `make` target; it
+  hand-repeated the commands, and its mypy target list **omitted
+  `integrations/`** while the Makefile's included it. CI now runs `make`
+  targets exclusively, and V3 fails the build when the two definitions diverge.
 - **`make check` did not include `status`.** Governance drift was therefore not
-  caught by the command `AGENTS.md` tells a session to run. ADR-0012 adds it.
+  caught by the command `AGENTS.md` tells a session to run. `check-strict` now
+  includes it.
+
+### Rules deliberately NOT enforced
+
+Per charter §20 these are labelled preferences rather than claimed as
+standards, and each is recorded where a reader will find it:
+
+| Rule | Status | Recorded in |
+|---|---|---|
+| No entry imports another entry's *internal* submodules | review rule — an `import-linter` `forbidden` contract on submodule names was **reproduced failing on correct code** | [AR-004](risks/ACCEPTED_RISKS.md), [ADR-0017](decisions/0017-structural-checks.md) |
+| Static import analysis sees dynamic/string-named imports | tool limitation, accepted | [AR-005](risks/ACCEPTED_RISKS.md) |
+| Commit body and footer structure | ambiguous in the specification; enforcing would encode an interpretation | [AR-003](risks/ACCEPTED_RISKS.md), [ADR-0019](decisions/0019-commit-message-validation.md) |
 
 ---
 
 ## Rule-to-check map
 
 ```text
-make lint        → C2, C3
-make typecheck   → C1
-make validate    → D1, D2, H3
-make status      → H1, H5, L2..L8
-make test        → T5
-pre-commit       → the subset relevant to staged files
-CI (make ci)     → all of the above + coverage
-human review     → H2, H4, C4..C6, T2..T4, D3..D6, §6 gates
+make lint            → C2, C3
+make typecheck       → C1
+make validate        → D1, D2, H3
+make status          → H1, H5, L2..L8
+make test            → T5
+make structural      → V5, V6, V7   (independence + collectability)
+make coverage        → V1
+make diff-coverage   → V2           (pull requests only)
+make security        → V8..V11      (secrets, sast, sca, licenses)
+make workflows       → V12
+make risks           → V14
+make deferred        → V15
+make commit-msg      → V13
+tests/test_ci_parity.py → V3
+Makefile preamble    → V4
+make check-strict    → V1..V15 except V2 and V13 (see below)
+pre-commit           → the subset relevant to staged files
+CI (make ci)         → every gate in CI_GATES; see `make print-gates`
+human review         → H2, H4, C4..C6, T2..T4, D3..D6, §6 gates
 ```
+
+Two gates are intentionally **not** in `make ci`, and the exception is explicit
+in `tests/test_ci_parity.py::_PR_ONLY_GATES` rather than left as an unexplained
+difference:
+
+- **V2 `diff-coverage`** needs a base branch, so it is meaningless on the
+  default branch. CI runs it in a `pull_request`-only step.
+- **V13 `commit-msg`** validates a *message*, not the tree. CI validates the
+  commit range on a branch; a local hook enforces it at authoring time.
 
 ## Changing a rule
 

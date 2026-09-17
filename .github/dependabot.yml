@@ -1,0 +1,93 @@
+# Dependabot configuration.
+#
+# Rationale and the alternatives that were rejected: docs/decisions/0020 and
+# docs/DEFERRED.md (DW-007 explains why Renovate is deferred, not dismissed).
+#
+# The design decisions worth stating:
+#
+# 1. A COOLDOWN. `cooldown.default-days: 7` keeps Dependabot from proposing a
+#    version the day it is published. This is the single most valuable setting
+#    here, and it is not about convenience: the LiteLLM compromise
+#    (CVE-2026-33634, March 2026) shipped a malicious release that was live for
+#    roughly 40 minutes before being pulled, and the "Shai-Hulud" npm worm used
+#    the same window -- a fresh version was malicious, then cleaned. An update
+#    bot with no cooldown is a distribution mechanism for exactly that window.
+#    7 days is also Dependabot's own default, but stating it explicitly means a
+#    future editor sees it was a decision rather than an accident.
+#
+# 2. NO AUTO-MERGE, deliberately. A version is not safe because a bot opened a
+#    PR for it. Every update goes through the full gate suite and a human read.
+#    This is the trust-boundary rule from charter §22: a dependency change is a
+#    reviewable event, not a routine one.
+#
+# 3. GROUPED updates. Ungrouped bots produce a wall of PRs, which trains a
+#    maintainer to merge without reading -- the exact failure this repository
+#    exists to prevent. Grouping keeps the review meaningful.
+#
+# 4. `open-pull-requests-limit: 2` per ecosystem. A hard cap forces the queue
+#    to be worked rather than accumulated.
+#
+# NOTE ON COVERAGE: Dependabot cannot see the pinned tool versions inside
+# .github/workflows/ci.yml (gitleaks, actionlint), because they are ENV
+# variables in a shell step, not dependencies in a manifest. Dependabot DOES
+# track `uses:` references for github-actions below. The in-workflow pins are
+# therefore reviewed manually at each phase gate; DW-007 records Renovate's
+# regex managers as the upgrade path for automating that.
+
+version: 2
+
+updates:
+  # --- GitHub Actions -----------------------------------------------------
+  # Weekly: action releases are infrequent and each one changes the CI
+  # environment, so a predictable weekly batch is easier to review than a
+  # trickle.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 2
+    groups:
+      # CodeQL and similar analysis actions move together; reviewing them as
+      # one change avoids a chain of PRs that each only make sense together.
+      code-analysis:
+        patterns:
+          - "github/codeql-action*"
+      # Everything else in one group, so a quiet week is one PR, not five.
+      actions:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "github/codeql-action*"
+    commit-message:
+      # Conventional Commits, enforced by the commit-msg hook (ADR-0019).
+      prefix: "build"
+      include: "scope"
+
+  # --- Python development toolchain ---------------------------------------
+  # Monthly, not weekly. The dev toolchain is pinned exactly (charter §19) so
+  # that two sessions a year apart verify identically; churning it weekly would
+  # undermine the reason it is pinned. There are NO runtime dependencies, so
+  # this only ever touches tools.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 2
+    groups:
+      dev-toolchain:
+        patterns:
+          - "*"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    # Only DIRECT dependencies get PRs. A transitive bump arrives through the
+    # direct one, and a PR that edits the lock file but not
+    # [project.optional-dependencies].dev would put the lock file out of step
+    # with its declared source of truth.
+    allow:
+      - dependency-type: "direct"

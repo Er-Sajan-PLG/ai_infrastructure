@@ -78,7 +78,9 @@ space := $(empty) $(empty)
 # WHY AN INTEGER WITH MARGIN, AND NOT "just below the measured value":
 # coverage DISPLAYS a rounded percentage while --cov-fail-under compares the
 # RAW float. Measured here: the report prints "90%" while the real value is
-# 89.79%. A floor of 90 would therefore FAIL while showing the reader "90%".
+# 90.03% (it was 89.79% before the checker unit tests landed, and the report
+# printed "90%" in both cases -- which is the point). A floor of 90 would
+# therefore FAIL while showing the reader "90%".
 # An integer at least one point below the measured value cannot land in that
 # gap. Rationale and rejected alternatives: docs/decisions/0016.
 COVERAGE_FLOOR := 85
@@ -110,7 +112,7 @@ ENTRY_PATHS := $(subst $(space),:,$(sort $(dir $(ENTRY_DIRS)))):integrations
 # meaningless on the default branch, so the workflow runs it in a separate
 # pull-request-only step. tests/test_ci_parity.py asserts the two-way
 # correspondence for the gates listed here.
-CI_GATES := check-strict coverage secrets sast sca licenses workflows status
+CI_GATES := check-strict coverage secrets sast sca licenses workflows deferred status
 
 export UV_CACHE_DIR := $(UV_CACHE)
 
@@ -337,6 +339,14 @@ risks: ## Verify the accepted-risk register is current and honestly maintained
 	@# docs/risks/ACCEPTED_RISKS.md and docs/decisions/0014.
 	$(PY) scripts/check_risks.py
 
+.PHONY: deferred
+deferred: ## Verify the deferred-work register is well-formed and current
+	@# Work that is correctly not done yet, recorded with the fact that makes
+	@# it premature, the trigger that would change that, and the reversal step.
+	@# Enforces schema/expiry, the same anti-gaming re-dating rule as the risk
+	@# register, and reports observable triggers that may have fired.
+	$(PY) scripts/check_deferred.py
+
 .PHONY: commit-msg
 commit-msg: ## Validate the Conventional Commits header format (ADR-0019)
 	@# Validates the header only. The specification is genuinely ambiguous about
@@ -355,7 +365,7 @@ commit-msg: ## Validate the Conventional Commits header format (ADR-0019)
 check: lint typecheck validate links test ## The full gate a session must pass before committing
 
 .PHONY: check-strict
-check-strict: lint typecheck validate-strict links phase-plan structural risks test ## Full gate + strict catalog + structural + risk register
+check-strict: lint typecheck validate-strict links phase-plan structural risks deferred test ## Full gate + strict catalog + structural + registers
 
 .PHONY: security
 security: secrets sast sca licenses ## All security gates (SAST, SCA, secrets, licences)

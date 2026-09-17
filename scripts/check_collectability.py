@@ -204,10 +204,6 @@ def main(argv: list[str] | None = None) -> int:
     entries = _entry_dirs()
     patterns = _configured_python_files()
 
-    if not entries:
-        print("check_collectability: no entries with tests/ found; nothing to check.")
-        return 0
-
     # --- Anti-silent-skip floor -------------------------------------------
     # If the discovery logic above ever breaks (a renamed directory, a changed
     # layout), it would find nothing and this check would pass having verified
@@ -215,6 +211,12 @@ def main(argv: list[str] | None = None) -> int:
     # .PHONY is renamed or the parse otherwise breaks, this loop would expand
     # nothing at all and would pass green having checked NOTHING."
     #
+    # NOTE ON HISTORY: this floor was originally written BELOW an
+    # `if not entries: return 0` short-circuit, so a TOTAL discovery collapse
+    # exited 0 while a partial one exited 1 -- backwards, and it meant the
+    # guard did not cover the case it was written for. A unit test that
+    # simulated collapse caught it. The early return is gone; the floor is now
+    # the only exit for too few entries, including zero.
     if len(entries) < MIN_EXPECTED_ENTRIES:
         print(
             f"check_collectability: FAILED - discovered only {len(entries)} "

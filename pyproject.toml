@@ -22,12 +22,32 @@ dependencies = []
 [project.optional-dependencies]
 # Development toolchain. Versions are pinned (see requirements-dev.txt) so that
 # two sessions a year apart verify against the same checks.
+#
+# Every entry here is a DEV dependency. The runtime dependency list above stays
+# empty by design, so nothing in this group reaches a consumer.
+#
+# Phase 1.5 additions, each with the gate it serves (docs/decisions/0015-0019):
+#   import-linter  structural independence of catalog entries (ADR-0017)
+#   bandit         SAST; NOT redundant with ruff's S rules (ADR-0018)
+#   pip-audit      dependency audit against PyPI and OSV (ADR-0018)
+#   types-PyYAML   stubs only; mypy strict rejects untyped imports (ADR-0015)
+#   diff-cover     change-scoped coverage on pull requests (ADR-0016)
+#
+# NOT here, deliberately: commitizen. It is evaluated in ADR-0019 and rejected
+# because its added machinery (changelog, versioning) is unused while the
+# header check it provides is a few dozen lines. A lock file must contain only
+# what the source of truth declares, so a rejected tool must not appear in it.
 dev = [
     "pytest==9.1.1",
     "pytest-cov==7.1.0",
     "ruff==0.16.7",
     "black==26.5.1",
     "mypy==2.3.1",
+    "bandit==1.9.4",
+    "import-linter==2.15",
+    "pip-audit==2.10.1",
+    "types-PyYAML==6.0.12.20260906",
+    "diff-cover==10.5.1",
 ]
 
 [build-system]

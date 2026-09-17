@@ -50,16 +50,25 @@ Versions are pinned in `requirements-dev.txt` (a lock file) and declared in `pyp
 | Tool | Version | Role | Config |
 |---|---|---|---|
 | pytest | 9.1.1 | Tests | `[tool.pytest.ini_options]` |
-| pytest-cov | 7.1.0 | Branch coverage | `[tool.coverage.*]` |
+| pytest-cov | 7.1.0 | Coverage measurement | `[tool.coverage.*]` |
 | ruff | 0.16.7 | **Lint only** | `[tool.ruff.lint]` |
 | black | 26.5.1 | **Format only** | `[tool.black]` |
 | mypy | 2.3.1 | Types, **strict** | `[tool.mypy]` |
+| bandit | 1.9.4 | SAST, alongside ruff `S` | `[tool.bandit]` |
+| import-linter | 2.15 | Entry independence (charter §31) | `[tool.importlinter]` |
+| pip-audit | 2.10.1 | Dependency audit (PyPI + OSV) | CLI flags |
+| diff-cover | 10.5.1 | Change-scoped coverage on PRs | CLI flags |
+| types-PyYAML | 6.0.12.20260906 | Stubs; mypy strict rejects untyped imports | — |
 
 **Division of labour: ruff lints, black formats.** Ruff's formatter is
 deliberately not used. Two opinionated formatters that always agree provide no
 additional coverage — disagreement would be a config bug, not a signal — so the
 repository keeps one formatter and inherits one convention. Reason recorded in
 [ADR-0003](decisions/0003-toolchain-and-enforcement.md).
+
+**ruff `S` and bandit are both run, deliberately.** They are not equivalent:
+`B614`/`B615` are unported in ruff, `S320` was removed, and `S401`–`S403` are
+preview-only. See [ADR-0018](decisions/0018-security-tooling.md).
 
 ## The gates
 
@@ -69,15 +78,55 @@ repository keeps one formatter and inherits one convention. Reason recorded in
 | `make typecheck` | mypy strict | §13 |
 | `make validate` | catalog entry contract | §13, §21 |
 | `make test` | test suite | §18 |
+| `make coverage` | tests + floor `85` | §18 |
+| `make diff-coverage` | coverage of changed lines (PRs) | §18 |
+| `make structural` | entry independence + test collectability | §31 |
+| `make security` | secrets, SAST, SCA, licences | §18, §22 |
+| `make workflows` | actionlint + zizmor | §18, §22 |
+| `make risks` | accepted-risk register current | §4, §22 |
+| `make deferred` | deferral register well-formed | §8 |
+| `make commit-msg` | Conventional Commits header | §25 |
 | `make status` | **taxonomy drift vs. disk** | §4 |
-| `make check` | all of the above | §21 |
-| `make ci` | `check-strict` + coverage | §18, §19 |
+| `make check` | lint + typecheck + validate + links + test | §21 |
+| `make check-strict` | `check` + strict catalog + structural + registers | §21 |
+| `make ci` | what CI runs — see `make print-gates` | §18, §19 |
+
+`make print-gates` prints the exact CI gate list, and
+[`tests/test_ci_parity.py`](../tests/test_ci_parity.py) fails the build if the
+workflow and that list diverge in either direction.
 
 ## Enforcement
 
-- **`make install-hooks`** installs `.git/hooks/pre-commit`, which runs the relevant gates on staged changes. It is per-clone, not versioned by git, so run it once per clone.
-- **CI** (`.github/workflows/ci.yml`) runs the same gates plus coverage on every push and pull request.
-- A gate failure is never resolved by weakening the check (charter §28) or by `--no-verify`.
+- **`make install-hooks`** installs `.git/hooks/pre-commit` (quality gates on
+  staged changes) and `.git/hooks/commit-msg` (commit header format). Hooks are
+  per-clone, not versioned by git, so run it once per clone.
+- **CI** (`.github/workflows/ci.yml`) invokes every gate through `make`, so a
+  green pipeline means the same thing as a green local run.
+- A gate failure is never resolved by weakening the check (charter §28) or by
+  `--no-verify`. If a check is wrong, fix the check and record why.
+
+## The three registers
+
+Three separate artefacts answer three different questions. Conflating them —
+treating a deferral as a bug, or a rejected option as planned work — is the
+mistake they exist to prevent:
+
+| Artefact | Question it answers | Checked by |
+|---|---|---|
+| [`decisions/`](decisions/README.md) "Options considered" | *Why was this **rejected**?* | review |
+| [`risks/ACCEPTED_RISKS.md`](risks/ACCEPTED_RISKS.md) | *What are we **living with**?* | `make risks` |
+| [`DEFERRED.md`](DEFERRED.md) | *What will become valuable **later**, and when?* | `make deferred` |
+
+Both checkers enforce an anti-gaming rule: a `review_by` date may not advance
+while the entry's rationale is unchanged. A date-only gate has a one-keystroke
+fix, and *"make the build pass"* and *"edit one date"* are a very short
+distance apart. The rationale must genuinely change, which means someone had to
+think about it again.
+
+`make deferred` additionally prints `POSSIBLE TRIGGER FIRE` advisories for the
+triggers it can observe (a git tag appearing, a runtime dependency being
+added). It never fails on those — adjudicating prose is not something a script
+can honestly claim to do.
 
 ## Governance drift detection
 

@@ -94,6 +94,19 @@ def _normalise(raw: str) -> str:
     # "Mozilla Public License 2.0 (MPL 2.0)".
     if "(" in text:
         text = text.split("(", 1)[0]
+
+    # MULTI-WORD FAMILIES ARE MATCHED BEFORE NOISE STRIPPING.
+    #
+    # This ordering is load-bearing and was a real bug: stripping the noise
+    # words below removes " software" and "the ", which destroys the phrase
+    # "Python Software Foundation" -- so a genuine PSF-licensed package
+    # normalised to "python foundation" and was rejected as unknown. Any
+    # multi-word family name has to be recognised while the phrase is intact.
+    if "python software foundation" in text:
+        return "psf-2.0"
+    if "mozilla public" in text:
+        return "mpl-2.0"
+
     for noise in (" license", " licence", "the ", " software", " version"):
         text = text.replace(noise, "")
     text = text.strip().strip("().,")
@@ -102,13 +115,13 @@ def _normalise(raw: str) -> str:
         return "apache-2.0"
     if text.startswith("mit"):
         return "mit"
-    if "mozilla public" in text or text.startswith("mpl"):
-        return "mpl-2.0" if ("2" in text or "mozilla public" in text) else "mpl-unknown"
+    if text.startswith("mpl"):
+        return "mpl-2.0" if "2" in text else "mpl-unknown"
     if text.startswith("isc"):
         return "isc"
     if text.startswith("unlicense"):
         return "unlicense"
-    if "python software foundation" in text or text.startswith("psf"):
+    if text.startswith("psf"):
         return "psf-2.0"
     if text.startswith("python") and "2" in text:
         return "python-2.0"

@@ -148,6 +148,10 @@ if echo "$STAGED" | grep -qE '^(docs/risks/|docs/decisions/)'; then
     echo "pre-commit: accepted-risk register"
     "${VENV}/bin/python" scripts/check_risks.py --quiet >/dev/null 2>&1 \
         || fail "the risk register is stale or was re-dated without review (run 'make risks')"
+
+    echo "pre-commit: deferred-work register"
+    "${VENV}/bin/python" scripts/check_deferred.py --quiet >/dev/null 2>&1 \
+        || fail "the deferred register is stale or was re-dated without review (run 'make deferred')"
 fi
 
 # --- 5. Governance drift --------------------------------------------------

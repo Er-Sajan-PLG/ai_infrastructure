@@ -128,6 +128,9 @@ jobs:
       - name: Workflow lint (actionlint + zizmor)
         run: make workflows
 
+      - name: Deferred-work register
+        run: make deferred
+
       - name: Governance drift (taxonomy vs artifacts)
         run: make status
 
