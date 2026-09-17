@@ -401,6 +401,13 @@ diff-coverage: ## On a branch: require full coverage of lines this change touche
 print-gates: ## Print the CI gate list, one per line (machine-readable)
 	@for t in $(CI_GATES); do echo "$$t"; done
 
+# The PYTHONPATH used by `make independence`, so callers other than this
+# Makefile (the pre-commit hook) do not have to re-derive it and risk drifting
+# from the definition above.
+.PHONY: print-entry-paths
+print-entry-paths: ## Print the PYTHONPATH for entry packages (machine-readable)
+	@echo "$(ENTRY_PATHS)"
+
 # ---------------------------------------------------------------------------
 # Benchmarking (charter §19)
 # ---------------------------------------------------------------------------

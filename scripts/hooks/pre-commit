@@ -105,7 +105,52 @@ if echo "$STAGED" | grep -qE '^(docs/phases/|TAXONOMY\.md|AGENTS\.md)'; then
         || fail "documented stage order contradicts charter 4 (run 'make phase-plan')"
 fi
 
-# --- 4. Governance drift --------------------------------------------------
+# --- 4. Structural checks (charter §31) -----------------------------------
+# Entry independence and test collectability. Cheap, and they guard the
+# property that makes the catalog reusable rather than merely present.
+if echo "$STAGED" | grep -qE '^(catalog/|integrations/|pyproject\.toml)'; then
+    echo "pre-commit: catalog entry independence"
+    PYTHONPATH="$(cd "$REPO_ROOT" && make --no-print-directory -s print-entry-paths)" \
+        "${VENV}/bin/lint-imports" --no-logo >/dev/null 2>&1 \
+        || fail "an entry imports something it must not (run 'make independence')"
+
+    echo "pre-commit: test collectability"
+    "${VENV}/bin/python" scripts/check_collectability.py --quiet >/dev/null 2>&1 \
+        || fail "an entry's tests are not collectable (run 'make collectability')"
+fi
+
+# --- 4b. Security: SAST + dependency audit + licences ---------------------
+# SAST and licence checks are fast and run on any code or dependency change.
+# The dependency AUDIT (pip-audit) needs the network, so it is left to CI:
+# a hook that blocks a commit because a remote service is unreachable would
+# be disabled within a week.
+if echo "$STAGED" | grep -qE '\.py$'; then
+    echo "pre-commit: SAST (bandit on production code)"
+    PROD=$(find catalog integrations scripts -name '*.py' \
+        -not -path '*/tests/*' -not -path '*/examples/*' 2>/dev/null || true)
+    if [ -n "$PROD" ]; then
+        # shellcheck disable=SC2086
+        "${VENV}/bin/python" -m bandit -c pyproject.toml -q -ll $PROD >/dev/null 2>&1 \
+            || fail "bandit found a MEDIUM+ issue in production code (run 'make sast')"
+    fi
+fi
+
+if echo "$STAGED" | grep -qE '(pyproject\.toml|requirements.*\.txt)$'; then
+    echo "pre-commit: licence allow-list"
+    "${VENV}/bin/python" scripts/check_licenses.py --quiet >/dev/null 2>&1 \
+        || fail "a dependency licence is not on the allow-list (run 'make licenses')"
+fi
+
+# --- 4c. Accepted-risk register -------------------------------------------
+# Runs whenever the register, the roadmap, or the ADRs move: those are the
+# files that carry a rationale_ref, and a dangling reference is a defect.
+if echo "$STAGED" | grep -qE '^(docs/risks/|docs/decisions/)'; then
+    echo "pre-commit: accepted-risk register"
+    "${VENV}/bin/python" scripts/check_risks.py --quiet >/dev/null 2>&1 \
+        || fail "the risk register is stale or was re-dated without review (run 'make risks')"
+fi
+
+# --- 5. Governance drift --------------------------------------------------
 # The single most important gate: no commit may claim a lifecycle status the
 # artifacts on disk do not support (charter §4).
 if echo "$STAGED" | grep -qE '^(TAXONOMY\.md|specifications/|catalog/|docs/decisions/)'; then

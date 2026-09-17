@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+#
+# Git commit-msg hook for ai_infrastructure.
+#
+# Validates the commit message header against the Conventional Commits
+# specification. Installed by `make install-hooks`.
+#
+# Git passes the path to the message file as $1.
+#
+# This is the LOCAL half of the check. CI re-validates every commit on a
+# branch, because a local hook can be bypassed with --no-verify and charter
+# §28 is a rule about not doing that, not a mechanism that prevents it.
+#
+# Rationale, and the dependency options that were rejected (gitlint: 3.5 years
+# stale; PyPI `commitlint`: a different GPL-3.0 package): docs/decisions/0019.
+#
+# Charter references: §4, §13, §20, §28.
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+VENV="${REPO_ROOT}/.venv"
+MESSAGE_FILE="${1:-}"
+
+if [ -z "$MESSAGE_FILE" ]; then
+    echo "commit-msg: no message file given; skipping." >&2
+    exit 0
+fi
+
+# A missing virtualenv is reported, never silently treated as a pass: an unrun
+# check must not look like a passed one (charter §28). CI has no such excuse.
+if [ ! -x "${VENV}/bin/python" ]; then
+    echo "commit-msg: no virtualenv at .venv — run 'make setup' first." >&2
+    echo "commit-msg: skipping the message check (environment not set up)." >&2
+    exit 0
+fi
+
+if ! "${VENV}/bin/python" scripts/check_commit_msg.py \
+        --message-file "$MESSAGE_FILE"; then
+    echo "" >&2
+    echo "commit-msg FAILED: the commit message is not a Conventional Commit." >&2
+    echo "Expected the form:  type(scope): description" >&2
+    echo "" >&2
+    echo "  type is one of: build chore ci docs feat fix perf refactor" >&2
+    echo "                  revert style test" >&2
+    echo "  scope is optional;  description must not be empty." >&2
+    echo "" >&2
+    echo "If the header is followed by a body, separate them with a BLANK LINE." >&2
+    echo "" >&2
+    echo "Deliberate exception: include the literal marker [skip commit-msg]" >&2
+    echo "in the header. It is visible in git log, unlike --no-verify." >&2
+    exit 1
+fi
+
+exit 0
