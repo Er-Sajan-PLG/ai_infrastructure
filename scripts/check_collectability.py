@@ -54,7 +54,13 @@ from __future__ import annotations
 import argparse
 import logging
 import re
-import subprocess  # nosec B404 - invoking the pinned pytest, no user input
+
+# subprocess is used to run the pinned pytest collector with a fixed argv and
+# no shell. The justification is deliberately NOT on the import line: bandit
+# parses everything after its suppression marker as a comma-separated test-id
+# list, so trailing prose makes it log a warning per word. Kept here, where a
+# reader finds it and the parser does not.
+import subprocess  # nosec B404
 import sys
 from pathlib import Path
 

@@ -56,7 +56,13 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import re
-import subprocess  # nosec B404 - invoking pinned git, fixed argv
+
+# subprocess is used to run pinned git with a fixed argv and no shell (to read
+# the previous version of the register for the re-dating check). The reason is
+# deliberately NOT on the import line: bandit parses everything after its
+# suppression marker as a comma-separated test-id list and warns per prose
+# word.
+import subprocess  # nosec B404
 import sys
 from dataclasses import dataclass
 from pathlib import Path
