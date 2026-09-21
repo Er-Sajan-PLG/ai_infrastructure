@@ -12,4 +12,4 @@ Small, runnable demonstrations of individual catalog capabilities and of minimal
 
 ## Status
 
-Empty. No catalog entries exist yet.
+5 catalog entries, each with at least one runnable example (`catalog/*/<entry>/examples/quickstart.py`). Examples are demos; correctness evidence lives in each entry's `tests/` and in `tests/` (charter §18).

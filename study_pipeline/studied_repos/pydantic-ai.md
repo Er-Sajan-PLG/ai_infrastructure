@@ -243,13 +243,12 @@ that basis alone.
 
 No new categories proposed.
 
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-
-- FACT: 348 of 802 Python files are test files (43%) — the top band measured across the 25 Track 2B targets.
-- INFERENCE: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-
+- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
+- INFERENCE: not assessed. Same reason.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

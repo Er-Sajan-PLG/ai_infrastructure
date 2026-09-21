@@ -58,10 +58,10 @@ the quality is uneven by nature: **7 give project-specific guidance** derived
 from facts measured this session (Letta's documentation-only branch and its npm
 move, the Agno/Phidata redirect caught by an identical commit, crewAI's `lib/`
 layout and copyright-first licence, swarm's reference-implementation test ratio,
-Mastra's zero-Python surface); **18 state `not assessed`** for the "avoid" half.
+Mastra's zero-Python surface); **18 state `not assessed`** for the \"avoid\" half.
 
 The reason is in this document's own Method: step 3 (*trade-offs*) is
-**"human- or agent-paced, not automated"**. A structural pass cannot honestly
+**\"human- or agent-paced, not automated\"**. A structural pass cannot honestly
 say what to avoid in a project without reading its implementation, and writing
 plausible prose for 25 repositories is exactly the rubber-stamp risk this
 criterion exists to prevent. The 18 honest refusals are the criterion working,

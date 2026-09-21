@@ -37,4 +37,4 @@ Machinery
 
 ## Status
 
-Skeleton only (Phase 1). No catalog entries exist. First expected entries: `catalog/tools/tool_registry`, `catalog/models/model_provider_abstraction` — see `TAXONOMY.md` §4 and ADR-0001.
+5 catalog entries across 5 of 20 declared categories (see `TAXONOMY.md`). 1 end-to-end integration. 5 specifications, 5 research records. The repository is past skeleton — see `docs/roadmap.md` for the current phase and queue.

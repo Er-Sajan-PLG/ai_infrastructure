@@ -363,13 +363,12 @@ that basis alone.
 |---|---|---|
 | `config` | `config` | category `tooling` is not in the taxonomy tree |
 
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-
-- FACT: 6 of 10 Python files are test files (60%) — the top band measured across the 25 Track 2B targets.
-- INFERENCE: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-
+- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
+- INFERENCE: not assessed. Same reason.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

@@ -361,13 +361,12 @@ that basis alone.
 | `config` | `config` | category `tooling` is not in the taxonomy tree |
 | `guardrails` | `guardrails` | category `guardrails` is not in the taxonomy tree |
 
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-
-- FACT: 0 of 5 Python files are test files (0%) — the lower band for this batch. A file ratio is not a test count: generated or parameterised tests are not visible here.
-- INFERENCE: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-
+- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
+- INFERENCE: not assessed. Same reason.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

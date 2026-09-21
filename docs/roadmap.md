@@ -7,11 +7,12 @@
 | Phase | Status | Plan |
 |---|---|---|
 | 0 — Foundation *(ADR-0005)* | ✅ Complete | [`phases/phase-0-foundation.md`](phases/phase-0-foundation.md) |
-| 1 — Seed | 🔄 **In progress** — capability work starts now | [`phases/phase-1-seed.md`](phases/phase-1-seed.md) |
-| 2 — Study pipeline | Not started | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
-| 3 — Discover | Not started | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
-| 4 — Compose | Not started | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
-| 5 — Sustain | Not started | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
+| 1 — Seed | ✅ Complete | [`phases/phase-1-seed.md`](phases/phase-1-seed.md) |
+| 1.5 — Hardening | ✅ Complete | [`phases/phase-1.5-hardening.md`](phases/phase-1.5-hardening.md) |
+| 2 — Study | 🟧 **Partial** — Tracks 2A+2B done; 18/25 trade-offs require session work | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
+| 3 — Discover | ⬜ Not started | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
+| 4 — Compose | ⬜ Not started | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
+| 5 — Sustain | ⬜ Not started | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
 
 Executable plans — including exit criteria — live in [`docs/phases/`](phases/). Read the current phase's plan before starting work.
 
