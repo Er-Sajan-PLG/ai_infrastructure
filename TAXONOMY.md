@@ -30,9 +30,12 @@ deployment/            Deployment
 application/           AI Application Infrastructure (research/ only, for now)
 prompt-engineering/    Prompt Engineering Primitives (catalog: prompt_engineering naming TBD on first entry)
 finetuning/            Fine-tuning Infrastructure
-config/                Configuration & Settings Infrastructure (added Phase 2, ADR-0022)
-caching/               Caching Infrastructure (added Phase 2, ADR-0023)
-agent-config/          Agent Repository Configuration (added Phase 2, ADR-0024)
+| config/                | Configuration & Settings Infrastructure (added Phase 2, ADR-0022) |
+| caching/               | Caching Infrastructure (added Phase 2, ADR-0023) |
+| agent-config/          | Agent Repository Configuration (added Phase 2, ADR-0024) |
+| evidence-plane/        | Execution Evidence Plane (added Phase 2, ADR-0025) |
+| evaluation/            | Evaluation & Verification Architecture (added Phase 2, ADR-0026) |
+| worker-contract/       | Worker/Agent Execution Contracts (added Phase 2, ADR-0027) |
 emerging/              Emerging / Other (research/ only)
 frameworks/            Distilled essence of full frameworks (catalog/ only)
 primitives/            Shared low-level building blocks (catalog/ only)

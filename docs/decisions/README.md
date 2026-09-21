@@ -28,7 +28,10 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0021](0021-study-pipeline-architecture.md) | Study pipeline: static-only, never executes studied code, stdlib only, emits proposals not code | Accepted |
 | [0022](0022-configuration-taxonomy-category.md) | New taxonomy category `config/` — configuration and settings infrastructure (15/25 studied repos) | Accepted |
 | [0023](0023-caching-taxonomy-category.md) | New taxonomy category `caching/` — response caching, AI-specific form (14/25 studied repos) | Accepted |
-| [0024](0024-agent-repository-configuration.md) | New taxonomy category `agent-config/` — agent instruction files in repositories (18/25 studied repos) | Accepted |
+|| [0024](0024-agent-repository-configuration.md) | New taxonomy category `agent-config/` — agent instruction files in repositories (18/25 studied repos) | Accepted |
+|| [0025](0025-execution-evidence-plane.md) | Execution evidence plane: structured proof of what happened | Accepted |
+|| [0026](0026-evaluator-verifier-separation.md) | Evaluator/Verifier separation: assessment vs truth | Accepted |
+|| [0027](0027-worker-contract.md) | Worker contract: explicit interface for agent execution | Accepted |
 
 ## When an ADR is required
 
