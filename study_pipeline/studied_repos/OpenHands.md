@@ -366,9 +366,15 @@ that basis alone.
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
+## Trade-offs and what to avoid
+
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+- OBSERVATION: OpenHands exposes a critical weakness in the structural detector — it is biased toward library architecture and underperforms on application architecture. The detector sees WEAK patterns (agent-loop, tools, MCP) but misses the actual architecture: UI → API → agent/session/profile → model/provider → tool/MCP → execution environment → events/results → persistence/continuation. The thing you ultimately want to extract — architecture — is relational, while the pipeline is predominantly lexical/structural.
+- OBSERVATION: OpenHands is highly relevant to JARVIS for the agent↔environment boundary, session/state machine, configuration-plane vs execution-plane separation, and agent authority vs environment capability. The 100 deps are application-level (React, Monaco, etc.), not AI-infrastructure deps — do not conflate with library studies.
+- DESIGN OPINION: MCP is potentially much more important than the report suggests — both backend (`src/api/mcp-service/`) and frontend (`src/components/features/mcp-page/`) treatment indicates MCP is integrated across the stack, not merely an isolated client library. Trace: MCP configuration → MCP service → agent-server representation → tool discovery → agent execution → UI management.
+- DESIGN OPINION: The agent-loop and tool-registry detections are inadequate — an agent profile is not an agent loop, `.agents/skills/` is not runtime orchestration. Do not extract "agent architecture" from this report. For tools, determine whether there is a formal tool lifecycle (discover→authorize→expose→select→validate→execute→observe→return→audit) or merely callable functions.
+- INFERENCE: The pipeline needs an ARCHITECTURAL RELATIONSHIPS output layer — not just `Pattern detected: tool-registry` but `Relationship: Agent → Tool` with evidence, boundary, confidence, architectural significance, and transferability. For JARVIS, study OpenHands as an agent execution system: trace runtime architecture from source, reconstruct configuration-plane vs execution-plane separation, and identify agent↔environment boundary patterns. The presence of @stryker-mutator (mutation testing) and playwright/mock-LLM test infrastructure is itself an architectural signal the detector missed — manifest evidence should be semantically classified, not merely counted.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

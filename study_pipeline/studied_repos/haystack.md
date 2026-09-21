@@ -381,12 +381,21 @@ that basis alone.
 | `guardrails` | `guardrails` | category `guardrails` is not in the taxonomy tree |
 | `rate-limiting` | `rate-limiting` | category `reliability` is not in the taxonomy tree |
 
-The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: Haystack is a serious deep-dive candidate. The combination of component architecture, pipeline/orchestration, agents+state, evaluation, retrieval, tooling, HITL, tracing/observability, caching, and validators is unusually relevant to STEMMA/JARVIS — but none of these are yet established as *good designs*.
+- OBSERVATION: The first deep-dive should be the component/pipeline execution model, not individual features. If Haystack has a genuinely strong component contract, that explains how all those capabilities fit together. The fundamental question is: what is the execution abstraction, and what guarantees does it provide?
+- DESIGN OPINION: For STEMMA, prioritize: (1) component model, (2) pipeline execution semantics, (3) retrieval architecture, (4) document/data/provenance model, (5) evaluation architecture, (6) tracing/observability, (7) HITL semantics, (8) validators. Do NOT study Haystack's agent as an alternative to JARVIS — study the underlying execution primitives (tool selection, state, termination, error recovery, streaming, tracing).
+- DESIGN OPINION: Haystack's pipeline is NOT STEMMA's knowledge authority. Even if Haystack's abstraction is excellent, do not let it define STEMMA's canonical data model. The safe pattern is: Haystack provides execution/retrieval/components → STEMMA proposal → STEMMA validation → human approval → canonical STEMMA.
+- DESIGN OPINION: Downgrade `memory` — the evidence (`document_stores/in_memory/`, `retrievers/in_memory/`) likely means document storage and retrieval index, not conversational/agent memory. Do not conflate with STEMMA's canonical knowledge, episodic state, working context, and provenance.
+- DESIGN OPINION: Do NOT create new taxonomy categories (`caching`, `guardrails`, `rate-limiting`) based on one repository. These may belong under broader categories like `performance` or `reliability`.
+- INFERENCE: Evaluation and observability may be the most valuable discoveries — STEMMA needs multi-stage evaluation (extraction accuracy, entity resolution, evidence-level verification) and causal execution traces connected to evidence provenance. Determine whether Haystack's tracing produces a causal record vs. mere performance telemetry. If HITL is governance-oriented (durable review state with explicit authorization transition) rather than interaction-oriented ("continue?"), it is highly relevant to STEMMA canonicalization.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

@@ -311,9 +311,16 @@ that basis alone.
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
+## Trade-offs and what to avoid
+
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+- OBSERVATION: The detector is susceptible to semantic noise — a website image directory (`dotnet/website/images/articles/UseAutoGenAsModelinAGStudio/`) appears as model-provider evidence, and an embeddings directory is treated as retrieval evidence. This reveals that the current detector identifies lexical/structural signals rather than reliably identifying architectural mechanisms.
+- OBSERVATION: AutoGen is a noisier target than Vercel AI — mixed Python/.NET/Studio/docs/experimental structure means more semantic contamination. This makes it a valuable stress test for the study pipeline.
+- OBSERVATION: The `memory` signal is the strongest structural finding: `autogen_core/memory/`, `autogen_ext/memory/`, `experimental/task_centric_memory/`, `memory/canvas/`, `memory/chromadb/`, `memory/mem0/`, `memory/redis/` — considerably more compelling than a single `memory/` directory. Agent/orchestration is also a legitimate high-priority research target across Python and .NET.
+- DESIGN OPINION: Treat this report as a **research map, not architectural knowledge**. The pipeline correctly identifies where deeper investigation should occur while refusing to invent implementation conclusions. That is its correct role.
+- DESIGN OPINION: The system needs to distinguish four different claims: `name/path evidence → implementation evidence → architectural evidence → reusable design knowledge`. Current pattern detection is too close to "interesting pathname matching a pattern dictionary." Automatic learning from these outputs risks false convergence.
+- INFERENCE: Retain AutoGen as a particularly useful test case for improving the study mechanism — its mixed structure exposes false-positive weaknesses that cleaner repositories may not reveal. Before using these results for evolution, the next layer must validate candidate mechanisms against source-level evidence.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

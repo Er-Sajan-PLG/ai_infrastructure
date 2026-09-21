@@ -361,12 +361,15 @@ that basis alone.
 | `config` | `config` | category `tooling` is not in the taxonomy tree |
 | `guardrails` | `guardrails` | category `guardrails` is not in the taxonomy tree |
 
-The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+- OBSERVATION: This study provides a valid structural reconnaissance and candidate architecture map. Its epistemic discipline — distinguishing structural evidence from implementation/quality claims — is good research behavior and should be preserved.
+- OBSERVATION: "Strong/moderate/weak" labels describe the strength of structural evidence, NOT architectural confidence. Strong evidence that `packages/provider/` exists is not strong evidence that Vercel AI's provider architecture should be adopted.
+- DESIGN OPINION: This study should NOT directly generate implementation changes. It has successfully answered "Where should we look?" but not "What should `ai_infrastructure` learn?"
+- DESIGN OPINION: For evolution, Vercel AI should be one evidence set among many. Repeated directory names across 18 repositories should NOT automatically be treated as architectural consensus.
+- INFERENCE: Adopt this study as a structural baseline and research map. Avoid treating it as verified architectural knowledge. The next phase requires targeted source-level investigation of the strongest candidate areas (agent-loop, model-provider, tools, evaluation, guardrails, retrieval).
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

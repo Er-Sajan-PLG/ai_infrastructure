@@ -152,12 +152,19 @@ that basis alone.
 
 No new categories proposed.
 
-The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+## Trade-offs and what to avoid
+
+The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
+
+- OBSERVATION: Haystack Experimental is structurally relevant to STEMMA's retrieval problem, but the report has reached the limit of usefulness at the structural stage. The strongest signal is `components/retrievers/` and the broader component architecture (embedders, generators, preprocessors, retrievers, summarizers, writers), but retrieval is already in the taxonomy.
+- OBSERVATION: The component-oriented structure (`components/` with typed subdirectories) is an architectural signal worth investigating for STEMMA's pipeline needs, but the study cannot determine whether the component abstraction provides useful composition, typing, serialization, execution semantics, observability, and failure isolation.
+- DESIGN OPINION: This repository deserves a **targeted deep-dive** on four specific areas: (1) retrieval architecture — interfaces, filtering, provenance preservation, ranking, composition; (2) component contracts — input/output types, validation, serialization, pipeline construction; (3) pipeline semantics — deterministic composition, failure isolation, intermediate artifact inspection, reproducibility from configuration; (4) provenance — whether the metadata model supports a canonical evidence chain (source → extraction → verification → proposal).
+- DESIGN OPINION: Do NOT conclude "Haystack is a retrieval framework, therefore STEMMA should use Haystack" or "Haystack has components, therefore STEMMA should adopt its architecture." The study hasn't established either.
+- INFERENCE: Classify as **studied, structurally relevant, but not yet architecturally influential**. Give the next agent a focused investigation budget limited to retrieval + component contracts + pipeline execution + provenance. If those four turn out strong, Haystack becomes a candidate for parts of STEMMA's implementation. If not, clean it from the influential list.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

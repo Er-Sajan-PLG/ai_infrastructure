@@ -260,9 +260,18 @@ that basis alone.
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
+## Trade-offs and what to avoid
+
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+- OBSERVATION: MCP Python SDK is the official reference implementation and is fundamentally different from the other repos — it's a **protocol boundary**, not a framework. Its real study value is: how do you define a protocol boundary between an AI system and externally provided capabilities? That is directly relevant to JARVIS → worker/tool/environment architecture.
+- OBSERVATION: The SDK has explicit architectural concerns around: protocol → transport → client/server → context → authorization/identity → capabilities → lifecycle/error handling. The client/server symmetry is what matters — investigate what is shared between them (protocol types, capability negotiation, initialization, lifecycle, messages, errors, transport, auth, sessions, cancellation).
+- OBSERVATION: `client_transports` suggests a potential separation: application → MCP client → transport abstraction → concrete transport. If confirmed, this is an excellent boundary — analogous to what JARVIS may need: JARVIS authority → worker contract → worker transport/protocol → worker capability. The architectural principle is: separate capability semantics from communication/execution transport.
+- OBSERVATION: Authorization + identity assertion (`docs_src/authorization`, `identity_assertion`, `oauth_clients`, `context`) deserve high priority — these could inform the authority vs capability distinction. `elicitation` is adjacent to HITL design — investigate whether it's information gathering or authorization/safety checkpoint. Do not confuse "I need more information" with "I need permission."
+- DESIGN OPINION: For the deep dive, prioritize: (1) protocol contract (mcp vs mcp-types), (2) client/server architecture, (3) transport boundary, (4) identity and authorization, (5) context and dependencies (runtime DI vs package deps?), (6) elicitation and HITL-like interaction, (7) sessions and state, (8) extensions and versioning, (9) observability, (10) error/failure semantics across the stack.
+- DESIGN OPINION: Do NOT make MCP your authority model. MCP is fundamentally a protocol/capability interoperability layer; your authority model is a governance/control layer. Keep them separate. Conceptually: authority → policy decision → capability authorization → protocol → execution. Don't confuse MCP authorization with system authority.
+- DESIGN OPINION: `tool-registry` is the least interesting label — the protocol contract is much more important. `memory` classification (from `session_groups`) is misleading — that's session organization, not AI memory. The detector sees nouns but misses relationships — this repo is a concrete case where capability interoperability can be separated from the agent/orchestrator itself.
+- INFERENCE: MCP Python SDK gives you a concrete case study for the worker/capability boundary. Compare conceptually with: JARVIS authority → worker contract → worker transport/protocol → worker capability → execution environment. The protocol ideas (transport abstraction, capability negotiation, identity assertion) are transferable; the MCP-specific concerns are not. Don't recommend adoption yet — extract architectural patterns, trade-offs, and unresolved questions.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

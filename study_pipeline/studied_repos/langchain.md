@@ -323,8 +323,13 @@ The phase Method makes this step **session** work rather than pipeline work: the
 ## Trade-offs and what to avoid
 
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+- OBSERVATION: LangChain is less interesting to STEMMA as a complete framework and potentially more interesting as a collection of foundational abstractions. The `langchain_core/` package (`documents/`, `embeddings/`, `indexing/`, `language_models/`, `messages/`, `outputs/`, `prompts/`, `runnables/`, `tools/`, `tracers/`, `vectorstores/`) is far more architecturally interesting than the `agents/` directories.
+- DESIGN OPINION: Study `langchain_core` first, not LangChain's agent ecosystem. If the agent-loop deep-dive report comes back saying "LangChain has agents, tools, retrievers, model integrations" without explaining the underlying abstractions, it hasn't gone deep enough. The most important investigation is `runnables/` — does it solve a general computational composition problem or merely an LLM convenience?
+- DESIGN OPINION: For STEMMA, prioritize: (1) core runnable/composition model, (2) document/data model, (3) indexing/retrieval, (4) tool abstraction, (5) tracing/callbacks, (6) model abstraction, (7) evaluation, (8) MCP, (9) agent loop, (10) memory. Do not let LangChain's tool abstraction dictate STEMMA's trust model — your architecture has a much stronger AI proposes → policy → authorization → execution → evidence chain.
+- DESIGN OPINION: LangChain's document model should be studied for what it gets right about generic document representation, not adopted as STEMMA's canonical schema. STEMMA's evidence object needs source identity, license, content hash, provenance chain, evidence window, and proposal metadata that generic RAG documents don't have.
+- DESIGN OPINION: `indexing/` deserves serious investigation — incremental indexing, change detection, source ID handling, metadata/provenance survival, deterministic re-indexing. This intersects directly with STEMMA's acquisition → hash → manifest → evidence → indexing architecture.
+- INFERENCE: The study pipeline is beginning to reveal recurring architectural primitives across repositories: composition (runnable/component), data model (document/evidence), execution (tracing/state), retrieval, evaluation, and human governance. This is more valuable than "which RAG framework should STEMMA use?" After Haystack + LangChain together, the question should be: what abstractions do these projects use to make capabilities composable, observable, serializable, testable, replaceable — and which survive STEMMA's provenance, determinism, verification, and canonicalization requirements?
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They

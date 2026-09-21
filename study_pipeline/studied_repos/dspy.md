@@ -310,9 +310,15 @@ that basis alone.
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
 ## Trade-offs and what to avoid
 
+## Trade-offs and what to avoid
+
 The phase Method makes this step **session** work rather than pipeline work: the pipeline supplies evidence and the session supplies judgement (charter §6). The notes below are therefore derived only from facts measured at the commit above, and each is labelled.
-- FACT: not assessed. Naming what to avoid requires reading the implementation; a structural pass cannot honestly supply it.
-- INFERENCE: not assessed. Same reason.
+
+- OBSERVATION: DSPy is a high-value target for source-level study. The combination of `dspy/core`, `dspy/predict`, `dspy/adapters`, `dspy/clients`, `dspy/evaluate`, model metadata/provider infrastructure, caching/retry, `.agents/skills`, and retrieval infrastructure makes it architecturally informative at 703 files.
+- OBSERVATION: The report correctly refuses to turn structural evidence into architectural claims. This discipline should be preserved across all 18 repositories. The current evidence supports only: "DSPy contains several potentially relevant architectural mechanisms; source-level study is warranted."
+- DESIGN OPINION: For architectural extraction, investigate: (1) LM/provider abstraction — what boundary allows heterogeneous models to be interchangeable execution targets? (2) Evaluation/optimization — can the system improve behavior through explicit evaluation rather than prompt engineering alone? (3) Program/module composition — boundary between program, reasoner, optimizer, and LM. (4) Retrieval — is it a tool, part of reasoning, or interchangeable? (5) Caching+retry — how does DSPy make expensive/non-deterministic execution reproducible and cacheable?
+- DESIGN OPINION: Do not accept "agent-loop" at face value. Determine: Does DSPy implement an autonomous loop? Where does planning occur? Where does state live? Who decides the next action? Is execution deterministic or model-controlled?
+- INFERENCE: The strongest potential areas for STEMMA/JARVIS are LM/provider abstraction, program/module composition, evaluation/optimization, and the relationship between prediction, retrieval, and execution. Do not record any DSPy pattern as something to adopt until source-level study validates it.
 ## Open questions for the next session
 
 The pipeline cannot answer these; each requires reading the source. They
