@@ -32,6 +32,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 || [0025](0025-execution-evidence-plane.md) | Execution evidence plane: structured proof of what happened | Accepted |
 || [0026](0026-evaluator-verifier-separation.md) | Evaluator/Verifier separation: assessment vs truth | Accepted |
 || [0027](0027-worker-contract.md) | Worker contract: explicit interface for agent execution | Accepted |
+| [0028](0028-llm-http-transport.md) | `llm-http-transport`: a stdlib socket for `model-provider-abstraction`, placed in `integrations/` | Accepted |
 
 ## When an ADR is required
 
