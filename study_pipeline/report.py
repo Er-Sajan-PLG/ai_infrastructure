@@ -33,9 +33,11 @@ from typing import Final
 
 from study_pipeline import __version__
 from study_pipeline.classify import Classification, Taxonomy
+from study_pipeline.dependency_extractor import Dependency
 from study_pipeline.inventory import Inventory
 from study_pipeline.licence import Licence
 from study_pipeline.patterns import Candidate, Confidence
+from study_pipeline.stack_detector import TechStack
 
 #: Emitted verbatim in every report. A constant, not a parameter, so no caller
 #: can produce a report claiming reuse (ADR-0021 Decision 2).
@@ -82,6 +84,10 @@ class StudyReport:
     #: Determined from declared metadata or an explicit title line, never by
     #: matching licence prose -- see `licence.py` for why.
     licence: Licence
+    #: Detected technology stack (languages, frameworks, databases, etc.)
+    tech_stack: TechStack
+    #: Extracted declared dependencies with metadata
+    dependencies: tuple[Dependency, ...]
     #: Set when the study could not complete, so a partial report is honest
     #: about being partial rather than looking like a thin result.
     incomplete_reason: str = ""
@@ -253,6 +259,111 @@ def _render_dependencies(report: StudyReport) -> list[str]:
             continue
         lines.extend(f"- `{requirement}`" for requirement in manifest.requirements)
         lines.append("")
+    return lines
+
+
+def _render_tech_stack(report: StudyReport) -> list[str]:
+    tech_stack = report.tech_stack
+    lines = [
+        "## Technology Stack",
+        "",
+        "Detected from file extensions, manifest parsing, and keyword scanning.",
+        "All detections are structural — no code was executed.",
+        "",
+    ]
+
+    if tech_stack.languages:
+        lines.extend(
+            [
+                "### Languages",
+                "",
+                *[f"- {lang}" for lang in sorted(tech_stack.languages)],
+                "",
+            ]
+        )
+
+    if tech_stack.frameworks:
+        lines.extend(
+            [
+                "### Frameworks & Libraries",
+                "",
+                *[f"- {fw}" for fw in sorted(tech_stack.frameworks)],
+                "",
+            ]
+        )
+
+    infra_sections = [
+        ("Databases", tech_stack.databases),
+        ("Message Queues", tech_stack.message_queues),
+        ("Cache Systems", tech_stack.cache_systems),
+        ("CI/CD", tech_stack.ci_cd),
+        ("Containerization", tech_stack.containerization),
+        ("Cloud Services", tech_stack.cloud_services),
+    ]
+
+    for title, items in infra_sections:
+        if items:
+            lines.extend(
+                [
+                    f"### {title}",
+                    "",
+                    *[f"- {item}" for item in sorted(items)],
+                    "",
+                ]
+            )
+
+    if not tech_stack.frameworks and not any(items for _, items in infra_sections):
+        lines.extend(
+            [
+                "No frameworks or infrastructure services detected.",
+                "",
+            ]
+        )
+
+    return lines
+
+
+def _render_extracted_dependencies(report: StudyReport) -> list[str]:
+    deps = report.dependencies
+    lines = [
+        "## Extracted Dependencies",
+        "",
+        "Declared dependencies extracted from manifests (pyproject.toml, package.json, go.mod, Cargo.toml, pom.xml, build.gradle).",
+        "Version constraints are normalized; `None` means not specified in the manifest.",
+        "",
+    ]
+
+    if not deps:
+        lines.extend(
+            [
+                "No dependencies extracted.",
+                "",
+            ]
+        )
+        return lines
+
+    # Group by language
+    by_language: dict[str, list[Dependency]] = {}
+    for dep in deps:
+        by_language.setdefault(dep.language, []).append(dep)
+
+    for language in sorted(by_language):
+        lang_deps = by_language[language]
+        lines.extend(
+            [
+                f"### {language.capitalize()} ({len(lang_deps)})",
+                "",
+                "| Dependency | Version | Category | Dev? |",
+                "|---|---|---|---|",
+            ]
+        )
+        for dep in sorted(lang_deps, key=lambda d: d.name.lower()):
+            version_display = dep.version or "—"
+            lines.append(
+                f"| `{dep.name}` | {version_display} | {dep.category} | {'✓' if dep.is_dev else '—'} |"
+            )
+        lines.append("")
+
     return lines
 
 
@@ -428,6 +539,8 @@ def render_report(report: StudyReport) -> str:
         _render_limitations(report),
         _render_structure(report),
         _render_dependencies(report),
+        _render_tech_stack(report),
+        _render_extracted_dependencies(report),
         _render_findings(report),
         _render_classification(report),
         _render_open_questions(report),
@@ -461,6 +574,8 @@ def build_report(
     classifications: tuple[Classification, ...],
     taxonomy: Taxonomy,
     licence: Licence,
+    tech_stack: TechStack,
+    dependencies: tuple[Dependency, ...],
     studied_on: str | None = None,
     incomplete_reason: str = "",
 ) -> StudyReport:
@@ -480,6 +595,8 @@ def build_report(
         classifications=classifications,
         taxonomy=taxonomy,
         licence=licence,
+        tech_stack=tech_stack,
+        dependencies=dependencies,
         incomplete_reason=incomplete_reason,
     )
 

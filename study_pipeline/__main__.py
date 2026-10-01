@@ -22,11 +22,13 @@ from typing import Final
 
 from study_pipeline import __version__
 from study_pipeline.classify import classify_all, load_taxonomy, proposal_summary
+from study_pipeline.dependency_extractor import extract_dependencies
 from study_pipeline.inventory import build_inventory
 from study_pipeline.licence import detect_licence
 from study_pipeline.patterns import extract_candidates, summarise
 from study_pipeline.report import build_report as assemble_report
 from study_pipeline.report import render_report, report_path
+from study_pipeline.stack_detector import detect_stack
 from study_pipeline.workspace import (
     StudyError,
     cleanup_workspace_root,
@@ -118,6 +120,21 @@ def study_one(url: str, *, dry_run: bool, quiet: bool) -> int:
                 f"{counts['moderate']} moderate, {counts['weak']} weak",
             )
 
+            # Detect tech stack
+            tech_stack = detect_stack(clone.path)
+            _stage(
+                quiet,
+                f"  stack: {', '.join(sorted(tech_stack.languages)) or 'unknown'} | "
+                f"{len(tech_stack.frameworks)} frameworks",
+            )
+
+            # Extract dependencies
+            dependencies = extract_dependencies(clone.path)
+            _stage(
+                quiet,
+                f"  dependencies: {len(dependencies)} declared",
+            )
+
             # Read the licence at the studied commit, before anything is
             # reused anywhere (charter §22; the plan's "license contamination"
             # risk). This reads a local file and never executes anything.
@@ -134,6 +151,8 @@ def study_one(url: str, *, dry_run: bool, quiet: bool) -> int:
                 classifications=classifications,
                 taxonomy=taxonomy,
                 licence=licence,
+                tech_stack=tech_stack,
+                dependencies=dependencies,
             )
             text = render_report(report)
 

@@ -33,6 +33,7 @@ from study_pipeline.report import (
     render_report,
     report_path,
 )
+from study_pipeline.stack_detector import TechStack
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 
@@ -112,6 +113,17 @@ def _report(
             evidence=("pyproject.toml: license = 'MIT'",),
         ),
         "studied_on": "2026-01-01",
+        "tech_stack": TechStack(
+            languages=frozenset(),
+            frameworks=frozenset(),
+            databases=frozenset(),
+            message_queues=frozenset(),
+            cache_systems=frozenset(),
+            ci_cd=frozenset(),
+            containerization=frozenset(),
+            cloud_services=frozenset(),
+        ),
+        "dependencies": (),
     }
     kwargs.update(overrides)
     return build_report(**kwargs)  # type: ignore[arg-type]
