@@ -297,8 +297,8 @@ capabilities:
     standards: []
     reference_projects: ["AWS Well-Architected Framework", "CNCF Cloud Native Landscape", "Twelve-Factor App Methodology"]
     research_records: ["research/deployment/infrastructure-scanner.md"]
-    implementation: "catalog/infrastructure/scanner"
-    tests: "catalog/infrastructure/scanner/tests"
+    implementation: "catalog/deployment/scanner"
+    tests: "catalog/deployment/scanner/tests"
     benchmarks: ""
     security: "Read-only — never modifies scanned repository. No execution of scanned code. Path traversal bounded. Secret values never logged. LLM layer is opt-in."
     license: Apache-2.0

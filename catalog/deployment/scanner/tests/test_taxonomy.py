@@ -5,8 +5,8 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-# The entry lives at catalog/infrastructure/scanner/tests/, so the importable
-# parent is catalog/infrastructure/ -- tests/ -> scanner/ -> infrastructure/.
+# The entry lives at catalog/deployment/scanner/tests/, so the importable
+# parent is catalog/deployment/ -- tests/ -> scanner/ -> deployment/.
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scanner.models import INFRASTRUCTURE_LAYERS

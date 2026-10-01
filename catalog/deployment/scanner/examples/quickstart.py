@@ -2,7 +2,7 @@
 """Quickstart for the Infrastructure Scanner.
 
 Demonstrates offline scanning of a local repository.
-Run with: python catalog/infrastructure/scanner/examples/quickstart.py [PATH]
+Run with: python catalog/deployment/scanner/examples/quickstart.py [PATH]
 
 Without arguments, scans this repository (ai_infrastructure).
 With --llm flag and OPENAI_API_KEY, enables LLM-assisted detection.

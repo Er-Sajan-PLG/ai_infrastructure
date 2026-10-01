@@ -65,10 +65,25 @@ Marks detections with `detection_method="llm"`.
 All three layers are combined with deduplication. The scanner works
 fully offline — LLM layer is purely optional enhancement.
 
+## Our implementations
+
+This entry is itself the implementation — one scanner with three
+detection layers, each independently usable:
+
+- `scanner.py` — `InfrastructureScanner` orchestration plus Layer 1 keyword
+  scanning (`scan_keywords`), Layer 3 LLM enhancement (`scan_with_llm`),
+  deduplication, and coverage calculation.
+- `config_parsers.py` — Layer 2 deterministic parsers: Docker Compose,
+  Kubernetes manifests, Terraform resources, CI/CD configs, `.env` files,
+  nginx/Caddy configs.
+- `taxonomy.py` — the 80+ component-type taxonomy (`TaxonomyEntry`) across
+  all 12 layers, with `validate_taxonomy()` pinning its invariants.
+- `models.py` — `InfraComponent` / `InfrastructureMap` neutral types.
+
 ## What it produces
 
 ```python
-from infrastructure.scanner import InfrastructureScanner
+from scanner import InfrastructureScanner
 from pathlib import Path
 
 scanner = InfrastructureScanner()
@@ -135,7 +150,7 @@ Stated here so they are not assumed away:
 
 Run with:
 ```bash
-.venv/bin/pytest catalog/infrastructure/scanner/tests -v
+.venv/bin/pytest catalog/deployment/scanner/tests -v
 ```
 
 ## References

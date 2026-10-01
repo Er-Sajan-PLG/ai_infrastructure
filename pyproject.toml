@@ -176,7 +176,7 @@ ignore = [
 "study_pipeline/tests/**" = ["S101", "ARG", "T20", "S108"]
 "catalog/**/tests/**" = ["S101", "ARG", "T20", "S108", "TID252", "INP001"]
 # Infrastructure scanner has intentional try/except/pass for optional LLM layer
-"catalog/infrastructure/scanner/scanner.py" = ["S110"]
+"catalog/deployment/scanner/scanner.py" = ["S110"]
 "scripts/**" = ["T20"]  # CLI scripts legitimately print
 # The study pipeline's CLI is a thin entry point over the library (ADR-0021
 # Decision 4); printing progress and report paths is its purpose, not a stray

@@ -64,5 +64,5 @@ the required artifacts per charter §4/§8.
 
 - Specification: `specifications/infrastructure-scanner.md`
 - Research: `research/deployment/infrastructure-scanner.md`
-- Implementation: `catalog/infrastructure/scanner/`
-- Tests: `catalog/infrastructure/scanner/tests/`
+- Implementation: `catalog/deployment/scanner/`
+- Tests: `catalog/deployment/scanner/tests/`
