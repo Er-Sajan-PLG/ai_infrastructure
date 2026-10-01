@@ -170,12 +170,17 @@ format: ## Auto-format the codebase (ruff --fix + black)
 typecheck: ## Run mypy in strict mode
 	@# Pass only existing targets: naming an empty directory makes mypy exit 2,
 	@# and empty category directories are the normal state of a young category.
+	@# MYMYATH is required and is not incidental. Entry packages are imported
+	@# by BARE NAME (charter §31: a consumer adds catalog/<category>/ to
+	@# sys.path), so without the entry directories on the search path mypy
+	@# reports import-not-found on every cross-entry import. This is the same
+	@# ENTRY_PATHS the `independence` target passes as PYTHONPATH.
 	@targets=$$(find catalog integrations scripts tests study_pipeline -name '*.py' \
 		-not -path '*/.venv/*' 2>/dev/null); \
 	if [ -z "$$targets" ]; then \
 		echo "No Python sources to type-check yet."; \
 	else \
-		$(MYPY) $$targets; \
+		MYPYPATH="$(ENTRY_PATHS)" $(MYPY) $$targets; \
 	fi
 
 .PHONY: test
@@ -195,8 +200,12 @@ coverage: ## Run tests with coverage, enforced at the recorded floor
 	$(PYTEST) --cov --cov-report=term-missing \
 		--cov-fail-under=$(COVERAGE_FLOOR)
 
+.PHONY: check_integrations
+check_integrations: ## Validate integrations/ directory consistency
+	$(PY) scripts/check_integrations.py
+
 .PHONY: validate
-validate: links phase-plan ## Check the catalog entry contract + doc links (charter §13)
+validate: links phase-plan check_integrations ## Check the catalog entry contract + doc links + integrations (charter §13)
 	$(PY) scripts/validate_catalog.py
 
 # ---------------------------------------------------------------------------

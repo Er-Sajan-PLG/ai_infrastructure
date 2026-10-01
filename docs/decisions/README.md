@@ -33,6 +33,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 || [0026](0026-evaluator-verifier-separation.md) | Evaluator/Verifier separation: assessment vs truth | Accepted |
 || [0027](0027-worker-contract.md) | Worker contract: explicit interface for agent execution | Accepted |
 | [0028](0028-llm-http-transport.md) | `llm-http-transport`: a stdlib socket for `model-provider-abstraction`, placed in `integrations/` | Accepted |
+| [0029](0029-infrastructure-scanner.md) | `infrastructure-scanner`: deterministic 12-layer infrastructure detection, zero runtime deps, optional LLM layer | Accepted |
 
 ## When an ADR is required
 

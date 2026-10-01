@@ -68,8 +68,12 @@ if echo "$STAGED" | grep -qE '\.py$'; then
     echo "pre-commit: mypy (strict)"
     TARGETS=$(find catalog scripts tests study_pipeline -name '*.py' -not -path '*/.venv/*' 2>/dev/null || true)
     if [ -n "$TARGETS" ]; then
+        # MYMYATH mirrors `make typecheck`: entry packages are imported by
+        # bare name (charter §31), so mypy needs the same entry directories
+        # the Makefile derives. Paths come from make itself, not a copy.
         # shellcheck disable=SC2086
-        "${VENV}/bin/mypy" $TARGETS >/dev/null 2>&1 || fail "type errors (run 'make typecheck')"
+        MYPYPATH="$(make --no-print-directory -s print-entry-paths)" \
+            "${VENV}/bin/mypy" $TARGETS >/dev/null 2>&1 || fail "type errors (run 'make typecheck')"
     fi
 fi
 

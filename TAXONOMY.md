@@ -280,6 +280,32 @@ capabilities:
     compatibility: "No conformance to any standard claimed: the OTel GenAI conventions are Development, moved repositories, have no published schema URL, and reversed one content-capture decision. specifications/execution-trace-recorder.md s4 publishes a correspondence table instead."
     last_reviewed: "2026-09-16"
 
+  - id: infrastructure-scanner
+    name: Infrastructure Scanner
+    category: deployment
+    status: TESTED
+    maturity: experimental
+    priority: medium — needed by AI agents that require infrastructure context before generating code; also consumed by the study pipeline's stack detection.
+    depends_on: []
+    decision: IMPLEMENT (ADR-0029) — deterministic 12-layer detection, zero runtime deps, optional LLM enhancement
+    description: Automatically detect and classify infrastructure components across 12 layers (identity, transaction, state, data, communication, delivery, observability, security, deployment, integration, UX, governance) using keyword scanning, config parsing, and optional LLM enhancement.
+    problem: Infrastructure is implicit in most codebases — answering "what infrastructure does this project use?" requires manual code archaeology.
+    inputs: ["repository filesystem path"]
+    outputs: ["InfraMap with layers_covered, total_components, layer_summary, components"]
+    interfaces: ["InfrastructureScanner", "InfraMap", "InfraComponent", "ScanConfig"]
+    dependencies: ["Python standard library only (no runtime dependency)"]
+    standards: []
+    reference_projects: ["AWS Well-Architected Framework", "CNCF Cloud Native Landscape", "Twelve-Factor App Methodology"]
+    research_records: ["research/deployment/infrastructure-scanner.md"]
+    implementation: "catalog/infrastructure/scanner"
+    tests: "catalog/infrastructure/scanner/tests"
+    benchmarks: ""
+    security: "Read-only — never modifies scanned repository. No execution of scanned code. Path traversal bounded. Secret values never logged. LLM layer is opt-in."
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-10-01"
+
   # ---------------------------------------------------------------------
   # Discovered in Phase 2 Track 2B (25 repositories studied at pinned
   # commits). Each of these categories was ABSENT from the taxonomy tree
