@@ -1,6 +1,6 @@
 # AGENTS.md — Instructions for AI Agent Sessions
 
-This repository operates under a charter and the **MACP (Multi-Agent Coordination Protocol)**. The charter is the constitution; MACP is the coordination layer.
+This repository operates under a charter and the **MACP (Multi-Agent Coordination Protocol)**. The charter is the constitution; MACP is the coordination layer. Canonical protocol text: [`docs/macp-protocol.md`](docs/macp-protocol.md) — this file is a digest; on any conflict the canonical text wins.
 
 ## First thing to read
 
@@ -12,7 +12,7 @@ This repository operates under a charter and the **MACP (Multi-Agent Coordinatio
 ## MACP Startup Sequence (mandatory before any work)
 
 1. **Git reconnaissance** — `git status`, `git branch -vva`, `git log --oneline -10`
-2. **Read `state/DASHBOARD.md`** — check "Last Reconciled" timestamp
+2. **Read `state/DASHBOARD.md`** — check "Last Reconciled" timestamp; confirm the checked-out branch matches its Branch field, HALT on mismatch
 3. **Read `state/REGISTRY.md`** — check for active agents and file ownership conflicts
 4. **Read `state/BLOCKERS.md`** — confirm your task isn't blocked
 5. **Search `state/INDEX.md`** — find relevant past sessions
@@ -54,6 +54,7 @@ Full rule-to-check map: [`docs/standards.md`](docs/standards.md). Environment de
 
 ## End of session (leave the repo resumable)
 
+0. **Stop working first.** After finalizing your session file, only shutdown mechanics are allowed. Any new finding aborts shutdown back to work mode (max 3 restarts, then halt with `[NEEDS HUMAN]`). Typo fixes to the file being written don't count.
 1. Update the taxonomy entry: `status`, `priority`, new `depends_on` links.
 2. Update `docs/registry/RESEARCH_REGISTRY.md` for anything newly studied.
 3. Add 1–2 lines to `docs/roadmap.md` under "Latest session notes": what happened, what's next and why.
@@ -61,6 +62,8 @@ Full rule-to-check map: [`docs/standards.md`](docs/standards.md). Environment de
 5. Update your session file in `state/sessions/` — what was done, what's next.
 6. Update `state/REGISTRY.md` — mark yourself inactive or remove your entry.
 7. Run `make check` and `make status`. Both must pass before you report success.
+8. **Terminal re-read (after the final commit):** re-read DASHBOARD.md and your session file against `git log` — fix anything found, commit, repeat until a read surfaces nothing. Resuming work after a completed shutdown is a **re-open**: status back to Active, dated reason entry, full shutdown again.
+9. Write claims reproducibly: counts as deltas/history, current-state claims paired with their verifying command — never bare totals (see protocol §2, reproducibility principle).
 
 ## Verification
 

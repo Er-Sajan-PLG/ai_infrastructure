@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 (post-merge: session branch merged to master, gates green)
+> **Last Reconciled:** 2026-10-01 13:05 UTC (amendments implementation in progress on session branch)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,7 +14,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `master` (session branch merged 2026-10-01, then deleted) |
+| **Branch** | `session/2026-10-01-macp-amendments` (branched from merged `master`) |
 | **Tests** | 1130 passing |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 28 |
@@ -25,9 +25,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| — | — | — | — | — |
-
-_(No active agents. Register in REGISTRY.md when starting work.)_
+| A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-macp-amendments` | Protocol amendments P1–P6 | Active |
 
 ## Critical Alerts
 
@@ -48,7 +46,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 1. Phase 3 — Discover (automate taxonomy discovery)
 2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-3. State-rot prevention (proposed, not built): terminal re-read rule, volatile-data ban, single-source discipline for `state/DECISIONS.md` — see session file `20261001-1113-A001-mcp-trial.md`
+3. State-rot prevention: refined P1–P6 being implemented now (`docs/macp-protocol.md`); P7 deferred per review
 
 ## Key Files
 

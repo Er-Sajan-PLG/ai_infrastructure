@@ -8,7 +8,7 @@
 
 | Agent ID | Model | Branch | Task | Started | Status | Files Owned |
 |---|---|---|---|---|---|---|
-| A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-state-convention` | Scanner completion + mypy repair | 2026-10-01 11:13 UTC | Completed 12:15 UTC | (released) |
+| A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-macp-amendments` | Protocol amendments P1–P6 implementation | 2026-10-01 11:13 UTC | Active (re-opened, same session per user direction) | `docs/macp-protocol.md`, `docs/macp-protocol-review.md`, `AGENTS.md` |
 
 ---
 

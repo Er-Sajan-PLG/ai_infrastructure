@@ -80,6 +80,13 @@ DISCOVERED → RESEARCHED → UNDERSTOOD → DESIGNED → DECIDED → PROTOTYPED
 | Deferred | `make deferred` | check_deferred.py |
 | Commit message | commit-msg hook | check_commit_msg.py |
 
+## Coordination
+
+Multi-agent work follows the MACP protocol, canonical text at
+[`docs/macp-protocol.md`](../docs/macp-protocol.md) (amendment rationale:
+[`docs/macp-protocol-review.md`](../docs/macp-protocol-review.md)).
+`AGENTS.md` is the entry digest; on conflict the canonical text wins.
+
 ## Design Principles
 
 1. **Zero runtime dependencies** — stdlib only
