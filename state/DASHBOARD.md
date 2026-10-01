@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 13:10 UTC (verified: ADR count from disk, 30 contiguous; gates green)
+> **Last Reconciled:** 2026-10-01 (post-merge: amendments on master, gates green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,7 +14,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `session/2026-10-01-macp-amendments` (branched from merged `master`) |
+| **Branch** | `master` (amendments branch merged 2026-10-01, then deleted) |
 | **Tests** | 1130 passing |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
@@ -25,7 +25,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-macp-amendments` | Protocol amendments P1–P6 | Active |
+| A001 | opencode/longcat-2.5-preview-free | `master` | Awaiting direction (amendments merged) | Active |
 
 ## Critical Alerts
 
@@ -47,7 +47,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 1. Phase 3 — Discover (automate taxonomy discovery)
 2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-3. Merge `session/2026-10-01-macp-amendments` to `master` (protocol docs invisible on default branch until then — same handoff argument as last cycle)
+3. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
 
 ## Key Files
 
