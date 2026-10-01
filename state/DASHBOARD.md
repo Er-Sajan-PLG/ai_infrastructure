@@ -25,7 +25,9 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-state-autosync` | State auto-sync implementation | Active |
+| — | — | — | — | — |
+
+_(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
@@ -65,6 +67,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `session/2026-10-01-state-autosync` at `0343972`; session commits not on master: 2 (see `git log master..HEAD --oneline`).
+> branch `session/2026-10-01-state-autosync` at `4930ee3`; session commits not on master: 3 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
