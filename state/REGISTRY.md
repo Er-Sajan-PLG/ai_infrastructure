@@ -8,7 +8,7 @@
 
 | Agent ID | Model | Branch | Task | Started | Status | Files Owned |
 |---|---|---|---|---|---|---|
-| A001 | opencode/longcat-2.5-preview-free | `master` | Awaiting direction (amendments merged) | 2026-10-01 11:13 UTC | Active | (released — merge complete) |
+| A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-state-autosync` | State auto-sync (sync_state.py + hook + tests) | 2026-10-01 11:13 UTC | Active | `scripts/sync_state.py`, `scripts/hooks/pre-commit`, `tests/test_sync_state.py`, `Makefile`, `docs/macp-protocol.md`, `state/sessions/20261001-1113-A001-mcp-trial.md` |
 
 ---
 

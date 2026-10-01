@@ -398,6 +398,15 @@ deferred: ## Verify the deferred-work register is well-formed and current
 	@# register, and reports observable triggers that may have fired.
 	$(PY) scripts/check_deferred.py
 
+.PHONY: sync-state
+sync-state: ## Regenerate git-derived MACP state blocks (idempotent)
+	@# Runs on every commit via the pre-commit hook, so the record tracks
+	@# reality at commit granularity. Deliberately NOT in check-strict: sync
+	@# writes files, which must never dirty a CI tree. Enforcement is the
+	@# hook (write path) plus `sync_state.py --check` in the terminal
+	@# verification loop (verify path). CI wiring waits on P7's evaluation.
+	$(PY) scripts/sync_state.py
+
 .PHONY: commit-msg
 commit-msg: ## Validate the Conventional Commits header format (ADR-0019)
 	@# Validates the header only. The specification is genuinely ambiguous about

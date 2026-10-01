@@ -64,6 +64,7 @@ Full rule-to-check map: [`docs/standards.md`](docs/standards.md). Environment de
 7. Run `make check` and `make status`. Both must pass before you report success.
 8. **Terminal re-read (after the final commit):** re-read DASHBOARD.md and your session file against `git log` — fix anything found, commit, repeat until a read surfaces nothing. Resuming work after a completed shutdown is a **re-open**: status back to Active, dated reason entry, full shutdown again.
 9. Write claims reproducibly: counts as deltas/history, current-state claims paired with their verifying command — never bare totals (see protocol §2, reproducibility principle).
+10. Commit often on session branches (save points welcome) — the pre-commit hook regenerates git-derived state blocks via `make sync-state`; prose and judgments stay yours. Never hand-edit inside `<!-- AUTO-* -->` markers.
 
 ## Verification
 

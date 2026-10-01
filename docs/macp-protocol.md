@@ -330,6 +330,35 @@ STEP 7 — Terminal verification loop (Amendment 2026-10-01, P2)
     • `git status` — clean.
     • DASHBOARD "Active Agents" vs REGISTRY.md — must match.
     • Session summary — every claim checkable (see the P5 principle).
+    • `scripts/sync_state.py --check` passes (see Save points below).
+
+### Save points and auto-sync (Amendment 2026-10-01, auto-sync)
+
+Commit often on session branches. Two commit kinds exist, both legitimate:
+
+  • Save points: work-in-progress commits that keep the tree recoverable.
+  • Work-complete commits: finished units with full summaries.
+
+Every commit runs the pre-commit hook, which runs `make sync-state`
+(`scripts/sync_state.py`): it regenerates GIT-DERIVED blocks — branch,
+HEAD, session commit lists, sync timestamps — inside marked
+`<!-- AUTO-*:START -->...<!-- END -->` sections of `state/` files. The
+hook stages exactly the files the script modified; new files still need
+an explicit `git add`. Because sync runs per commit, the record tracks
+reality at commit granularity instead of rotting between manual updates.
+
+Boundaries (what automation must never do):
+  • Script-owned: branch, HEAD, commit lists, sync timestamps. Never
+    hand-edit inside marked blocks; the next sync overwrites it.
+  • Human-owned: prose, judgments, decisions, gate numbers from runs,
+    plans, debt, ADRs. Automation that judges content produces
+    thin-but-passing records — worse than honest rot.
+  • New session files get their markers appended automatically on first
+    sync (the "forgot" case). INDEX.md entries stay human-written:
+    presence can be automated, meaning cannot.
+  • The terminal loop (Step 7) invokes `--check` mode: regenerate in
+    memory, fail on any stale/missing block. Enforcement without
+    judgment — the loop supplies the judgment.
 
 ### Re-open Transition (Amendment 2026-10-01, P3)
 
@@ -482,3 +511,12 @@ Known open issues (next-batch backlog, not this amendment):
 
 Rationale record: `macp-protocol-review.md` (adversarial review of P1–P7;
 verdicts and refinements adopted above).
+
+2026-10-01, auto-sync: save-point convention + `scripts/sync_state.py`
+(pre-commit write path, `--check` verify path, `make sync-state`). Rationale:
+session records rotted three times in one day while the session was open —
+commit lists behind, branch fields on deleted branches — always the same
+shape (hand-written git facts, then git moved). Idempotency is the
+load-bearing property; only git-derived facts are automated; prose and
+judgment stay human. CI wiring deliberately excluded (sync writes files;
+see Makefile target comment) — revisit under P7's evaluation.

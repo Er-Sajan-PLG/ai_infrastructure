@@ -57,6 +57,16 @@ else
     echo "pre-commit: CI still runs it. Install: https://github.com/gitleaks/gitleaks" >&2
 fi
 
+# --- 0b. MACP state auto-sync ---------------------------------------------
+# Regenerates git-derived blocks (branch, HEAD, session commit lists) inside
+# marked sections of state/ files. Idempotent: a second run with no new git
+# state changes nothing. Runs early so every downstream gate sees the synced
+# record. Stages exactly the files the script modified (--stage) — new files
+# still need an explicit `git add` (intentional: new files are a decision).
+echo "pre-commit: macp state auto-sync"
+"${VENV}/bin/python" scripts/sync_state.py --quiet --stage >/dev/null 2>&1 \
+    || fail "state auto-sync failed (run 'make sync-state')"
+
 # --- 1. Python: lint + format --------------------------------------------
 if echo "$STAGED" | grep -qE '\.py$'; then
     echo "pre-commit: ruff check"

@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 (post-merge: amendments on master, gates green)
+> **Last Reconciled:** 2026-10-01 (auto-sync work in progress; numbers below re-verified at gates below)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,7 +14,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `master` (amendments branch merged 2026-10-01, then deleted) |
+| **Branch** | `session/2026-10-01-state-autosync` (branched from merged `master`) |
 | **Tests** | 1130 passing |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
@@ -25,7 +25,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| A001 | opencode/longcat-2.5-preview-free | `master` | Awaiting direction (amendments merged) | Active |
+| A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-state-autosync` | State auto-sync implementation | Active |
 
 ## Critical Alerts
 
@@ -62,3 +62,9 @@ An independent AI infrastructure laboratory — research repository, architectur
 | [`CHARTER.md`](../CHARTER.md) | Repository constitution |
 | [`TAXONOMY.md`](../TAXONOMY.md) | Capability registry |
 | [`docs/roadmap.md`](../docs/roadmap.md) | Phase status and session notes |
+
+<!-- AUTO-SYNC:START -->
+> Branched reality check (auto-synced, git-derived — do not hand-edit):
+> branch `session/2026-10-01-state-autosync` at `1b6e086`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> working tree dirty at sync time — see `git status`.
+<!-- AUTO-SYNC:END -->
