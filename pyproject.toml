@@ -175,6 +175,8 @@ ignore = [
 # probe test prints to show its finding (T20).
 "study_pipeline/tests/**" = ["S101", "ARG", "T20", "S108"]
 "catalog/**/tests/**" = ["S101", "ARG", "T20", "S108", "TID252", "INP001"]
+# Infrastructure scanner has intentional try/except/pass for optional LLM layer
+"catalog/infrastructure/scanner/scanner.py" = ["S110"]
 "scripts/**" = ["T20"]  # CLI scripts legitimately print
 # The study pipeline's CLI is a thin entry point over the library (ADR-0021
 # Decision 4); printing progress and report paths is its purpose, not a stray
@@ -239,6 +241,26 @@ exclude = ["^\\.venv/", "^\\.uv-cache/", "^study_pipeline/studied_repos/"]
 # Tests use fixtures and monkeypatching patterns that strict mode fights.
 module = "tests.*"
 disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+# Catalog examples use runtime path manipulation for imports
+module = "catalog.*.examples.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Integration examples use runtime path manipulation
+module = "integrations.*.examples.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Integration tests use runtime path manipulation
+module = "integrations.*.tests.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Catalog tests use runtime path manipulation
+module = "catalog.*.tests.*"
+ignore_missing_imports = true
 
 # ---------------------------------------------------------------------------
 # SAST — bandit (docs/decisions/0018)
