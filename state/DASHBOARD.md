@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 (auto-sync work in progress; numbers below re-verified at gates below)
+> **Last Reconciled:** 2026-10-01 (post-merge: autosync branch merged to master, gates green, session closed)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,7 +14,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `session/2026-10-01-state-autosync` (branched from merged `master`) |
+| **Branch** | `master` (autosync branch merged 2026-10-01, then deleted) |
 | **Tests** | 1140 passing (verified via `make check`) |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
@@ -67,6 +67,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `session/2026-10-01-state-autosync` at `4930ee3`; session commits not on master: 3 (see `git log master..HEAD --oneline`).
+> branch `master` at `7f52262`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
