@@ -119,3 +119,7 @@
 ## ADR-0028: LLM HTTP Transport
 **Decision:** Guarded stdlib HTTP transport for integrations.
 **Status:** Accepted
+
+## ADR-0029: Infrastructure Scanner
+**Decision:** IMPLEMENT — deterministic 12-layer detection, zero runtime deps, optional LLM layer.
+**Status:** Accepted
