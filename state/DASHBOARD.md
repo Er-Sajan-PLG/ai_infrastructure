@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 12:15 UTC (post-scanner-completion)
+> **Last Reconciled:** 2026-10-01 12:18 UTC (handoff-verified: cold-read tested)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -31,11 +31,15 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
-- **Session branch unmerged**: `session/2026-10-01-state-convention` is 7 commits ahead of `master` (working tree CLEAN). Until merged, a cold clone of `master` CANNOT see this work — there is no remote. Merge to `master` to make the state visible to future sessions.
+- **Session branch unmerged**: `session/2026-10-01-state-convention` is 9 commits ahead of `master` (working tree CLEAN). Until merged, a cold clone of `master` CANNOT see this work — there is no remote. Merge to `master` to make the state visible to future sessions.
 - None blocking. All gates green (`make check`, `make status`, `make ci`).
 
 ## Recently Completed
 
+- MACP protocol bootstrapped + trial-run (`state/`, AGENTS.md, STATE.md)
+- `infrastructure-scanner` completed to TESTED (6th capability: 73 tests, spec, research, ADR-0029)
+- Repo-wide mypy repaired (226→0 errors; 313 suppressions removed; MYMYATH fix)
+- Study-pipeline stack/dependency extraction; integration consistency checker
 - Phase 0 — Foundation (charter, taxonomy, registry, ADR process)
 - Phase 1 — Seed (5 capabilities TESTED: tool-registry, model-provider-abstraction, react-agent-loop, mcp-client, execution-trace-recorder)
 - Phase 1.5 — Hardening (all gates enforced, 601 tests, 90.03% coverage)
