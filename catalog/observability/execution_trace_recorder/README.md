@@ -186,6 +186,15 @@ raised, a truncated message with the field named, a cycle that terminates, a
 broken `__repr__` that does not kill the run, a doubled settlement that raises, an
 exception inside a tool block that still writes a record.
 
+## Relationship to Evidence Plane
+
+The execution trace recorder is the first concrete implementation within the
+**evidence-plane** category (ADR-0025). It records structured execution traces.
+The broader evidence plane may later include additional adapters for semantic
+evidence, replayable actions, and state-change records. The trace recorder's
+data model is designed to be composable with those future adapters, not replaced
+by them.
+
 ## References
 
 - [`specifications/execution-trace-recorder.md`](../../../specifications/execution-trace-recorder.md)

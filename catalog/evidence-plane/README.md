@@ -15,7 +15,13 @@ proof-of-delta, and evaluation across all projects.
 
 ## status
 
-Empty. First expected implementation: JARVIS `app.evidence/`.
+The first concrete implementation is
+[`catalog/observability/execution_trace_recorder/`](../observability/execution_trace_recorder/)
+(`TESTED`, 50 tests). It provides flat, bounded JSONL traces with
+prompt text, completions, and tool payloads **off by default**. Additional
+adapters for semantic evidence, replayable actions, and state-change records
+may be added later. The trace recorder's data model is designed to be
+composable with those future adapters, not replaced by them.
 
 ## references
 
