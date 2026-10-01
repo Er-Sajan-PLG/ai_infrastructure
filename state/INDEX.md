@@ -9,7 +9,7 @@
 - **Agent:** A001 (opencode/longcat-2.5-preview-free)
 - **Branch:** `session/2026-10-01-state-convention`
 - **Task:** Complete infrastructure-scanner to TESTED; repair repo-wide mypy (226→0 errors)
-- **Files touched:** `state/`, `AGENTS.md`, `STATE.md`, `specifications/infrastructure-scanner.md`, `research/deployment/infrastructure-scanner.md`, `docs/decisions/0029-infrastructure-scanner.md`, `docs/macp-protocol.md`, `docs/macp-protocol-review.md`, `docs/roadmap.md`, `TAXONOMY.md`, `catalog/deployment/scanner/` (moved from `catalog/infrastructure/`), `Makefile`, `pyproject.toml`, `scripts/hooks/pre-commit`, `study_pipeline/`, `scripts/check_integrations.py`
+- **Files touched:** `state/`, `AGENTS.md`, `STATE.md`, `specifications/infrastructure-scanner.md`, `research/deployment/infrastructure-scanner.md`, `docs/decisions/0029-infrastructure-scanner.md`, `docs/macp-protocol.md`, `docs/macp-protocol-review.md`, `docs/roadmap.md`, `TAXONOMY.md`, `catalog/deployment/scanner/` (moved from `catalog/infrastructure/`), `Makefile`, `pyproject.toml`, `scripts/sync_state.py`, `scripts/hooks/pre-commit`, `tests/test_sync_state.py`, `study_pipeline/`, `scripts/check_integrations.py`
 - **Outcome:** COMPLETED. 1130 tests pass, `make check`/`status`/`ci` green. TESTED 6.
 - **Session file:** `state/sessions/20261001-1113-A001-mcp-trial.md`
 

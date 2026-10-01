@@ -15,7 +15,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
 | **Branch** | `session/2026-10-01-state-autosync` (branched from merged `master`) |
-| **Tests** | 1130 passing |
+| **Tests** | 1140 passing (verified via `make check`) |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
 | **Capabilities** | 6 TESTED, 5 DISCOVERED |
@@ -65,6 +65,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `session/2026-10-01-state-autosync` at `1b6e086`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `session/2026-10-01-state-autosync` at `ccb1493`; session commits not on master: 1 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
