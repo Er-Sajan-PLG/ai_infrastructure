@@ -31,7 +31,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
-- **Session branch unmerged**: `session/2026-10-01-state-convention` is 9 commits ahead of `master` (working tree CLEAN). Until merged, a cold clone of `master` CANNOT see this work — there is no remote. Merge to `master` to make the state visible to future sessions.
+- **Session branch unmerged**: `session/2026-10-01-state-convention` is ahead of `master` (run `git log master..HEAD --oneline` for the list; working tree CLEAN). Until merged, a cold clone of `master` CANNOT see this work — there is no remote. Merge to `master` to make the state visible to future sessions.
 - None blocking. All gates green (`make check`, `make status`, `make ci`).
 
 ## Recently Completed
