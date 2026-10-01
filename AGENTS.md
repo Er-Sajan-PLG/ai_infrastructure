@@ -1,11 +1,30 @@
 # AGENTS.md — Instructions for AI Agent Sessions
 
-This repository operates under a charter. These are the Level-2 instructions for this repository (see the workspace scope-discipline rules); the charter is the constitution.
+This repository operates under a charter and the **MACP (Multi-Agent Coordination Protocol)**. The charter is the constitution; MACP is the coordination layer.
+
+## First thing to read
+
+1. **[`state/DASHBOARD.md`](state/DASHBOARD.md)** — executive summary. Read this first, always.
+2. **[`state/REGISTRY.md`](state/REGISTRY.md)** — who's active and what they own.
+3. **[`state/BLOCKERS.md`](state/BLOCKERS.md)** — what's blocking work.
+4. **[`CHARTER.md`](CHARTER.md)** §25 (Session Protocol) and §27 (Output Contract).
+
+## MACP Startup Sequence (mandatory before any work)
+
+1. **Git reconnaissance** — `git status`, `git branch -vva`, `git log --oneline -10`
+2. **Read `state/DASHBOARD.md`** — check "Last Reconciled" timestamp
+3. **Read `state/REGISTRY.md`** — check for active agents and file ownership conflicts
+4. **Read `state/BLOCKERS.md`** — confirm your task isn't blocked
+5. **Search `state/INDEX.md`** — find relevant past sessions
+6. **Read `state/ARCHITECTURE.md`** and **`state/DECISIONS.md`** — if touching structure or making design choices
+7. **Register yourself** — create `state/sessions/YYYYMMDD-HHMM-<AGENT-ID>-<slug>.md` and add to REGISTRY.md
+8. **Create a plan** — add `state/plans/agent-<ID>-<slug>.md` with objective, scope, approach, risks, rollback, success criteria
+9. **Only then start work**
 
 ## Before you write any code
 
-1. Read [`CHARTER.md`](CHARTER.md) §25 (Session Protocol) and §27 (Output Contract). Skim the rest as needed.
-2. Open [`TAXONOMY.md`](TAXONOMY.md). Find the highest-priority capability that is not MATURE. Read its entry: `status`, `depends_on`, `priority`, linked ADRs and registry entries.
+1. Read [`state/DASHBOARD.md`](state/DASHBOARD.md) and [`state/REGISTRY.md`](state/REGISTRY.md) first.
+2. Open [`TAXONOMY.md`](TAXONOMY.md). Find the highest-priority capability that is not MATURE.
 3. **Verify actual state, do not trust labels.** If the taxonomy says `TESTED` but no test file exists, that inconsistency is your first bug to fix (charter §4).
 4. Do the **next** lifecycle stage only. Not a stage already done, not one three steps ahead.
 
@@ -38,7 +57,10 @@ Full rule-to-check map: [`docs/standards.md`](docs/standards.md). Environment de
 1. Update the taxonomy entry: `status`, `priority`, new `depends_on` links.
 2. Update `docs/registry/RESEARCH_REGISTRY.md` for anything newly studied.
 3. Add 1–2 lines to `docs/roadmap.md` under "Latest session notes": what happened, what's next and why.
-4. Run `make check` and `make status`. Both must pass before you report success.
+4. Update `state/DASHBOARD.md` — reconcile status, update "Last Reconciled" timestamp.
+5. Update your session file in `state/sessions/` — what was done, what's next.
+6. Update `state/REGISTRY.md` — mark yourself inactive or remove your entry.
+7. Run `make check` and `make status`. Both must pass before you report success.
 
 ## Verification
 

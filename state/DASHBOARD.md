@@ -1,0 +1,62 @@
+# DASHBOARD — Executive Summary
+
+> **Last Reconciled:** 2026-10-01 12:15 UTC (post-scanner-completion)
+> **Protocol:** MACP (Multi-Agent Coordination Protocol)
+
+---
+
+## Project: ai_infrastructure
+
+An independent AI infrastructure laboratory — research repository, architectural knowledge base, implementation library, interoperability layer, evaluation environment, and reusable engineering foundation for AI systems.
+
+## Current Status
+
+| Field | Value |
+|---|---|
+| **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
+| **Branch** | `session/2026-10-01-state-convention` |
+| **Tests** | 1130 passing |
+| **Coverage** | ≥85% floor enforced, green |
+| **ADRs** | 28 |
+| **Capabilities** | 6 TESTED, 5 DISCOVERED |
+| **Runtime deps** | Zero (stdlib only) |
+
+## Active Agents
+
+| Agent ID | Model | Branch | Task | Status |
+|---|---|---|---|---|
+| — | — | — | — | — |
+
+_(No active agents. Register in REGISTRY.md when starting work.)_
+
+## Critical Alerts
+
+- **Uncommitted work on session branch**: Scanner completion + study-pipeline enhancements await maintainer review on `session/2026-10-01-state-convention`. See session file.
+- None blocking. All gates green (`make check`, `make status`, `make ci`).
+
+## Recently Completed
+
+- Phase 0 — Foundation (charter, taxonomy, registry, ADR process)
+- Phase 1 — Seed (5 capabilities TESTED: tool-registry, model-provider-abstraction, react-agent-loop, mcp-client, execution-trace-recorder)
+- Phase 1.5 — Hardening (all gates enforced, 601 tests, 90.03% coverage)
+- Phase 2 — Study (25 repos studied, 18 trade-offs, 3 new categories discovered)
+
+## Next Up
+
+1. Maintainer reviews + merges `session/2026-10-01-state-convention`
+2. Phase 3 — Discover (automate taxonomy discovery)
+3. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
+
+## Key Files
+
+| File | Purpose |
+|---|---|
+| [`state/REGISTRY.md`](REGISTRY.md) | Active agents and file ownership |
+| [`state/INDEX.md`](INDEX.md) | Searchable log of all past sessions |
+| [`state/ARCHITECTURE.md`](ARCHITECTURE.md) | Current system architecture |
+| [`state/DECISIONS.md`](DECISIONS.md) | Architecture Decision Records |
+| [`state/DEBT.md`](DEBT.md) | Technical debt tracker |
+| [`state/BLOCKERS.md`](BLOCKERS.md) | Active blockers |
+| [`CHARTER.md`](../CHARTER.md) | Repository constitution |
+| [`TAXONOMY.md`](../TAXONOMY.md) | Capability registry |
+| [`docs/roadmap.md`](../docs/roadmap.md) | Phase status and session notes |
