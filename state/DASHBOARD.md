@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 13:05 UTC (amendments implementation in progress on session branch)
+> **Last Reconciled:** 2026-10-01 13:10 UTC (verified: ADR count from disk, 30 contiguous; gates green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -17,7 +17,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | **Branch** | `session/2026-10-01-macp-amendments` (branched from merged `master`) |
 | **Tests** | 1130 passing |
 | **Coverage** | ≥85% floor enforced, green |
-| **ADRs** | 28 |
+| **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
 | **Capabilities** | 6 TESTED, 5 DISCOVERED |
 | **Runtime deps** | Zero (stdlib only) |
 
@@ -37,6 +37,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 - `infrastructure-scanner` completed to TESTED (6th capability: 73 tests, spec, research, ADR-0029)
 - Repo-wide mypy repaired (226→0 errors; 313 suppressions removed; MYMYATH fix)
 - Study-pipeline stack/dependency extraction; integration consistency checker
+- MACP amendments P1–P6 implemented (`docs/macp-protocol.md` canonical + `docs/macp-protocol-review.md` rationale, AGENTS.md repointed; P7 deferred)
 - Phase 0 — Foundation (charter, taxonomy, registry, ADR process)
 - Phase 1 — Seed (5 capabilities TESTED: tool-registry, model-provider-abstraction, react-agent-loop, mcp-client, execution-trace-recorder)
 - Phase 1.5 — Hardening (all gates enforced, 601 tests, 90.03% coverage)
@@ -46,7 +47,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 1. Phase 3 — Discover (automate taxonomy discovery)
 2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-3. State-rot prevention: refined P1–P6 being implemented now (`docs/macp-protocol.md`); P7 deferred per review
+3. Merge `session/2026-10-01-macp-amendments` to `master` (protocol docs invisible on default branch until then — same handoff argument as last cycle)
 
 ## Key Files
 
