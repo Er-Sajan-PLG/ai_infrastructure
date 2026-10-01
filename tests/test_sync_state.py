@@ -237,6 +237,29 @@ def test_generated_blocks_carry_no_timestamps() -> None:
     assert not re.search(r"\d{2}:\d{2} UTC", combined)
 
 
+def test_check_ignores_transient_dirty_lines(repo: Path) -> None:
+    # --check on a just-committed (clean) tree must pass even though the
+    # stored block was rendered while dirty: dirty-state is transient, and
+    # verification that flaps on every commit is noise, not signal. Only
+    # stable claims (branch, HEAD, commit list) participate in --check.
+    session = repo / "state" / "sessions" / "s.md"
+    session.write_text("# session\n", encoding="utf-8")
+    _write_registry(repo, "state/sessions/s.md")
+    _git(repo, "checkout", "-b", "work")
+    (repo / "README.md").write_text("# test\ndirty\n", encoding="utf-8")
+    assert main(["--root", str(repo), "--quiet"]) == 0
+    assert "uncommitted changes present" in session.read_text(encoding="utf-8")
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-m", "save")
+    # Re-sync to pick up the new commit, then dirty the tree again without
+    # committing: the stored block keeps its old dirty line while a fresh
+    # render would too — --check must pass regardless, because only stable
+    # claims (branch, HEAD, commit list) participate in verification.
+    assert main(["--root", str(repo), "--quiet"]) == 0
+    (repo / "README.md").write_text("# test\ndirty again\n", encoding="utf-8")
+    assert main(["--root", str(repo), "--quiet", "--check"]) == 0
+
+
 def test_no_state_dir_exits_zero(tmp_path: Path) -> None:
     assert main(["--root", str(tmp_path), "--quiet"]) == 0
     assert main(["--root", str(tmp_path), "--quiet", "--check"]) == 0

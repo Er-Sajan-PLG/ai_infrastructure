@@ -225,6 +225,19 @@ def main(argv: list[str] | None = None) -> int:
     for session_path in _active_session_files(root):
         targets.append((session_path, _commits_body(entries, dirty)))
 
+    # Dirty-tree disclosure lines are transient snapshots ("at sync time"),
+    # not stable claims: the tree is dirty during every pre-commit sync by
+    # definition, and clean right after. Comparing them in --check mode would
+    # make verification fail on every just-committed tree until the next
+    # sync — flapping, not signal. Normalize them away on BOTH sides here;
+    # write mode still records them (disclosure matters in the record).
+    _dirty_re = re.compile(r"^.*(?:working tree dirty|uncommitted changes present).*$")
+
+    def _normalized(block: str) -> str:
+        return "\n".join(
+            line for line in block.splitlines() if not _dirty_re.match(line)
+        )
+
     problems: list[str] = []
     changed_files: list[Path] = []
     for path, body in targets:
@@ -237,7 +250,10 @@ def main(argv: list[str] | None = None) -> int:
             continue
         new_text, changed = _apply_block(text, start, end, body)
         if args.check:
-            if changed:
+            _, check_changed = _apply_block(
+                _normalized(text), start, end, _normalized(body)
+            )
+            if check_changed:
                 problems.append(f"{path}: block missing or stale")
         elif changed:
             path.write_text(new_text, encoding="utf-8")
