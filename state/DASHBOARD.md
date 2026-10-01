@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 12:45 UTC (pre-merge: gates re-verified post-move, roadmap notes written)
+> **Last Reconciled:** 2026-10-01 (post-merge: session branch merged to master, gates green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,7 +14,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `session/2026-10-01-state-convention` |
+| **Branch** | `master` (session branch merged 2026-10-01, then deleted) |
 | **Tests** | 1130 passing |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 28 |
@@ -31,8 +31,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
-- **Session branch unmerged**: `session/2026-10-01-state-convention` is ahead of `master` (run `git log master..HEAD --oneline` for the list; working tree CLEAN). Until merged, a cold clone of `master` CANNOT see this work — there is no remote. Merge to `master` to make the state visible to future sessions.
-- None blocking. All gates green (`make check`, `make status`, `make ci`).
+- None. All gates green on `master` (`make check`, `make status`, `make ci`). No remote exists, so visibility is limited to this checkout.
 
 ## Recently Completed
 
@@ -47,9 +46,9 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Maintainer reviews + merges `session/2026-10-01-state-convention`
-2. Phase 3 — Discover (automate taxonomy discovery)
-3. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
+1. Phase 3 — Discover (automate taxonomy discovery)
+2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
+3. State-rot prevention (proposed, not built): terminal re-read rule, volatile-data ban, single-source discipline for `state/DECISIONS.md` — see session file `20261001-1113-A001-mcp-trial.md`
 
 ## Key Files
 
