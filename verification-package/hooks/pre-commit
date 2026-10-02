@@ -25,6 +25,77 @@ fail() {
     exit 1
 }
 
+# --- 0. Branch enforcement (config-driven) -----------------------------------
+GUARD_CONFIG="$REPO_ROOT/verification-package/config/branch-guard.conf"
+if [ -f "$GUARD_CONFIG" ]; then
+    source "$GUARD_CONFIG"
+else
+    PROTECTED_BRANCHES=("main" "master")
+    BRANCH_PATTERN="^(feat|fix|chore|docs|refactor|test|ci|build|perf|revert)/[a-z0-9][a-z0-9-]*$"
+    AGENT_ENFORCEMENT=1
+    AGENT_PREFIX="agent"
+    BLOCK_REPEATED_COMMITS=1
+    MAX_COMMITS_PER_BRANCH=10
+fi
+
+BRANCH=$(git branch --show-current)
+
+# Check protected branches (exact match + regex patterns)
+for pattern in "${PROTECTED_BRANCHES[@]}"; do
+    if [[ "$BRANCH" =~ ^$pattern$ ]]; then
+        echo "" >&2
+        echo "pre-commit FAILED: '$BRANCH' is a protected branch." >&2
+        echo "New work must start with a new branch:" >&2
+        echo "  git checkout -b <type>/<description>" >&2
+        echo "This applies even within a running session." >&2
+        exit 1
+    fi
+done
+
+# Check branch naming convention
+if ! [[ "$BRANCH" =~ $BRANCH_PATTERN ]]; then
+    echo "" >&2
+    echo "pre-commit FAILED: branch '$BRANCH' does not match naming convention." >&2
+    echo "Expected: <type>/<description>" >&2
+    echo "Types: feat fix chore docs refactor test ci build perf revert" >&2
+    echo "Example: feat/branch-enforcement" >&2
+    exit 1
+fi
+
+# Agent enforcement: detect if running as AI agent
+if [ "${AGENT_ENFORCEMENT:-1}" = "1" ]; then
+    IS_AGENT=false
+    if [ -n "${OPENCODE_SESSION_ID:-}" ] || [ -n "${CLAUDE_SESSION_ID:-}" ] || \
+       [ -n "${AGENT_ID:-}" ] || [ -n "${AI_AGENT:-}" ]; then
+        IS_AGENT=true
+    fi
+    PARENT_CMD=$(ps -o comm= -p $PPID 2>/dev/null || echo "")
+    if echo "$PARENT_CMD" | grep -qiE '(opencode|claude|cursor|copilot|codex)'; then
+        IS_AGENT=true
+    fi
+
+    if [ "$IS_AGENT" = "true" ]; then
+        if [[ ! "$BRANCH" == $AGENT_PREFIX/* ]]; then
+            echo "" >&2
+            echo "pre-commit FAILED: agent detected but branch '$BRANCH'" >&2
+            echo "does not have '$AGENT_PREFIX/' prefix." >&2
+            echo "Agents must use: $AGENT_PREFIX/<type>/<description>" >&2
+            echo "Example: $AGENT_PREFIX/feat/my-work" >&2
+            exit 1
+        fi
+    fi
+fi
+
+# Block repeated commits on the same branch
+if [ "${BLOCK_REPEATED_COMMITS:-1}" = "1" ]; then
+    COMMIT_COUNT=$(git rev-list --count HEAD 2>/dev/null || echo 0)
+    if [ "$COMMIT_COUNT" -gt "${MAX_COMMITS_PER_BRANCH:-10}" ]; then
+        echo "" >&2
+        echo "pre-commit WARNING: $COMMIT_COUNT commits on '$BRANCH'." >&2
+        echo "Consider creating a new branch for new work." >&2
+    fi
+fi
+
 # --- 1. Python: syntax + lint + format ------------------------------------
 if echo "$STAGED" | grep -qE '\.py$'; then
     PY="${VENV:-.venv}/bin/python"
