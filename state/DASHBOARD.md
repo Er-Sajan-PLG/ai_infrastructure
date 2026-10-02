@@ -67,6 +67,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/branch-enforcement` at `ed2b28b`; session commits not on master: 1 (see `git log master..HEAD --oneline`).
+> branch `feat/branch-enforcement` at `5c56227`; session commits not on master: 2 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

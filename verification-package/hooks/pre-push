@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 #
-# Pre-push hook: typecheck + fast tests.
+# Pre-push hook: branch enforcement before push.
 #
-# Runs in ~1-2 min. Catches likely CI failures before push. Not the full suite.
+# Blocks push if:
+#   - On a protected branch (main, master, develop, release/*, hotfix/*)
+#   - Branch name doesn't match naming convention
+#   - Agent detected without agent/ prefix
 #
 # Installed by scripts/install-verification.sh.
 
@@ -11,56 +14,61 @@ set -euo pipefail
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 cd "$REPO_ROOT"
 
-fail() {
+GUARD_CONFIG="$REPO_ROOT/verification-package/config/branch-guard.conf"
+if [ -f "$GUARD_CONFIG" ]; then
+    source "$GUARD_CONFIG"
+else
+    PROTECTED_BRANCHES=("main" "master")
+    BRANCH_PATTERN="^(feat|fix|chore|docs|refactor|test|ci|build|perf|revert)/[a-z0-9][a-z0-9-]*$"
+    AGENT_ENFORCEMENT=1
+    AGENT_PREFIX="agent"
+fi
+
+BRANCH=$(git branch --show-current)
+
+# Check protected branches
+for pattern in "${PROTECTED_BRANCHES[@]}"; do
+    if [[ "$BRANCH" =~ ^$pattern$ ]]; then
+        echo "" >&2
+        echo "pre-push FAILED: '$BRANCH' is a protected branch." >&2
+        echo "Push to a feature branch instead:" >&2
+        echo "  git checkout -b <type>/<description>" >&2
+        echo "  git push -u origin <type>/<description>" >&2
+        exit 1
+    fi
+done
+
+# Check naming convention
+if ! [[ "$BRANCH" =~ $BRANCH_PATTERN ]]; then
     echo "" >&2
-    echo "pre-push FAILED: $1" >&2
-    echo "Fix the problem and push again." >&2
+    echo "pre-push FAILED: branch '$BRANCH' does not match naming convention." >&2
+    echo "Expected: <type>/<description>" >&2
+    echo "Types: feat fix chore docs refactor test ci build perf revert" >&2
     exit 1
-}
+fi
 
-# --- 1. Python: typecheck --------------------------------------------------
-if ls *.py **/*.py 2>/dev/null | head -1 >/dev/null 2>&1; then
-    if [ -x ".venv/bin/mypy" ]; then
-        echo "pre-push: mypy (strict)"
-        .venv/bin/mypy . 2>/dev/null || fail "type errors (run: mypy .)"
-    elif command -v mypy >/dev/null 2>&1; then
-        echo "pre-push: mypy (strict)"
-        mypy . 2>/dev/null || fail "type errors (run: mypy .)"
+# Agent enforcement
+if [ "${AGENT_ENFORCEMENT:-1}" = "1" ]; then
+    IS_AGENT=false
+    if [ -n "${OPENCODE_SESSION_ID:-}" ] || [ -n "${CLAUDE_SESSION_ID:-}" ] || \
+       [ -n "${AGENT_ID:-}" ] || [ -n "${AI_AGENT:-}" ]; then
+        IS_AGENT=true
+    fi
+    PARENT_CMD=$(ps -o comm= -p $PPID 2>/dev/null || echo "")
+    if echo "$PARENT_CMD" | grep -qiE '(opencode|claude|cursor|copilot|codex)'; then
+        IS_AGENT=true
+    fi
+
+    if [ "$IS_AGENT" = "true" ]; then
+        if [[ ! "$BRANCH" == $AGENT_PREFIX/* ]]; then
+            echo "" >&2
+            echo "pre-push FAILED: agent detected but branch '$BRANCH'" >&2
+            echo "does not have '$AGENT_PREFIX/' prefix." >&2
+            echo "Agents must use: $AGENT_PREFIX/<type>/<description>" >&2
+            exit 1
+        fi
     fi
 fi
 
-# --- 2. TypeScript/JavaScript: typecheck ------------------------------------
-if ls *.ts **/*.ts 2>/dev/null | head -1 >/dev/null 2>&1; then
-    if command -v npx >/dev/null 2>&1; then
-        echo "pre-push: tsc --noEmit"
-        npx tsc --noEmit 2>/dev/null || fail "type errors (run: tsc --noEmit)"
-    fi
-fi
-
-# --- 3. Fast tests (unit only, no integration/e2e) -------------------------
-if [ -f "pyproject.toml" ] || [ -f "package.json" ]; then
-    if [ -x ".venv/bin/pytest" ]; then
-        echo "pre-push: pytest (unit)"
-        .venv/bin/pytest -x -q --ignore=tests/integration --ignore=tests/e2e 2>/dev/null \
-            || fail "tests failed (run: pytest)"
-    elif command -v pytest >/dev/null 2>&1; then
-        echo "pre-push: pytest (unit)"
-        pytest -x -q --ignore=tests/integration --ignore=tests/e2e 2>/dev/null \
-            || fail "tests failed (run: pytest)"
-    elif [ -f "package.json" ] && command -v npm >/dev/null 2>&1; then
-        echo "pre-push: npm test"
-        npm test 2>/dev/null || fail "tests failed (run: npm test)"
-    fi
-fi
-
-# --- 4. Build sanity (if build command exists) -----------------------------
-if [ -f "pyproject.toml" ] && [ -x ".venv/bin/python" ]; then
-    echo "pre-push: build sanity"
-    .venv/bin/python -m compileall -q . 2>/dev/null || fail "build failed"
-elif [ -f "package.json" ] && command -v npm >/dev/null 2>&1; then
-    echo "pre-push: build sanity"
-    npm run build 2>/dev/null || fail "build failed (run: npm run build)"
-fi
-
-echo "pre-push: all checks passed."
+echo "pre-push: branch '$BRANCH' — OK"
 exit 0

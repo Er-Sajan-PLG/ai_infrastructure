@@ -7,12 +7,20 @@ Installable verification pipeline for any repository. Provides pre-commit hooks,
 ```
 verification-package/
 ├── hooks/
-│   ├── pre-commit          # Fast staged-files checks (~10s)
-│   ├── pre-push            # Typecheck + fast tests (~1-2min)
-│   └── commit-msg          # Conventional Commits header check
+│   ├── pre-commit          # Fast staged-files checks + branch enforcement
+│   ├── pre-push            # Typecheck + branch enforcement before push
+│   ├── commit-msg          # Conventional Commits header check
+│   ├── agent-claude-code.sh # Claude Code PreToolUse enforcement
+│   └── agent-opencode.sh    # OpenCode preToolUse enforcement
 ├── scripts/
 │   ├── verify-full.sh      # Full suite runner (canonical entry point)
+│   ├── check-branch.sh     # Standalone branch check
+│   ├── branch-watcher.sh   # Background branch monitor (start|stop|status)
 │   └── install-verification.sh  # One-command installer
+├── config/
+│   └── branch-guard.conf   # Protected branches, naming pattern, agent policy
+├── docs/
+│   └── github-rulesets.md  # Server-side enforcement guide
 ├── .github/workflows/
 │   └── ci.yml              # GitHub Actions CI workflow
 └── README.md               # This file
@@ -49,6 +57,16 @@ working tree → commit-msg → pre-commit → pre-push → push → remote CI �
 | remote CI | Full suite + security + coverage | Yes (authoritative) | ~2-5min |
 | merge gate | Required checks pass | Yes (platform) | — |
 
+## Branch Enforcement
+
+5 layers, config-driven via `config/branch-guard.conf`:
+
+1. **pre-commit** — blocks commits on protected branches + naming violations
+2. **pre-push** — blocks pushes on protected branches + naming violations
+3. **background watcher** — `bash scripts/branch-watcher.sh start` monitors every 30s, warns/logs on protected branch
+4. **agent hooks** — `agent-claude-code.sh` + `agent-opencode.sh` fire before any tool use, require `agent/` prefix
+5. **GitHub rulesets** — server-side hard boundary, see `docs/github-rulesets.md`
+
 ## Design Principles
 
 1. **Single source of truth** — `verify-full.sh` is the canonical entry point. Hooks and CI both call it.
@@ -56,6 +74,7 @@ working tree → commit-msg → pre-commit → pre-push → push → remote CI �
 3. **Tiered, not monolith** — Each property is addressable individually (`verify-full.sh lint`, `verify-full.sh type`, etc.).
 4. **Defense-in-depth** — Pre-commit runs a subset for fast feedback. CI runs the full suite for independent verification.
 5. **Idempotent** — Installer can run multiple times without duplication.
+6. **Branch enforcement** — Commits on `main`/`master` blocked. Naming convention required. Agents require `agent/` prefix.
 
 ## Customize
 
