@@ -1,0 +1,91 @@
+#!/usr/bin/env bash
+#
+# Pre-commit hook: fast, staged-files-only checks.
+#
+# Runs in ~10s on staged files. Format, syntax, cheap lint, config validation,
+# fast secret detection. No heavy suites — those run in pre-push and CI.
+#
+# Installed by scripts/install-verification.sh. Do not edit .git/hooks/ directly.
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED" ]; then
+    exit 0
+fi
+
+fail() {
+    echo "" >&2
+    echo "pre-commit FAILED: $1" >&2
+    echo "Fix the problem, re-stage, and commit again." >&2
+    exit 1
+}
+
+# --- 1. Python: syntax + lint + format ------------------------------------
+if echo "$STAGED" | grep -qE '\.py$'; then
+    PY="${VENV:-.venv}/bin/python"
+    [ -x "$PY" ] || PY="python3"
+
+    echo "pre-commit: python syntax check"
+    echo "$STAGED" | grep '\.py$' | while read -r f; do
+        "$PY" -m py_compile "$f" 2>/dev/null || fail "syntax error in $f"
+    done
+
+    if command -v ruff >/dev/null 2>&1; then
+        echo "pre-commit: ruff lint"
+        ruff check "$STAGED" --fix 2>/dev/null || fail "ruff found lint errors"
+    elif [ -x ".venv/bin/ruff" ]; then
+        echo "pre-commit: ruff lint"
+        .venv/bin/ruff check "$STAGED" 2>/dev/null || fail "ruff found lint errors"
+    fi
+
+    if command -v black >/dev/null 2>&1; then
+        echo "pre-commit: black format check"
+        black --check "$STAGED" 2>/dev/null || fail "black would reformat (run: black .)"
+    elif [ -x ".venv/bin/black" ]; then
+        echo "pre-commit: black format check"
+        .venv/bin/black --check "$STAGED" 2>/dev/null || fail "black would reformat (run: black .)"
+    fi
+fi
+
+# --- 2. TypeScript/JavaScript: syntax + lint -------------------------------
+if echo "$STAGED" | grep -qE '\.(ts|tsx|js|jsx)$'; then
+    if command -v npx >/dev/null 2>&1; then
+        echo "pre-commit: eslint"
+        npx eslint "$STAGED" 2>/dev/null || fail "eslint found errors"
+    fi
+fi
+
+# --- 3. Config validation --------------------------------------------------
+if echo "$STAGED" | grep -qE '\.(json|toml|ya?ml)$'; then
+    echo "pre-commit: config syntax"
+    echo "$STAGED" | grep -E '\.(json|toml|ya?ml)$' | while read -r f; do
+        case "$f" in
+            *.json) python3 -c "import json; json.load(open('$f'))" 2>/dev/null || fail "invalid JSON: $f" ;;
+            *.toml) python3 -c "import tomllib; tomllib.load(open('$f','rb'))" 2>/dev/null || fail "invalid TOML: $f" ;;
+            *.yaml|*.yml) python3 -c "import yaml; yaml.safe_load(open('$f'))" 2>/dev/null || fail "invalid YAML: $f" ;;
+        esac
+    done
+fi
+
+# --- 4. Secret detection (fast, staged content only) -----------------------
+if command -v gitleaks >/dev/null 2>&1; then
+    echo "pre-commit: gitleaks (staged)"
+    gitleaks protect --staged --no-banner --redact --exit-code 1 2>/dev/null \
+        || fail "gitleaks found a secret in staged changes"
+fi
+
+# --- 5. Trailing whitespace + conflict markers -----------------------------
+echo "pre-commit: whitespace + conflict markers"
+echo "$STAGED" | while read -r f; do
+    [ -f "$f" ] || continue
+    grep -nE '^(<<<<<<<|=======|>>>>>>>)' "$f" 2>/dev/null && fail "conflict markers in $f"
+    grep -nE ' +$' "$f" 2>/dev/null && fail "trailing whitespace in $f"
+done
+
+echo "pre-commit: all checks passed."
+exit 0

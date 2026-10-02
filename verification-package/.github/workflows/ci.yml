@@ -1,0 +1,78 @@
+name: verification
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verification-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  verify:
+    name: verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d494a4c3e4040a24d006f35
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff black mypy pytest pytest-cov bandit
+
+      - name: Format check
+        run: black --check .
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Typecheck
+        run: mypy .
+
+      - name: Unit tests
+        run: pytest -x -q --ignore=tests/integration --ignore=tests/e2e
+
+      - name: Integration tests
+        run: pytest -x -q tests/integration
+
+      - name: Build
+        run: python -m compileall -q .
+
+      - name: Security scan
+        run: bandit -r . -ll
+
+      - name: Coverage
+        run: pytest --cov --cov-report=term-missing --cov-fail-under=80 -q
+
+  required:
+    name: required
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [verify]
+    steps:
+      - name: Check that every required job succeeded
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') }}" = "true" ]; then
+            echo "At least one required job failed." >&2
+            exit 1
+          fi
+          if [ "${{ contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "At least one required job was cancelled." >&2
+            exit 1
+          fi
+          echo "All required jobs succeeded."

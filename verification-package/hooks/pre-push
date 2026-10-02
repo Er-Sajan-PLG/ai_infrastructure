@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+#
+# Pre-push hook: typecheck + fast tests.
+#
+# Runs in ~1-2 min. Catches likely CI failures before push. Not the full suite.
+#
+# Installed by scripts/install-verification.sh.
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+fail() {
+    echo "" >&2
+    echo "pre-push FAILED: $1" >&2
+    echo "Fix the problem and push again." >&2
+    exit 1
+}
+
+# --- 1. Python: typecheck --------------------------------------------------
+if ls *.py **/*.py 2>/dev/null | head -1 >/dev/null 2>&1; then
+    if [ -x ".venv/bin/mypy" ]; then
+        echo "pre-push: mypy (strict)"
+        .venv/bin/mypy . 2>/dev/null || fail "type errors (run: mypy .)"
+    elif command -v mypy >/dev/null 2>&1; then
+        echo "pre-push: mypy (strict)"
+        mypy . 2>/dev/null || fail "type errors (run: mypy .)"
+    fi
+fi
+
+# --- 2. TypeScript/JavaScript: typecheck ------------------------------------
+if ls *.ts **/*.ts 2>/dev/null | head -1 >/dev/null 2>&1; then
+    if command -v npx >/dev/null 2>&1; then
+        echo "pre-push: tsc --noEmit"
+        npx tsc --noEmit 2>/dev/null || fail "type errors (run: tsc --noEmit)"
+    fi
+fi
+
+# --- 3. Fast tests (unit only, no integration/e2e) -------------------------
+if [ -f "pyproject.toml" ] || [ -f "package.json" ]; then
+    if [ -x ".venv/bin/pytest" ]; then
+        echo "pre-push: pytest (unit)"
+        .venv/bin/pytest -x -q --ignore=tests/integration --ignore=tests/e2e 2>/dev/null \
+            || fail "tests failed (run: pytest)"
+    elif command -v pytest >/dev/null 2>&1; then
+        echo "pre-push: pytest (unit)"
+        pytest -x -q --ignore=tests/integration --ignore=tests/e2e 2>/dev/null \
+            || fail "tests failed (run: pytest)"
+    elif [ -f "package.json" ] && command -v npm >/dev/null 2>&1; then
+        echo "pre-push: npm test"
+        npm test 2>/dev/null || fail "tests failed (run: npm test)"
+    fi
+fi
+
+# --- 4. Build sanity (if build command exists) -----------------------------
+if [ -f "pyproject.toml" ] && [ -x ".venv/bin/python" ]; then
+    echo "pre-push: build sanity"
+    .venv/bin/python -m compileall -q . 2>/dev/null || fail "build failed"
+elif [ -f "package.json" ] && command -v npm >/dev/null 2>&1; then
+    echo "pre-push: build sanity"
+    npm run build 2>/dev/null || fail "build failed (run: npm run build)"
+fi
+
+echo "pre-push: all checks passed."
+exit 0

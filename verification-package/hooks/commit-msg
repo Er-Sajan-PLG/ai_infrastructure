@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+#
+# commit-msg hook: validate Conventional Commits header.
+#
+# Installed by scripts/install-verification.sh.
+
+set -euo pipefail
+
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+MESSAGE_FILE="${1:-}"
+
+if [ -z "$MESSAGE_FILE" ]; then
+    exit 0
+fi
+
+HEADER=$(head -1 "$MESSAGE_FILE")
+
+# Skip merge commits, revert commits, and explicit skip marker
+if echo "$HEADER" | grep -qE '^(Merge|Revert|\[skip commit-msg\])'; then
+    exit 0
+fi
+
+# Conventional Commits pattern: type(scope): description
+if ! echo "$HEADER" | grep -qE '^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9-]+\))?:\s+.+$'; then
+    echo "" >&2
+    echo "commit-msg FAILED: not a Conventional Commit." >&2
+    echo "Expected: type(scope): description" >&2
+    echo "Types: build chore ci docs feat fix perf refactor revert style test" >&2
+    exit 1
+fi
+
+exit 0
