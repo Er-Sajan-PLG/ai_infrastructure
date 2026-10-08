@@ -4,6 +4,17 @@
 
 ---
 
+## Session: 2026-10-08 — Phase 3 Discover (HERMES)
+
+- **Agent:** HERMES (longcat-2.5-preview-free)
+- **Branch:** `master`
+- **Task:** Build cross-repo convergence detection + review workflow
+- **Files touched:** `study_pipeline/discover.py`, `study_pipeline/review.py`, `study_pipeline/tests/test_discover.py`, `study_pipeline/tests/test_review.py`, `Makefile`, `docs/phases/phase-3-discover.md`, `docs/discovery/`
+- **Outcome:** COMPLETED. Two commits: `3b546cd` (discover.py, 14 tests) + `8be12ad` (review.py, 7 tests). 4 convergent patterns found: config 15/25, caching 14/25, guardrails 10/25, rate-limiting 6/25. Phase 3 exit criteria 1-3 met. 1188 tests pass.
+- **Session file:** `state/sessions/20261008-1645-HERMES-phase3-discover.md`
+
+---
+
 ## Session: 2026-10-08 — CI Fix (HERMES)
 
 - **Agent:** HERMES (longcat-2.5-preview-free)
