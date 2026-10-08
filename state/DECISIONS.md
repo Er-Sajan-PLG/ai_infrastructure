@@ -127,3 +127,11 @@
 ## ADR-0030: Session Closure Authorization
 **Decision:** A session may only claim completion with an explicit maintainer close directive (`Close-Authorized-By:`); enforced by `make sessions` (V16) in check, check-strict, CI, and pre-commit.
 **Status:** Accepted
+
+## ADR-0031: Guardrails Category
+**Decision:** Add `guardrails/` category (10/25 repos, 40% convergence). Output validation distinct from safety/governance.
+**Status:** Accepted
+
+## ADR-0032: Reliability Category
+**Decision:** Add `reliability/` category (6/25 repos, 24% convergence). Rate limiting, retry, backoff infrastructure.
+**Status:** Accepted

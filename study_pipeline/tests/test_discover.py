@@ -244,6 +244,22 @@ class TestDiscover:
         # The real reports should have some proposals
         assert len(result.proposals) > 0
 
+    def test_filters_existing_categories(self, tmp_path: Path) -> None:
+        """Categories already in the taxonomy should not appear as proposals."""
+        (tmp_path / "study_pipeline" / "studied_repos").mkdir(parents=True)
+        (tmp_path / "TAXONOMY.md").write_text(_MINIMAL_TAXONOMY, encoding="utf-8")
+
+        # 3 repos propose "caching" — but caching is NOT in the minimal taxonomy
+        for slug in ("repo-a", "repo-b", "repo-c"):
+            _write_report(tmp_path, slug, _REPORT_SINGLE_PROPOSAL)
+
+        result = discover(tmp_path)
+
+        # caching should appear as a proposal since it's not in the taxonomy
+        assert len(result.convergences) == 1
+        assert result.convergences[0].proposed_id == "caching"
+        assert not result.convergences[0].in_taxonomy
+
 
 # ---------------------------------------------------------------------------
 # render_discovery

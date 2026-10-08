@@ -128,7 +128,9 @@ def generate_review_docs(result: DiscoveryResult, root: Path) -> tuple[ReviewIte
     review_dir = root / REVIEW_DIR
     review_dir.mkdir(parents=True, exist_ok=True)
 
-    convergent = [c for c in result.convergences if c.is_convergent]
+    convergent = [
+        c for c in result.convergences if c.is_convergent and not c.in_taxonomy
+    ]
     items: list[ReviewItem] = []
 
     for conv in convergent:
