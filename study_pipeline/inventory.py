@@ -418,12 +418,18 @@ def _count_nested_manifests(root: Path, directories: tuple[str, ...]) -> int:
     say the count is root-only rather than leaving a reader to conclude the
     project has four dependencies.
     """
-    return sum(
-        1
-        for directory in directories
-        for name in _manifest_filenames()
-        if (root / directory / name).is_file()
-    )
+    count = 0
+    for directory in directories:
+        for name in _manifest_filenames():
+            try:
+                if (root / directory / name).is_file():
+                    count += 1
+            except OSError:
+                # An unreadable directory is skipped, not fatal: a permissions
+                # quirk in a third-party tree must not abort a study. This
+                # mirrors the handling in _walk above.
+                pass
+    return count
 
 
 def _manifest_filenames() -> tuple[str, ...]:
@@ -493,10 +499,13 @@ def _detect_packages(root: Path, directories: tuple[str, ...]) -> tuple[str, ...
     packages: list[str] = []
 
     for name in ("src", "lib"):
-        if (root / name).is_dir():
-            for child in sorted((root / name).iterdir()):
-                if child.is_dir() and (child / "__init__.py").is_file():
-                    packages.append(f"{name}/{child.name}")
+        try:
+            if (root / name).is_dir():
+                for child in sorted((root / name).iterdir()):
+                    if child.is_dir() and (child / "__init__.py").is_file():
+                        packages.append(f"{name}/{child.name}")
+        except OSError:
+            pass
 
     for directory in directories:
         if directory.count("/") > _MAX_PACKAGE_DEPTH:
@@ -511,8 +520,11 @@ def _detect_packages(root: Path, directories: tuple[str, ...]) -> tuple[str, ...
         # `tests` and `tests/testserver` alongside the real `src/requests`.
         if any(part in _TEST_DIR_NAMES for part in directory.split("/")):
             continue
-        if (root / directory / "__init__.py").is_file():
-            packages.append(directory)
+        try:
+            if (root / directory / "__init__.py").is_file():
+                packages.append(directory)
+        except OSError:
+            pass
 
     return tuple(dict.fromkeys(packages))
 
