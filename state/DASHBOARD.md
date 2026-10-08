@@ -14,7 +14,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `feat/branch-enforcement` (3 commits ahead of `master`; merge decision pending — see Critical Alerts) |
+| **Branch** | `master` (`feat/branch-enforcement` merged 2026-10-08, 4 commits) |
 | **Tests** | 1141 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
@@ -31,8 +31,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
-- `feat/branch-enforcement` is 3 commits ahead of `master` (branch guard + `verification-package/`) — unreviewed, unmerged. Decide merge vs discard before capability work resumes; downstream sessions assume `master` is truth.
-- No remote exists, so visibility is limited to this checkout. All gates green on this branch (`make check`, `make status`).
+- No remote exists yet, so visibility is limited to this checkout. All gates green on `master` (`make check`, `make status`, coverage 89.70%).
 
 ## Recently Completed
 
@@ -48,7 +47,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Merge-or-discard decision on `feat/branch-enforcement` (3 unmerged commits)
+1. Create public GitHub repo + push `master` (maintainer-ordered 2026-10-08)
 2. Phase 3 — Discover (automate taxonomy discovery)
 3. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
 4. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
@@ -69,6 +68,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/branch-enforcement` at `29d33b5`; session commits not on master: 3 (see `git log master..HEAD --oneline`).
+> branch `master` at `7ed746d`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

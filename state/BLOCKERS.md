@@ -34,4 +34,4 @@ execution-trace-recorder ──→ (standalone)
 
 - `vector-memory-store` and `basic-rag-pipeline` are the only remaining Phase 1 capabilities (both DISCOVERED)
 - Phase 3 (Discover) is not blocked — it can start when ready
-- `feat/branch-enforcement` (3 commits ahead of `master`) needs a merge-or-discard decision before capability work resumes — unmerged work, not a blocker on starting it
+- `feat/branch-enforcement` merged to `master` 2026-10-08; next is repo creation + push (maintainer-ordered)
