@@ -67,6 +67,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `9e1c13c`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `1cc0cd7`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

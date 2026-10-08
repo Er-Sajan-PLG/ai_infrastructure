@@ -244,6 +244,12 @@ study-clean: ## Remove the clone workspace (never touches written reports)
 	prune_workspace(); \
 	print(f'workspace: {before} -> {workspace_size_bytes()} bytes')"
 
+.PHONY: discover
+discover: ## Run cross-repo convergence detection (Phase 3)
+	$(PY) -c "from pathlib import Path; from study_pipeline.discover import discover, render_discovery; \
+	result = discover(Path('.')); \
+	print(render_discovery(result))"
+
 .PHONY: links
 links: ## Verify relative Markdown links resolve
 	$(PY) scripts/check_links.py
