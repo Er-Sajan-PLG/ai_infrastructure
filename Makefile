@@ -250,6 +250,14 @@ discover: ## Run cross-repo convergence detection (Phase 3)
 	result = discover(Path('.')); \
 	print(render_discovery(result))"
 
+.PHONY: review
+review: ## Generate review documents for convergent patterns (Phase 3)
+	$(PY) -c "from pathlib import Path; from study_pipeline.discover import discover; \
+	from study_pipeline.review import generate_review_docs, render_review_summary; \
+	result = discover(Path('.')); \
+	items = generate_review_docs(result, Path('.')); \
+	print(render_review_summary(items))"
+
 .PHONY: links
 links: ## Verify relative Markdown links resolve
 	$(PY) scripts/check_links.py
