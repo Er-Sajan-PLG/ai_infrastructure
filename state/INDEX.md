@@ -4,6 +4,17 @@
 
 ---
 
+## Session: 2026-10-08 — Branch State Reconciliation (R001)
+
+- **Agent:** R001 (opencode session)
+- **Branch:** `feat/branch-enforcement`
+- **Task:** Reconcile MACP state files with git reality; then build V16 closure-authorization gate (ADR-0030) after the session's own premature closure
+- **Files touched:** `state/DASHBOARD.md`, `STATE.md`, `state/DEBT.md`, `state/BLOCKERS.md`, `state/INDEX.md`, `state/REGISTRY.md`, `state/DECISIONS.md`, `state/sessions/20261008-0334-R001-reconcile.md`, `state/plans/agent-reconcile-branch-state.md`, `docs/decisions/0030-session-closure-authorization.md`, `docs/decisions/README.md`, `docs/standards.md`, `docs/macp-protocol.md`, `AGENTS.md`, `Makefile`, `scripts/check_session_closure.py`, `scripts/hooks/pre-commit`, `tests/test_session_closure.py`
+- **Outcome:** IN PROGRESS (re-opened — premature closure reversed; no commit made). `make check` green (1141 passed, 3 deselected) + `make status` green before and after edits. DEBT-001/002 closed with `git ls-tree` evidence; DEBT-005 confirmed still open. Merge-or-discard decision on `feat/branch-enforcement` left for the maintainer.
+- **Session file:** `state/sessions/20261008-0334-R001-reconcile.md`
+
+---
+
 ## Session: 2026-10-01 — Scanner Completion + mypy Repair (A001)
 
 - **Agent:** A001 (opencode/longcat-2.5-preview-free)

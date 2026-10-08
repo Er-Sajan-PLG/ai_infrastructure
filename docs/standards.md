@@ -143,6 +143,7 @@ normative table is exactly the drift this repository refuses.
 | V13 | Commit messages follow the conventional-commit header | §25 | `scripts/check_commit_msg.py` (hook) | 0019 |
 | V14 | An accepted risk carries a real rationale reference and an unexpired review date | §4, §22 | `scripts/check_risks.py` | 0014 |
 | V15 | A deferred item records the fact that defers it, a trigger, and a reversal | §8 | `scripts/check_deferred.py` | 0020 |
+| V16 | A session claims completion only with an explicit maintainer close directive on record | §25 | `scripts/check_session_closure.py` (`make sessions`) | 0030 |
 
 ### Corrections to previously claimed checks
 
@@ -184,10 +185,11 @@ make security        → V8..V11      (secrets, sast, sca, licenses)
 make workflows       → V12
 make risks           → V14
 make deferred        → V15
+make sessions        → V16
 make commit-msg      → V13
 tests/test_ci_parity.py → V3
 Makefile preamble    → V4
-make check-strict    → V1..V15 except V2 and V13 (see below)
+make check-strict    → V1..V16 except V2 and V13 (see below)
 pre-commit           → the subset relevant to staged files
 CI (make ci)         → every gate in CI_GATES; see `make print-gates`
 human review         → H2, H4, C4..C6, T2..T4, D3..D6, §6 gates

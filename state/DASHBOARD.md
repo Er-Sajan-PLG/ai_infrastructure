@@ -14,8 +14,8 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `master` (autosync branch merged 2026-10-01, then deleted) |
-| **Tests** | 1140 passing (verified via `make check`) |
+| **Branch** | `feat/branch-enforcement` (3 commits ahead of `master`; merge decision pending — see Critical Alerts) |
+| **Tests** | 1141 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
 | **Capabilities** | 6 TESTED, 5 DISCOVERED |
@@ -31,7 +31,8 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
-- None. All gates green on `master` (`make check`, `make status`, `make ci`). No remote exists, so visibility is limited to this checkout.
+- `feat/branch-enforcement` is 3 commits ahead of `master` (branch guard + `verification-package/`) — unreviewed, unmerged. Decide merge vs discard before capability work resumes; downstream sessions assume `master` is truth.
+- No remote exists, so visibility is limited to this checkout. All gates green on this branch (`make check`, `make status`).
 
 ## Recently Completed
 
@@ -47,9 +48,10 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Phase 3 — Discover (automate taxonomy discovery)
-2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-3. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+1. Merge-or-discard decision on `feat/branch-enforcement` (3 unmerged commits)
+2. Phase 3 — Discover (automate taxonomy discovery)
+3. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
+4. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
 
 ## Key Files
 
@@ -67,6 +69,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/branch-enforcement` at `5c56227`; session commits not on master: 2 (see `git log master..HEAD --oneline`).
+> branch `feat/branch-enforcement` at `29d33b5`; session commits not on master: 3 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

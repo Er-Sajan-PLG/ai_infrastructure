@@ -22,13 +22,13 @@
 
 ---
 
-## Current Status (2026-10-01)
+## Current Status (2026-10-08)
 
 - **Phase:** Phase 2 complete; Phase 3 (Discover) not started
-- **Branch:** `session/2026-10-01-state-convention`
-- **Tests:** 601 passing, 90.03% coverage
-- **Capabilities:** 5 TESTED, 2 DISCOVERED
-- **Uncommitted work:** Infrastructure scanner + study pipeline enhancements (incomplete)
+- **Branch:** `feat/branch-enforcement` (3 commits ahead of `master`; merge decision pending)
+- **Tests:** 1141 passing, 3 deselected (verified via `make check` on this branch); `make status` green, no drift
+- **Capabilities:** 6 TESTED, 5 DISCOVERED (verified via `make status`)
+- **Uncommitted work:** none committed-but-unmerged — see branch note above; worktree holds only this session's state-file reconciliation (uncommitted)
 
 ---
 
@@ -43,7 +43,7 @@
 
 ### What's next
 
-1. Decide what to do with uncommitted infrastructure scanner work
+1. Merge-or-discard decision on `feat/branch-enforcement` (branch guard + `verification-package/`, 3 commits ahead of `master`)
 2. Phase 3 — Discover (automate taxonomy discovery)
 3. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
 

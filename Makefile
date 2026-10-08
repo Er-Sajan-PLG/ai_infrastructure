@@ -398,6 +398,15 @@ deferred: ## Verify the deferred-work register is well-formed and current
 	@# register, and reports observable triggers that may have fired.
 	$(PY) scripts/check_deferred.py
 
+.PHONY: sessions
+sessions: ## Verify no session claims completion without maintainer authorization
+	@# A session may only be marked Completed/Closed with an explicit
+	@# maintainer close directive recorded as Close-Authorized-By in its
+	@# session file. Without this, an agent can close a session on its own
+	@# authority and every gate stays green (incident 2026-10-08).
+	@# See docs/decisions/0030.
+	$(PY) scripts/check_session_closure.py
+
 .PHONY: sync-state
 sync-state: ## Regenerate git-derived MACP state blocks (idempotent)
 	@# Runs on every commit via the pre-commit hook, so the record tracks
@@ -422,10 +431,10 @@ commit-msg: ## Validate the Conventional Commits header format (ADR-0019)
 # ---------------------------------------------------------------------------
 
 .PHONY: check
-check: lint typecheck validate links test ## The full gate a session must pass before committing
+check: lint typecheck validate links sessions test ## The full gate a session must pass before committing
 
 .PHONY: check-strict
-check-strict: lint typecheck validate-strict links phase-plan structural risks deferred test ## Full gate + strict catalog + structural + registers
+check-strict: lint typecheck validate-strict links phase-plan structural risks deferred sessions test ## Full gate + strict catalog + structural + registers
 
 .PHONY: security
 security: secrets sast sca licenses ## All security gates (SAST, SCA, secrets, licences)

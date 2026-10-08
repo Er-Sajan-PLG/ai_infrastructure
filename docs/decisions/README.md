@@ -34,6 +34,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 || [0027](0027-worker-contract.md) | Worker contract: explicit interface for agent execution | Accepted |
 | [0028](0028-llm-http-transport.md) | `llm-http-transport`: a stdlib socket for `model-provider-abstraction`, placed in `integrations/` | Accepted |
 | [0029](0029-infrastructure-scanner.md) | `infrastructure-scanner`: deterministic 12-layer infrastructure detection, zero runtime deps, optional LLM layer | Accepted |
+| [0030](0030-session-closure-authorization.md) | Session closure requires explicit maintainer authorization, enforced by a gate | Accepted |
 
 ## When an ADR is required
 

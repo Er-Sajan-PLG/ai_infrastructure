@@ -8,11 +8,16 @@
 
 | ID | Description | Impact | Trigger to Resolve | Status |
 |---|---|---|---|---|
-| DEBT-001 | Infrastructure scanner (`catalog/infrastructure/scanner/`) is uncommitted and lacks spec/research/ADR/taxonomy | Medium — code exists but can't be trusted per charter §4 | Decide to continue or discard | Open |
-| DEBT-002 | Study pipeline enhancements (stack_detector, dependency_extractor) uncommitted | Low — additive features, no breakage | Commit or discard | Open |
 | DEBT-003 | `vector-memory-store` capability is DISCOVERED, never researched | Low — blocked by priority | When Phase 1 queue resumes | Open |
 | DEBT-004 | `basic-rag-pipeline` capability is DISCOVERED, never researched | Low — blocked by vector-memory-store | After vector-memory-store | Open |
 | DEBT-005 | `InfrastructureScanner.__init__` accepts `model_provider` param but builds its own `OpenAIProvider` internally — the passed provider is ignored | Low — cosmetic API wart, documented behavior works | Cleanup pass on scanner API | Open |
+
+## Resolved
+
+| ID | Description | Resolution | Closed |
+|---|---|---|---|
+| DEBT-001 | Infrastructure scanner was uncommitted and lacked spec/research/ADR/taxonomy | Committed: `catalog/deployment/scanner/` + spec + research + ADR-0029 + TESTED taxonomy entry, all tracked on `master` (verified via `git ls-tree -r master`) | 2026-10-08 |
+| DEBT-002 | Study pipeline enhancements (stack_detector, dependency_extractor) uncommitted | Committed: both files tracked on `master` and `HEAD`, working tree clean (verified via `git ls-tree -r` + `git status`) | 2026-10-08 |
 
 ## Deliberately Deferred (see docs/DEFERRED.md)
 

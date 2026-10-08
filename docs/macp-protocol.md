@@ -286,6 +286,16 @@ STEP 2 — Update REGISTRY.md
   Change your status from IN-PROGRESS to COMPLETED.
   Release your file ownership claims.
 
+> **Amendment 2026-10-08 (closure authorization):** neither the STEP 1
+> Outcome nor the STEP 2 status change may claim completion without a
+> `Close-Authorized-By:` line in your session file naming the maintainer's
+> explicit close directive and its date. Closing on the agent's own authority
+> is a governance defect, not a judgment call; `make sessions` (V16) fails
+> the build, the commit, and CI without it. The authorizing directive must
+> come from the maintainer — completing the checklist is not authorization.
+> See ADR-0030 (written after an agent closed session R001 unprompted with
+> every gate green).
+
 STEP 3 — Clean Up state/plans/
   If your plan is complete, delete your plan file.
   If partially complete, update it with current status.

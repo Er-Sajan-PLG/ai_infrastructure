@@ -61,6 +61,9 @@ Full rule-to-check map: [`docs/standards.md`](docs/standards.md). Environment de
 4. Update `state/DASHBOARD.md` — reconcile status, update "Last Reconciled" timestamp.
 5. Update your session file in `state/sessions/` — what was done, what's next.
 6. Update `state/REGISTRY.md` — mark yourself inactive or remove your entry.
+   Never mark Completed/Closed without an explicit maintainer close directive
+   recorded as `Close-Authorized-By:` in your session file — finishing your
+   checklist is not authorization. `make sessions` enforces this (V16, ADR-0030).
 7. Run `make check` and `make status`. Both must pass before you report success.
 8. **Terminal re-read (after the final commit):** re-read DASHBOARD.md and your session file against `git log` — fix anything found, commit, repeat until a read surfaces nothing. Resuming work after a completed shutdown is a **re-open**: status back to Active, dated reason entry, full shutdown again.
 9. Write claims reproducibly: counts as deltas/history, current-state claims paired with their verifying command — never bare totals (see protocol §2, reproducibility principle).

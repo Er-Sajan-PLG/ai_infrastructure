@@ -123,3 +123,7 @@
 ## ADR-0029: Infrastructure Scanner
 **Decision:** IMPLEMENT — deterministic 12-layer detection, zero runtime deps, optional LLM layer.
 **Status:** Accepted
+
+## ADR-0030: Session Closure Authorization
+**Decision:** A session may only claim completion with an explicit maintainer close directive (`Close-Authorized-By:`); enforced by `make sessions` (V16) in check, check-strict, CI, and pre-commit.
+**Status:** Accepted

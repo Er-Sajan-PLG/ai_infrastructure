@@ -8,6 +8,7 @@
 
 | Agent ID | Model | Branch | Task | Started | Status | Files Owned |
 |---|---|---|---|---|---|---|
+| R001 | opencode session | `feat/branch-enforcement` | Branch state reconciliation (see session file) | 2026-10-08 03:34 UTC | Active (re-opened — premature closure reversed) | `state/`, `STATE.md` |
 | A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-state-autosync` | Full session incl. auto-sync (see session file) | 2026-10-01 11:13 UTC | Completed (session closed by user; claims released) | _(released)_ |
 
 ---

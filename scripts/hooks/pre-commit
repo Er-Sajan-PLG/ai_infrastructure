@@ -177,5 +177,15 @@ if echo "$STAGED" | grep -qE '^(TAXONOMY\.md|specifications/|catalog/|docs/decis
         || fail "taxonomy claims exceed artifacts on disk (run 'make status')"
 fi
 
+# --- 5b. Session closure authorization ------------------------------------
+# A session file may only claim completion with an explicit maintainer close
+# directive on record. An agent closing a session on its own authority is a
+# governance defect, not a judgment call (ADR-0030, incident 2026-10-08).
+if echo "$STAGED" | grep -qE '^(state/sessions/|state/REGISTRY\.md|state/INDEX\.md)'; then
+    echo "pre-commit: session closure authorization"
+    "${VENV}/bin/python" scripts/check_session_closure.py --quiet \
+        || fail "a session claims completion without maintainer authorization (run 'make sessions')"
+fi
+
 echo "pre-commit: all gates passed."
 exit 0
