@@ -13,9 +13,9 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Field | Value |
 |---|---|
-| **Phase** | Phase 3 (Discover) in progress — exit criteria 1-3 met |
+| **Phase** | Phase 3 (Discover) complete — all 5 exit criteria met |
 | **Branch** | `master` (`feat/branch-enforcement` merged 2026-10-08, 4 commits) |
-| **Tests** | 1188 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
+| **Tests** | 1203 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
 | **Capabilities** | 6 TESTED, 5 DISCOVERED |
@@ -47,10 +47,9 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Review Phase 3 convergent patterns (config, caching, guardrails, rate-limiting) — ADOPT/DEFER/REJECT with ADRs
-2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-3. Phase 3 exit criteria 4-5: taxonomy growth from Phase 3 proposals + deprecation flagging (charter §23)
-4. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+1. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
+2. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+3. Phase 4 — Compose (compose TESTED capabilities into larger systems)
 
 ## Key Files
 
@@ -68,6 +67,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `653f070`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `b8cd5dc`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
