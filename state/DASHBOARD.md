@@ -31,7 +31,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
-- No remote exists yet, so visibility is limited to this checkout. All gates green on `master` (`make check`, `make status`, coverage 89.70%).
+- Remote is live (`github.com/Er-Sajan-PLG/ai_infrastructure`, public, `master` pushed 2026-10-08) — CI runs from here on; first remote CI result not yet observed. All local gates green (`make check`, `make status`, coverage 89.70%).
 
 ## Recently Completed
 
@@ -47,7 +47,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Create public GitHub repo + push `master` (maintainer-ordered 2026-10-08)
+1. Observe first remote CI result on origin (push just landed)
 2. Phase 3 — Discover (automate taxonomy discovery)
 3. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
 4. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
@@ -68,6 +68,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `7ed746d`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `f5b2e96`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

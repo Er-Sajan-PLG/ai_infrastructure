@@ -44,4 +44,9 @@
 | AR-002 | Path-scoping reduces SAST coverage of tests | 2026-09-17 | 2027-03-17 | Tests are fixtures, not attack surface |
 | AR-003 | Commit-msg checker differs from commitlint | 2026-09-17 | 2027-03-17 | Header-only is the subset used |
 | AR-004 | import-linter independence (not forbidden) | 2026-09-17 | 2027-03-17 | Forbidding fails on correct code |
-| AR-005 | No remote — CI can't run | 2026-09-17 | 2027-03-17 | Local gates are comprehensive |
+
+## Resolved risks
+
+| ID | Risk | Resolution | Closed |
+|---|---|---|---|
+| AR-005 | No remote — CI can't run | Remote added: `github.com/Er-Sajan-PLG/ai_infrastructure` (public), `master` pushed 2026-10-08; CI runs on push/branches from here on | 2026-10-08 |
