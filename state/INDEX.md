@@ -4,6 +4,17 @@
 
 ---
 
+## Session: 2026-10-08 — CI Fix (HERMES)
+
+- **Agent:** HERMES (longcat-2.5-preview-free)
+- **Branch:** `master`
+- **Task:** Fix CI failure — setup-uv cache + inventory.py unreadable directories
+- **Files touched:** `.github/workflows/ci.yml`, `study_pipeline/inventory.py`, `state/`
+- **Outcome:** COMPLETED. Two commits: `2353698` (remove enable-cache from setup-uv) + `9e1c13c` (OSError guards in inventory.py). CI green on remote (run `37810460662`). 1159 tests pass.
+- **Session file:** `state/sessions/20261008-1628-HERMES-ci-fix.md`
+
+---
+
 ## Session: 2026-10-08 — Branch State Reconciliation (R001)
 
 - **Agent:** R001 (opencode session)

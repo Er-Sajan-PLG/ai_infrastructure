@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-01 (post-merge: autosync branch merged to master, gates green, session closed)
+> **Last Reconciled:** 2026-10-08 (CI fixed and green on remote; two commits: setup-uv cache fix + inventory.py unreadable directory fix)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -31,7 +31,7 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Critical Alerts
 
-- Remote is live (`github.com/Er-Sajan-PLG/ai_infrastructure`, public, `master` pushed 2026-10-08) — CI runs from here on; first remote CI result not yet observed. All local gates green (`make check`, `make status`, coverage 89.70%).
+- Remote is live (`github.com/Er-Sajan-PLG/ai_infrastructure`, public, `master` pushed 2026-10-08). CI green on remote (run `37810460662`, 2026-10-08). Two fixes landed: (1) removed `enable-cache: true` from setup-uv (no `uv.lock` in repo), (2) added `OSError` guards to `inventory.py` for unreadable directories.
 
 ## Recently Completed
 
@@ -47,10 +47,9 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Observe first remote CI result on origin (push just landed)
-2. Phase 3 — Discover (automate taxonomy discovery)
-3. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-4. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+1. Phase 3 — Discover (automate taxonomy discovery)
+2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
+3. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
 
 ## Key Files
 
@@ -68,6 +67,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `2353698`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `9e1c13c`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
