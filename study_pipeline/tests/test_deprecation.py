@@ -209,6 +209,16 @@ class TestDetectDeprecations:
         # The real reports should have some patterns
         assert len(result.occurrences) > 0
 
+    def test_missing_reports_dir(self, tmp_path: Path) -> None:
+        """detect_deprecations() returns empty result when reports dir doesn't exist."""
+        (tmp_path / "TAXONOMY.md").write_text(_MINIMAL_TAXONOMY, encoding="utf-8")
+
+        result = detect_deprecations(tmp_path)
+
+        assert result.total_reports == 0
+        assert result.candidates == ()
+        assert result.occurrences == ()
+
 
 # ---------------------------------------------------------------------------
 # render_deprecation_report
