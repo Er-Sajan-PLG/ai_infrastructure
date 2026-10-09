@@ -175,7 +175,7 @@ typecheck: ## Run mypy in strict mode
 	@# sys.path), so without the entry directories on the search path mypy
 	@# reports import-not-found on every cross-entry import. This is the same
 	@# ENTRY_PATHS the `independence` target passes as PYTHONPATH.
-	@targets=$$(find catalog integrations scripts tests study_pipeline -name '*.py' \
+	@targets=$$(find catalog integrations scripts tests study_pipeline benchmarks -name '*.py' \
 		-not -path '*/.venv/*' 2>/dev/null); \
 	if [ -z "$$targets" ]; then \
 		echo "No Python sources to type-check yet."; \
@@ -243,6 +243,26 @@ study-clean: ## Remove the clone workspace (never touches written reports)
 	before = workspace_size_bytes(); \
 	prune_workspace(); \
 	print(f'workspace: {before} -> {workspace_size_bytes()} bytes')"
+
+.PHONY: discover
+discover: ## Run cross-repo convergence detection (Phase 3)
+	$(PY) -c "from pathlib import Path; from study_pipeline.discover import discover, render_discovery; \
+	result = discover(Path('.')); \
+	print(render_discovery(result))"
+
+.PHONY: review
+review: ## Generate review documents for convergent patterns (Phase 3)
+	$(PY) -c "from pathlib import Path; from study_pipeline.discover import discover; \
+	from study_pipeline.review import generate_review_docs, render_review_summary; \
+	result = discover(Path('.')); \
+	items = generate_review_docs(result, Path('.')); \
+	print(render_review_summary(items))"
+
+.PHONY: deprecations
+deprecations: ## Detect obsolete patterns for deprecation review (Phase 3, charter §23)
+	$(PY) -c "from pathlib import Path; from study_pipeline.deprecation import detect_deprecations, render_deprecation_report; \
+	result = detect_deprecations(Path('.')); \
+	print(render_deprecation_report(result))"
 
 .PHONY: links
 links: ## Verify relative Markdown links resolve

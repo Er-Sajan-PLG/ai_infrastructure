@@ -13,9 +13,9 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Field | Value |
 |---|---|
-| **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
+| **Phase** | Phase 4 (Compose) complete — all 7 exit criteria met |
 | **Branch** | `master` (`feat/branch-enforcement` merged 2026-10-08, 4 commits) |
-| **Tests** | 1141 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
+| **Tests** | 1278 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
 | **Capabilities** | 6 TESTED, 5 DISCOVERED |
@@ -47,9 +47,8 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Phase 3 — Discover (automate taxonomy discovery)
-2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-3. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+1. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+2. Remaining Phase 1 capability: basic-rag-pipeline (now unblocked — vector-memory-store is TESTED)
 
 ## Key Files
 
@@ -67,6 +66,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `9e1c13c`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `feat/ci-cd-hardening` at `f89c844`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

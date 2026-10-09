@@ -4,6 +4,28 @@
 
 ---
 
+## Session: 2026-10-08 — Phase 4 Compose (HERMES)
+
+- **Agent:** HERMES (longcat-2.5-preview-free)
+- **Branch:** `master`
+- **Task:** Complete vector-memory-store, build System C + A + B, benchmarks
+- **Files touched:** `catalog/memory/vector_store/`, `integrations/system_c_internal/`, `integrations/system_a_partial/`, `integrations/system_b_mixed/`, `benchmarks/`, `specifications/vector-memory-store.md`, `research/memory/vector-memory-store.md`, `docs/decisions/0033-vector-memory-store.md`, `TAXONOMY.md`, `integrations/README.md`
+- **Outcome:** COMPLETED. Five commits: `9963bff` (vector-memory-store, 35 tests) + `b19c18a` (System C, 12 tests) + `41d210d` (System A, 15 tests) + `986e60d` (System B, 13 tests) + `e7c0f69` (benchmarks). Phase 4 exit criteria 1-7 all met. 1278 tests pass.
+- **Session file:** `state/sessions/20261008-2330-HERMES-phase4-compose.md`
+
+---
+
+## Session: 2026-10-08 — Phase 3 Discover (HERMES)
+
+- **Agent:** HERMES (longcat-2.5-preview-free)
+- **Branch:** `master`
+- **Task:** Build cross-repo convergence detection + review workflow
+- **Files touched:** `study_pipeline/discover.py`, `study_pipeline/review.py`, `study_pipeline/tests/test_discover.py`, `study_pipeline/tests/test_review.py`, `Makefile`, `docs/phases/phase-3-discover.md`, `docs/discovery/`
+- **Outcome:** COMPLETED. Two commits: `3b546cd` (discover.py, 14 tests) + `8be12ad` (review.py, 7 tests). 4 convergent patterns found: config 15/25, caching 14/25, guardrails 10/25, rate-limiting 6/25. Phase 3 exit criteria 1-3 met. 1188 tests pass.
+- **Session file:** `state/sessions/20261008-1645-HERMES-phase3-discover.md`
+
+---
+
 ## Session: 2026-10-08 — CI Fix (HERMES)
 
 - **Agent:** HERMES (longcat-2.5-preview-free)

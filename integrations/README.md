@@ -11,13 +11,18 @@ Compositions of catalog components into working systems (charter §17, §31). An
 
 ## Status
 
-**2 integrations.** Phase 1's exit criterion — *"at least one end-to-end
+**4 integrations.** Phase 1's exit criterion — *"at least one end-to-end
 composition: model + tools + agent loop, demonstrated in `integrations/`"* — is
-met.
+met. Phase 4's System C — *"entirely composed from `ai_infrastructure`"* — is
+met. Phase 4's System A — *"partial adoption"* — is met. Phase 4's System B —
+*"mixed"* — is met.
 
 | Integration | Composes | Proves |
 |---|---|---|
 | [`agent_loop_end_to_end`](agent_loop_end_to_end/) | `tool-registry` + `model-provider-abstraction` + `react-agent-loop`, all `TESTED` | The three capabilities compose into a working system, and the composition is verified by 25 tests with no network. It found a real defect on the seam that neither capability's own suite could see. |
 | [`llm_http_transport`](llm_http_transport/) | `model-provider-abstraction` (`TESTED`) | The missing stdlib transport implementation and basic live-call path are provided without new dependencies. Offline tests verify local mapping and composition only; live vendor verification is deferred. See [ADR-0028](../docs/decisions/0028-llm-http-transport.md). |
+| [`system_c_internal`](system_c_internal/) | `tool-registry` + `model-provider-abstraction` + `react-agent-loop`, all `TESTED` | Phase 4 System C — entirely composed from `ai_infrastructure`. Three capabilities compose into a working system, verified by 12 tests with no network. |
+| [`system_a_partial`](system_a_partial/) | `react-agent-loop` + `vector-memory-store`, both `TESTED` | Phase 4 System A — partial adoption. Our runtime + our memory compose with external provider and external embedder (doubles), verified by 15 tests with no network. |
+| [`system_b_mixed`](system_b_mixed/) | `execution-trace-recorder` (`TESTED`) | Phase 4 System B — mixed. External runtime (double) wrapped with our trace recorder and evaluation scoring, verified by 13 tests with no network. |
 
 See [`agent_loop_end_to_end/README.md`](agent_loop_end_to_end/README.md) and [`llm_http_transport/README.md`](llm_http_transport/README.md).

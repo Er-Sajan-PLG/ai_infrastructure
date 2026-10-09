@@ -3,14 +3,10 @@
 # This workflow DELEGATES. Every gate is invoked as a `make` target rather than
 # re-implemented inline, so a green pipeline means the same thing as a green
 # local run. `tests/test_ci_parity.py` fails the build if this file and the
-# Makefile ever disagree about which gates exist -- that test exists because
-# the claim in this comment was FALSE before it was written: CI ran
-# `scripts/repo_status.py` while `make ci` did not include `status` at all.
+# Makefile ever disagree about which gates exist.
 #
-# The steps are separate rather than one `make ci` call, deliberately:
-# collapsing them into a single step would destroy per-gate check granularity,
-# partial-failure visibility, and native annotations, and branch protection
-# requires statically named checks.
+# Jobs are split for branch protection granularity: each job is a statically
+# named check that can be required independently.
 #
 # Charter references: §4 (claims must match artifacts), §18 (testing),
 # §20 (a rule with no check is a preference), §21 (definition of done),
@@ -22,45 +18,139 @@ on:
   push:
     branches: ["**"]
   pull_request:
-  # Available on every workflow by hand, per the maintenance guidance in
-  # docs/decisions/0014: a scheduled workflow can be automatically disabled
-  # after 60 days of repository inactivity, so being able to run these on
-  # demand must not depend on a cron entry.
   workflow_dispatch:
 
-# Least privilege, stated explicitly rather than inherited. GitHub changed the
-# default GITHUB_TOKEN to read-only in 2023 but did NOT change it for existing
-# repositories, so this cannot be assumed.
+# Least privilege, stated explicitly rather than inherited.
 permissions:
   contents: read
 
-# A newer push supersedes an in-flight run on the same ref. Not applied to the
-# default branch: cancelling there could leave a commit with no completed
-# check, which branch protection reads as a failure.
+# A newer push supersedes an in-flight run on the same ref.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
 jobs:
+  # --- Build & smoke test -----------------------------------------------
+  build:
+    name: build & smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+
+      - name: Create virtualenv and install pinned toolchain
+        run: |
+          uv venv --python 3.12
+          uv pip install -r requirements-dev.txt
+          uv pip install -e .
+
+      - name: Smoke test the package
+        run: |
+          .venv/bin/python -m study_pipeline --version
+          PYTHONPATH="catalog/memory:catalog/tools:catalog/models:catalog/agents:catalog/observability:catalog/protocols" \
+            .venv/bin/python -c "from vector_store import VectorStore; print('vector_store OK')"
+          PYTHONPATH="catalog/memory:catalog/tools:catalog/models:catalog/agents:catalog/observability:catalog/protocols" \
+            .venv/bin/python -c "from tool_registry import ToolRegistry; print('tool_registry OK')"
+
+  # --- Conventional commits (PRs only) ----------------------------------
+  commits:
+    name: conventional commits
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Check commit messages
+        run: |
+          # Get all commits in the PR
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          COMMITS=$(git log --format=%s "$BASE_SHA".."$HEAD_SHA")
+          echo "Checking commits:"
+          echo "$COMMITS"
+          echo "---"
+          # Check each commit message
+          FAILED=0
+          while IFS= read -r msg; do
+            if [ -z "$msg" ]; then continue; fi
+            # Must start with type(scope): or type:
+            if ! echo "$msg" | grep -qE '^(feat|fix|refactor|docs|style|test|chore|ci|perf|build)(\([a-z-]+\))?: .+'; then
+              echo "INVALID: $msg"
+              echo "Expected format: type(scope): description"
+              echo "Types: feat, fix, refactor, docs, style, test, chore, ci, perf, build"
+              FAILED=1
+            fi
+          done <<< "$COMMITS"
+          if [ "$FAILED" = "1" ]; then
+            echo "::error::One or more commits do not follow Conventional Commits."
+            exit 1
+          fi
+          echo "All commits follow Conventional Commits."
+
+  # --- Quality gates ----------------------------------------------------
   quality:
     name: quality gates
     runs-on: ubuntu-latest
-
+    needs: [build]
     steps:
-      - name: Checkout
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # diff-coverage needs history to diff against the base branch.
           fetch-depth: 0
-          # Do NOT leave the GITHUB_TOKEN in .git/config for the rest of the
-          # job. zizmor's `artipacked` audit flags the default, and the risk is
-          # concrete: any later step that uploads an artifact or runs
-          # third-party code could read the persisted credential. Nothing in
-          # this workflow pushes, so the credential is never needed.
           persist-credentials: false
 
       - name: Install uv
-        uses: astral-sh/setup-uv@caf0cab7a618c569241d31dcd442f54681755d39 # v3.2.4
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+
+      - name: Create virtualenv and install pinned toolchain
+        run: |
+          uv venv --python 3.12
+          uv pip install -r requirements-dev.txt
+
+      - name: Lint, types, catalog contract, structural checks, risks, tests
+        run: make check-strict
+
+      - name: Coverage floor
+        run: make coverage
+
+      - name: Deferred-work register
+        run: make deferred
+
+      - name: Governance drift (taxonomy vs artifacts)
+        run: make status
+
+      # --- Change-scoped coverage (pull requests only) -------------------
+      - name: Diff coverage (changed lines)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          ALLOW_MISSING: ${{ contains(github.event.pull_request.labels.*.name, 'missing-coverage-ok') }}
+          DIFF_COVER_BASE: origin/${{ github.base_ref }}
+        run: |
+          git fetch --no-tags origin "$BASE_REF"
+          if [ "$ALLOW_MISSING" = "true" ]; then
+            echo "Label 'missing-coverage-ok' present: reporting without failing."
+            DIFF_COVER_FAIL_UNDER=0 make diff-coverage
+          else
+            make diff-coverage
+          fi
+
+  # --- Security scans ---------------------------------------------------
+  security:
+    name: security scans
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
 
       - name: Create virtualenv and install pinned toolchain
         run: |
@@ -68,19 +158,6 @@ jobs:
           uv pip install -r requirements-dev.txt
 
       # --- Tools that are not Python packages ---------------------------
-      #
-      # Each is pinned to an exact version AND installed by a route that
-      # cannot silently pick up a different one. This is not fussiness: it is
-      # the specific lesson of CVE-2026-33634 (March 2026), in which LiteLLM
-      # was backdoored THROUGH ITS OWN SECURITY SCAN because its
-      # `security_scans.sh` installed Trivy from a package repository, which
-      # "always pulled the latest version available" with "no pinning or
-      # checksum verification". The malicious binary then exfiltrated CI
-      # credentials, which were used to publish backdoored releases.
-      #
-      # SHA-pinning the `uses:` references above would NOT have prevented
-      # that, because the compromised component was not an action -- it was a
-      # tool installed by a shell command. Both halves are required.
       - name: Install pinned non-Python tools
         env:
           GITLEAKS_VERSION: "8.30.1"
@@ -89,33 +166,13 @@ jobs:
           mkdir -p "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-          # gitleaks: exact version, from the project's own release asset.
           curl -sSfL \
             "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
             | tar -xz -C "$HOME/.local/bin" gitleaks
 
-          # actionlint: exact version, from the project's own release asset.
           curl -sSfL \
             "https://github.com/rhysd/actionlint/releases/download/v${ACTIONLINT_VERSION}/actionlint_${ACTIONLINT_VERSION}_linux_amd64.tar.gz" \
             | tar -xz -C "$HOME/.local/bin" actionlint
-
-          # zizmor: pinned via the Python toolchain requirements file, which
-          # is the same pinning mechanism as every other dev tool. No curl and
-          # no floating tag.
-
-      # --- Gates, each delegated to make --------------------------------
-      #
-      # The targets below are exactly the contents of CI_GATES in the
-      # Makefile. tests/test_ci_parity.py asserts that correspondence in both
-      # directions: a gate in the Makefile that CI never runs is not enforced,
-      # and a gate CI runs that the Makefile does not describe makes a green
-      # local run a poor predictor of a green pipeline.
-
-      - name: Lint, types, catalog contract, structural checks, risks, tests
-        run: make check-strict
-
-      - name: Coverage floor
-        run: make coverage
 
       - name: Secret scan (gitleaks, full history)
         run: make secrets
@@ -132,56 +189,12 @@ jobs:
       - name: Workflow lint (actionlint + zizmor)
         run: make workflows
 
-      - name: Deferred-work register
-        run: make deferred
-
-      - name: Governance drift (taxonomy vs artifacts)
-        run: make status
-
-      # --- Change-scoped coverage (pull requests only) -------------------
-      #
-      # Runs only on PRs because it needs a base branch to diff against. This
-      # is the gate that actually measures the change: a global percentage can
-      # be held up by untouched code, whereas "every line this PR added is
-      # exercised" cannot. The `missing-coverage-ok` label is the deliberate,
-      # visible escape hatch (a label is reviewable; a silent skip is not).
-      #
-      # SECURITY: `github.base_ref` and the label check reach the shell ONLY
-      # through `env:`, never through direct `${{ }}` interpolation in `run:`.
-      # That is not style -- zizmor's template-injection audit flagged this
-      # step at HIGH confidence when the value was interpolated inline, because
-      # a branch name is attacker-controlled and `${{ }}` expansion happens
-      # BEFORE the shell parses the script. `"$BASE_REF"` inside `env` is a
-      # plain shell variable: quoted, expanded by the shell, never re-parsed as
-      # code. The indirect `env` indirection is the documented mitigation.
-      - name: Diff coverage (changed lines)
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_REF: ${{ github.base_ref }}
-          ALLOW_MISSING: ${{ contains(github.event.pull_request.labels.*.name, 'missing-coverage-ok') }}
-          DIFF_COVER_BASE: origin/${{ github.base_ref }}
-        run: |
-          git fetch --no-tags origin "$BASE_REF"
-          if [ "$ALLOW_MISSING" = "true" ]; then
-            echo "Label 'missing-coverage-ok' present: reporting without failing."
-            DIFF_COVER_FAIL_UNDER=0 make diff-coverage
-          else
-            make diff-coverage
-          fi
-
   # --- Terminal aggregator ------------------------------------------------
-  #
-  # Branch protection can only require checks that exist by a STATIC name. If
-  # the required check is a matrix job or a conditional job, a run where it
-  # never appears blocks the merge forever. This job always runs, always has
-  # the same name, and fails if any upstream job failed or was cancelled.
-  #
-  # It depends only on `quality` today. Add new jobs to `needs` as they appear.
   required:
     name: required
     runs-on: ubuntu-latest
     if: always()
-    needs: [quality]
+    needs: [build, commits, quality, security]
     steps:
       - name: Check that every required job succeeded
         run: |

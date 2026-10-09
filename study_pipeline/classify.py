@@ -43,7 +43,7 @@ _YAML_FENCE: Final = "```yaml"
 #: the authoritative list of valid categories; the capability entries below it
 #: are instances.
 _TREE_LINE_RE: Final = re.compile(
-    r"^(?P<names>[a-z][a-z0-9|_-]*)/\s+(?P<description>.+?)\s*$"
+    r"^\|?\s*(?P<names>[a-z][a-z0-9|_-]*)/\s+(?P<description>.+?)\s*\|?\s*$"
 )
 
 #: Capability ids are `- id: some-id` inside the YAML block.

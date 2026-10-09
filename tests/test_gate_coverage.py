@@ -36,7 +36,9 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 #: Directories that hold this project's own Python source and must therefore be
 #: measured by coverage and traversed by mypy. ``tests/`` is absent: measuring a
 #: test suite's own coverage is circular, and it is still type-checked.
-SOURCE_DIRS: frozenset[str] = frozenset({"catalog", "integrations", "scripts"})
+SOURCE_DIRS: frozenset[str] = frozenset(
+    {"catalog", "integrations", "scripts", "benchmarks"}
+)
 
 #: Directories whose tests live *inside* them rather than in ``tests/``. These
 #: must appear in pytest's ``testpaths`` or their tests never run.

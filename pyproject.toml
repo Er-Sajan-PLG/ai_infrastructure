@@ -101,7 +101,7 @@ filterwarnings = ["error"]
 # Include catalog so capability tests actually contribute measurement, and
 # study_pipeline so the Phase 2 pipeline is held to the same standard as the
 # code it exists to evaluate.
-source = ["catalog", "integrations", "scripts", "study_pipeline"]
+source = ["catalog", "integrations", "scripts", "study_pipeline", "benchmarks"]
 branch = true
 
 [tool.coverage.report]
@@ -130,7 +130,7 @@ skip_covered = false
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-src = ["catalog", "scripts", "tests", "study_pipeline"]
+src = ["catalog", "scripts", "tests", "study_pipeline", "benchmarks"]
 # Explicit so that tooling behavior is intentional rather than incidental.
 extend-exclude = [".venv", ".uv-cache", "study_pipeline/studied_repos"]
 
@@ -188,6 +188,9 @@ ignore = [
 # independent of how the repository happens to be laid out. Requiring absolute
 # `catalog.tools.x.y` imports would couple every entry to this repo's structure.
 "catalog/**" = ["T20", "TID252"]
+# VectorStore uses `id` as a parameter name — it is the interface contract
+# (caller-assigned IDs), not a local variable choice.
+"catalog/memory/vector_store/**" = ["A001", "A002"]
 # Examples exist to be read and run, so printing is their purpose, not a stray
 # debug leftover. /tmp paths here are deliberate attack payloads in
 # injection-boundary demonstrations, not temp-file handling.
@@ -255,6 +258,11 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 # Integration tests use runtime path manipulation
 module = "integrations.*.tests.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+# Benchmarks use runtime path manipulation for imports
+module = "benchmarks.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
