@@ -22,6 +22,8 @@ memory/                Context & Memory
 retrieval/             Retrieval & Knowledge
 evaluation/            Evaluation
 safety/ (+governance/) Safety & Governance
+guardrails/            Guardrails & Output Validation (added Phase 3, ADR-0031)
+reliability/           Rate Limiting & Retry Infrastructure (added Phase 3, ADR-0032)
 orchestration/         Workflow & Distributed Infrastructure
 observability/         Observability
 data/                  Data
@@ -391,4 +393,61 @@ capabilities:
     provenance: original
     compatibility: ""
     last_reviewed: "2026-09-17"
+
+  # ---------------------------------------------------------------------
+  # Added Phase 3 (ADR-0031, ADR-0032) — convergent patterns from
+  # cross-repo convergence detection (25 studied repos).
+  # ---------------------------------------------------------------------
+
+  - id: guardrails
+    name: Guardrails & Output Validation
+    category: guardrails
+    status: DISCOVERED
+    maturity: experimental
+    priority: medium — 10/25 studied repos (40%) proposed this category; output validation is distinct from safety/governance and needs its own taxonomy leaf.
+    depends_on: []
+    decision: pending
+    description: Output moderation, content filtering, response validation, safety classifiers, and policy enforcement on model outputs.
+    problem: Model output must be validated before reaching users, but no taxonomy category covered the machinery between model response and user-facing output.
+    inputs: ["model output", "validation policy"]
+    outputs: ["validated output", "rejection reason"]
+    interfaces: []
+    dependencies: []
+    standards: []
+    reference_projects: []
+    research_records: ["study_pipeline/studied_repos/ (10/25 repos proposed guardrails)"]
+    implementation: ""
+    tests: ""
+    benchmarks: ""
+    security: "A guardrail that validates model output is a trust boundary — it must not become a bypass for prompt injection."
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-10-08"
+
+  - id: rate-limiting
+    name: Rate Limiting & Retry Infrastructure
+    category: reliability
+    status: DISCOVERED
+    maturity: experimental
+    priority: medium — 6/25 studied repos (24%) proposed this category; rate limiting and retry are cross-cutting infrastructure every production AI system needs.
+    depends_on: []
+    decision: pending
+    description: Rate limiting, retry with backoff, circuit breakers, throttling, and resilience patterns for AI API calls.
+    problem: Production AI systems must handle rate limits, transient failures, and provider outages gracefully, but no taxonomy category covered this machinery.
+    inputs: ["API call", "retry policy"]
+    outputs: ["successful response", "backoff/retry decision"]
+    interfaces: []
+    dependencies: []
+    standards: []
+    reference_projects: []
+    research_records: ["study_pipeline/studied_repos/ (6/25 repos proposed rate-limiting)"]
+    implementation: ""
+    tests: ""
+    benchmarks: ""
+    security: ""
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-10-08"
 

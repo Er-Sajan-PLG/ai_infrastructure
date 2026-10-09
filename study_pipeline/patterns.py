@@ -333,6 +333,22 @@ _RULES: Final[tuple[_Rule, ...]] = (
         manifest_hints=("guardrails-ai", "nemoguardrails"),
     ),
     _Rule(
+        pattern_id="rate-limiting",
+        name="Rate limiting / retry policy",
+        category="reliability",
+        fragments=(
+            "ratelimit",
+            "rate_limit",
+            "backoff",
+            "retry",
+            "retries",
+            "throttle",
+        ),
+        evidence_kind="directory or manifest evidence",
+        limitations=("Frequently inlined into a client. Absence means little."),
+        manifest_hints=("tenacity", "backoff", "limits", "aiolimiter"),
+    ),
+    _Rule(
         pattern_id="chunking",
         name="Document ingestion / chunking",
         category="retrieval",
@@ -362,7 +378,7 @@ _RULES: Final[tuple[_Rule, ...]] = (
     _Rule(
         pattern_id="config",
         name="Configuration / settings management",
-        category="tooling",
+        category="config",
         fragments=("config", "configs", "settings", "conf"),
         evidence_kind="directory evidence",
         limitations=(
@@ -374,7 +390,7 @@ _RULES: Final[tuple[_Rule, ...]] = (
     _Rule(
         pattern_id="caching",
         name="Caching layer",
-        category="performance",
+        category="caching",
         fragments=("cache", "caching", "memoize"),
         evidence_kind="directory or manifest evidence",
         limitations=(
