@@ -189,7 +189,9 @@ class TestSystemBComposition:
         _OPEN_SYSTEMS.append(system)
         assert isinstance(system.recorder, TraceRecorder)
 
-    def test_run_with_exception_records_error(self, tmp_path: Path) -> None:
+    def test_run_with_exception_records_error(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         """Exception in runtime is recorded and re-raised (lines 139-141)."""
         system = build_system_b(
             responses=[_text_response("ok")],
@@ -197,13 +199,10 @@ class TestSystemBComposition:
         )
         _OPEN_SYSTEMS.append(system)
 
-        # Force the runtime to raise an exception
-        original_run = system.runtime.run
-
         def _raising_run(_task: str) -> dict[str, Any]:
             raise RuntimeError("simulated failure")
 
-        system.runtime.run = _raising_run  # type: ignore[method-assign]
+        monkeypatch.setattr(system.runtime, "run", _raising_run)
 
         with pytest.raises(RuntimeError, match="simulated failure"):
             system.run("test task")
@@ -213,9 +212,6 @@ class TestSystemBComposition:
         assert trace_path.exists()
         content = trace_path.read_text()
         assert "error" in content
-
-        # Restore
-        system.runtime.run = original_run  # type: ignore[method-assign]
 
     def test_evaluate_returns_zero_when_no_trace(self, tmp_path: Path) -> None:
         """evaluate() returns zero scores when trace file doesn't exist (line 152)."""

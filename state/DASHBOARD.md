@@ -67,6 +67,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/system-b-mixed` at `4d6e002`; session commits not on master: 15 (see `git log master..HEAD --oneline`).
+> branch `feat/system-b-mixed` at `5fc753b`; session commits not on master: 16 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
