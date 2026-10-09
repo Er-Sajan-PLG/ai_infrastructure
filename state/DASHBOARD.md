@@ -67,6 +67,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/system-c-internal` at `9861244`; session commits not on master: 11 (see `git log master..HEAD --oneline`).
+> branch `feat/system-c-internal` at `5e2aef3`; session commits not on master: 12 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
