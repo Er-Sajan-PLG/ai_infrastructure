@@ -13,7 +13,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Field | Value |
 |---|---|
-| **Phase** | Phase 4 (Compose) in progress — System C + A + B done |
+| **Phase** | Phase 4 (Compose) complete — all 7 exit criteria met |
 | **Branch** | `master` (`feat/branch-enforcement` merged 2026-10-08, 4 commits) |
 | **Tests** | 1278 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
 | **Coverage** | ≥85% floor enforced, green |
@@ -47,8 +47,8 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Phase 4 benchmarks with recorded methodology (charter §19)
-2. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+1. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+2. Remaining Phase 1 capability: basic-rag-pipeline (now unblocked — vector-memory-store is TESTED)
 
 ## Key Files
 
@@ -66,6 +66,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `aa55231`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `e7c0f69`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
