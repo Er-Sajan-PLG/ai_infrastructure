@@ -366,3 +366,28 @@ class TestRenderDiscovery:
         text = render_discovery(result)
 
         assert "0 studied repositories" in text
+
+    def test_renders_convergent_with_many_repos(self) -> None:
+        """Cover line 292: repos_str join in render_discovery."""
+        result = DiscoveryResult(
+            total_repos=10,
+            proposals=(),
+            convergences=(
+                Convergence(
+                    proposed_id="caching",
+                    count=6,
+                    total_repos=10,
+                    repos=("r1", "r2", "r3", "r4", "r5", "r6"),
+                    from_patterns=("caching",),
+                    in_taxonomy=False,
+                ),
+            ),
+            mapped_patterns=(),
+            confirmed_categories=(),
+            repos_parsed=("r1", "r2", "r3", "r4", "r5", "r6"),
+        )
+
+        text = render_discovery(result)
+
+        assert "`r1`" in text
+        assert "`r5`" in text
