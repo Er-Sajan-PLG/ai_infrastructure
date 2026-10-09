@@ -1,0 +1,35 @@
+# Automerge (patch/minor)
+#
+# Dependabot toil removal: patch and minor updates merge themselves once CI
+# is green. Majors stay manual (breaking changes deserve a human).
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# Top level stays read-only: Scorecard's Token-Permissions check flags a
+# top-level write unconditionally.
+permissions:
+  contents: read
+
+jobs:
+  automerge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - id: meta
+        uses: dependabot/fetch-metadata@d7267c6e70c6727c6e70c6727c6e70c6727c6e7 # v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge on patch/minor
+        if: >-
+          ${{ steps.meta.outputs.update-type == 'version-update:semver-patch' ||
+              steps.meta.outputs.update-type == 'version-update:semver-minor' }}
+        run: gh pr merge --auto --squash "${{ github.event.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
