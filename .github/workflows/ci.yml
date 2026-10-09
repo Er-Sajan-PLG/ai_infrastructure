@@ -49,8 +49,10 @@ jobs:
       - name: Smoke test the package
         run: |
           .venv/bin/python -m study_pipeline --version
-          .venv/bin/python -c "from vector_store import VectorStore; print('vector_store OK')"
-          .venv/bin/python -c "from tool_registry import ToolRegistry; print('tool_registry OK')"
+          PYTHONPATH="catalog/memory:catalog/tools:catalog/models:catalog/agents:catalog/observability:catalog/protocols" \
+            .venv/bin/python -c "from vector_store import VectorStore; print('vector_store OK')"
+          PYTHONPATH="catalog/memory:catalog/tools:catalog/models:catalog/agents:catalog/observability:catalog/protocols" \
+            .venv/bin/python -c "from tool_registry import ToolRegistry; print('tool_registry OK')"
 
   # --- Conventional commits (PRs only) ----------------------------------
   commits:
