@@ -260,6 +260,26 @@ class TestDiscover:
         assert result.convergences[0].proposed_id == "caching"
         assert not result.convergences[0].in_taxonomy
 
+    def test_missing_reports_dir(self, tmp_path: Path) -> None:
+        """discover() returns empty result when reports dir doesn't exist."""
+        (tmp_path / "TAXONOMY.md").write_text(_MINIMAL_TAXONOMY, encoding="utf-8")
+
+        result = discover(tmp_path)
+
+        assert result.total_repos == 0
+        assert result.convergences == ()
+        assert result.proposals == ()
+
+    def test_proposal_evidence_property(self, tmp_path: Path) -> None:
+        """Proposal.evidence returns a one-line summary string."""
+        path = _write_report(tmp_path, "test-repo", _REPORT_SINGLE_PROPOSAL)
+        proposals, _ = _parse_report(path)
+
+        assert len(proposals) == 1
+        evidence = proposals[0].evidence
+        assert "test-repo" in evidence
+        assert "caching" in evidence
+
 
 # ---------------------------------------------------------------------------
 # render_discovery
