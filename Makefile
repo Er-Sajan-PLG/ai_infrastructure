@@ -258,12 +258,6 @@ review: ## Generate review documents for convergent patterns (Phase 3)
 	items = generate_review_docs(result, Path('.')); \
 	print(render_review_summary(items))"
 
-.PHONY: deprecations
-deprecations: ## Detect obsolete patterns for deprecation review (Phase 3, charter §23)
-	$(PY) -c "from pathlib import Path; from study_pipeline.deprecation import detect_deprecations, render_deprecation_report; \
-	result = detect_deprecations(Path('.')); \
-	print(render_deprecation_report(result))"
-
 .PHONY: links
 links: ## Verify relative Markdown links resolve
 	$(PY) scripts/check_links.py
