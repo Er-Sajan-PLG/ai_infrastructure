@@ -188,6 +188,9 @@ ignore = [
 # independent of how the repository happens to be laid out. Requiring absolute
 # `catalog.tools.x.y` imports would couple every entry to this repo's structure.
 "catalog/**" = ["T20", "TID252"]
+# VectorStore uses `id` as a parameter name — it is the interface contract
+# (caller-assigned IDs), not a local variable choice.
+"catalog/memory/vector_store/**" = ["A001", "A002"]
 # Examples exist to be read and run, so printing is their purpose, not a stray
 # debug leftover. /tmp paths here are deliberate attack payloads in
 # injection-boundary demonstrations, not temp-file handling.
