@@ -9,7 +9,7 @@
 | Agent ID | Model | Branch | Task | Started | Status | Files Owned |
 |---|---|---|---|---|---|---|
 | R001 | opencode session | `master` (was `feat/branch-enforcement`; merged 2026-10-08) | Branch state reconciliation + V16 gate (see session file) | 2026-10-08 03:34 UTC | Active | `state/`, `STATE.md`, gate files |
-| HERMES | longcat-2.5-preview-free | `master` | Phase 4: benchmarks | 2026-10-08 23:30 UTC | Active | `benchmarks/` |
+| HERMES | longcat-2.5-preview-free | `master` | Phase 3: cross-repo convergence detection | 2026-10-08 16:45 UTC | Active | `study_pipeline/discover.py`, `study_pipeline/tests/test_discover.py`, `Makefile` |
 | A001 | opencode/longcat-2.5-preview-free | `session/2026-10-01-state-autosync` | Full session incl. auto-sync (see session file) | 2026-10-01 11:13 UTC | Completed (session closed by user; claims released) | _(released)_ |
 
 ---
