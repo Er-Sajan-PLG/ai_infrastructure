@@ -66,6 +66,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/benchmarks` at `e7c0f69`; session commits not on master: 13 (see `git log master..HEAD --oneline`).
+> branch `feat/benchmarks` at `3347679`; session commits not on master: 14 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
