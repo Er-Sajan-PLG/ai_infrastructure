@@ -51,7 +51,15 @@ IN_TREE_TEST_DIRS: frozenset[str] = frozenset({"catalog", "integrations"})
 #: toolchain. Listing them explicitly means the check below reports an
 #: unexplained new directory rather than silently passing it.
 EXEMPT_DIRS: frozenset[str] = frozenset(
-    {".git", ".venv", ".uv-cache", "study_pipeline", "__pycache__", ".mypy_cache"}
+    {
+        ".git",
+        ".venv",
+        ".uv-cache",
+        "study_pipeline",
+        "benchmarks",
+        "__pycache__",
+        ".mypy_cache",
+    }
 )
 
 

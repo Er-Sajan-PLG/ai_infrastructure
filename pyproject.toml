@@ -261,6 +261,11 @@ module = "integrations.*.tests.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+# Benchmarks use runtime path manipulation for imports
+module = "benchmarks.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 # Catalog tests use runtime path manipulation
 module = "catalog.*.tests.*"
 ignore_missing_imports = true
