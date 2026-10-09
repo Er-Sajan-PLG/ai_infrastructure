@@ -6,7 +6,7 @@
 
 - **Convergence:** 10 of 25 studied repositories (40%) proposed this category
 - **From patterns:** `guardrails`
-- **In taxonomy:** yes
+- **In taxonomy:** no
 
 ## Repositories
 
