@@ -12,11 +12,11 @@ repositories to find convergent patterns.
 
 ## Exit criteria
 
-- [ ] Cross-repo pattern convergence detection (same pattern, many implementations)
-- [ ] The pipeline proposes new taxonomy categories with evidence, not guesses
-- [ ] A review workflow exists for accepting/rejecting proposed categories
-- [ ] The taxonomy has grown from Phase 1's 7 categories, with each addition traceable to evidence
-- [ ] Obsolete patterns are flagged for deprecation (charter §23)
+- [x] Cross-repo pattern convergence detection (same pattern, many implementations) — `study_pipeline/discover.py` + `make discover`
+- [x] The pipeline proposes new taxonomy categories with evidence, not guesses — `docs/discovery/2026-10-08-convergence.md` (4 convergent patterns: config 15/25, caching 14/25, guardrails 10/25, rate-limiting 6/25)
+- [ ] A review workflow exists for accepting/rejecting proposed categories — pending (needs ADR for each adoption)
+- [ ] The taxonomy has grown from Phase 1's 7 categories, with each addition traceable to evidence — pending (Phase 2 added 6 categories; Phase 3 proposals are ready for review)
+- [ ] Obsolete patterns are flagged for deprecation (charter §23) — not yet implemented
 
 ## Method
 

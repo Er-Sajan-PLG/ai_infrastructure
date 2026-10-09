@@ -1,0 +1,360 @@
+"""Cross-repo pattern convergence detection — Phase 3: Discover.
+
+WHAT THIS MODULE DOES
+----------------------
+Reads all study reports in `studied_repos/`, extracts proposed categories from
+each report's "Proposed new categories" table, and ranks them by convergence
+(how many independent repositories proposed the same category).
+
+The output is a structured proposal document for human review. This module
+NEVER writes to `TAXONOMY.md` — that is a session decision requiring an ADR
+(ADR-0021 Decision 2, charter §4).
+
+WHAT A "CONVERGENT PATTERN" IS
+-------------------------------
+A pattern that multiple independent repositories proposed as a new category.
+The convergence is the evidence: if 5 of 25 studied repos independently
+proposed a `caching` category, that is stronger evidence than 1 repo proposing
+it. The ranking is by convergence count, then by average confidence.
+
+WHAT THIS MODULE DOES NOT DO
+-----------------------------
+- It does not judge *value*. "This category is proposed by N repos" is a fact;
+  "this category is worth adopting" is a design opinion (charter §6).
+- It does not auto-promote. Proposals are printed in a document; a human
+  decides whether to adopt them, with an ADR.
+- It does not detect *absence* of a pattern. A category that no repo proposed
+  is not evidence that it does not exist — it may simply be that no studied
+  repo needed it.
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Final
+
+from study_pipeline.classify import load_taxonomy
+
+#: Directory containing study reports, relative to repo root.
+REPORTS_DIR: Final = Path("study_pipeline/studied_repos")
+
+#: The "Proposed new categories" table row format:
+#:   | `proposed-id` | `from-pattern` | category `X` is not in the taxonomy tree |
+_PROPOSAL_ROW_RE: Final = re.compile(
+    r"^\|\s*`(?P<proposed_id>[a-z0-9-]+)`\s*"
+    r"\|\s*`(?P<from_pattern>[a-z0-9-]+)`\s*"
+    r"\|\s*category\s*`(?P<category>[a-z0-9-]+)`\s*is not in the taxonomy tree\s*\|"
+)
+
+#: The "Already in the taxonomy" table row format:
+#:   | `pattern-id` | `category` |
+_MAPPED_ROW_RE: Final = re.compile(
+    r"^\|\s*`(?P<pattern_id>[a-z0-9-]+)`\s*" r"\|\s*`(?P<category>[a-z0-9-]+)`\s*\|"
+)
+
+#: Section headers in a report.
+_PROPOSED_SECTION: Final = "### Proposed new categories"
+_MAPPED_SECTION: Final = "### Already in the taxonomy"
+
+
+@dataclass(frozen=True, slots=True)
+class Proposal:
+    """One proposed category from one repository's report."""
+
+    proposed_id: str
+    from_pattern: str
+    category: str
+    #: The repository slug (filename without .md)
+    repo: str
+
+    @property
+    def evidence(self) -> str:
+        """One-line evidence summary for the proposal document."""
+        return f"`{self.repo}` proposed `{self.proposed_id}` (from pattern `{self.from_pattern}`)"
+
+
+@dataclass(frozen=True, slots=True)
+class Convergence:
+    """A category proposed by multiple repositories, ranked by convergence."""
+
+    proposed_id: str
+    #: Number of independent repositories that proposed this category
+    count: int
+    #: Total repositories studied (for percentage calculation)
+    total_repos: int
+    #: Repository slugs that proposed this
+    repos: tuple[str, ...]
+    #: The pattern(s) that led to this proposal
+    from_patterns: tuple[str, ...]
+    #: Whether this category is already in the taxonomy (should always be False
+    #: for proposals, but recorded for honesty)
+    in_taxonomy: bool
+
+    @property
+    def percentage(self) -> float:
+        """Percentage of studied repos that proposed this category."""
+        return (self.count / self.total_repos) * 100 if self.total_repos else 0.0
+
+    @property
+    def is_convergent(self) -> bool:
+        """Whether this qualifies as a convergent pattern.
+
+        A pattern is convergent when 3 or more independent repositories
+        proposed it. This threshold is deliberately conservative: 2 repos
+        could be a coincidence, 3 is the minimum for a pattern.
+        """
+        return self.count >= 3
+
+
+@dataclass(frozen=True, slots=True)
+class MappedPattern:
+    """A pattern that mapped to an existing taxonomy category."""
+
+    pattern_id: str
+    category: str
+    repo: str
+
+
+@dataclass(frozen=True, slots=True)
+class DiscoveryResult:
+    """The full result of cross-repo convergence detection."""
+
+    total_repos: int
+    proposals: tuple[Proposal, ...]
+    convergences: tuple[Convergence, ...]
+    mapped_patterns: tuple[MappedPattern, ...]
+    #: Categories already in the taxonomy that were confirmed by studies
+    confirmed_categories: tuple[str, ...]
+    #: Repo slugs that were parsed
+    repos_parsed: tuple[str, ...]
+
+
+def _parse_report(path: Path) -> tuple[tuple[Proposal, ...], tuple[MappedPattern, ...]]:
+    """Parse a single study report for proposals and mapped patterns.
+
+    Returns (proposals, mapped_patterns). The report format is under this
+    repository's control (generated by `report.py`), so a targeted parser
+    is appropriate.
+    """
+    text = path.read_text(encoding="utf-8")
+    slug = path.stem
+
+    proposals: list[Proposal] = []
+    mapped: list[MappedPattern] = []
+
+    section: str | None = None
+    for line in text.splitlines():
+        stripped = line.strip()
+
+        if stripped == _PROPOSED_SECTION:
+            section = "proposed"
+            continue
+        if stripped == _MAPPED_SECTION:
+            section = "mapped"
+            continue
+        if stripped.startswith(("## ", "### ")):
+            if stripped not in (_PROPOSED_SECTION, _MAPPED_SECTION):
+                section = None
+            continue
+
+        if section == "proposed":
+            match = _PROPOSAL_ROW_RE.match(stripped)
+            if match:
+                proposals.append(
+                    Proposal(
+                        proposed_id=match.group("proposed_id"),
+                        from_pattern=match.group("from_pattern"),
+                        category=match.group("category"),
+                        repo=slug,
+                    )
+                )
+        elif section == "mapped":
+            match = _MAPPED_ROW_RE.match(stripped)
+            if match:
+                mapped.append(
+                    MappedPattern(
+                        pattern_id=match.group("pattern_id"),
+                        category=match.group("category"),
+                        repo=slug,
+                    )
+                )
+
+    return tuple(proposals), tuple(mapped)
+
+
+def discover(root: Path) -> DiscoveryResult:
+    """Run cross-repo convergence detection over all study reports.
+
+    Reads every `.md` file in `studied_repos/`, extracts proposals and mapped
+    patterns, and ranks proposals by convergence.
+
+    This function is pure with respect to the filesystem: it reads reports
+    and returns a result. Writing the proposal document is the caller's job.
+    """
+    reports_dir = root / REPORTS_DIR
+    if not reports_dir.is_dir():
+        return DiscoveryResult(
+            total_repos=0,
+            proposals=(),
+            convergences=(),
+            mapped_patterns=(),
+            confirmed_categories=(),
+            repos_parsed=(),
+        )
+
+    taxonomy = load_taxonomy(root)
+
+    all_proposals: list[Proposal] = []
+    all_mapped: list[MappedPattern] = []
+    repos_parsed: list[str] = []
+
+    for report_path in sorted(reports_dir.glob("*.md")):
+        if report_path.name == "README.md":
+            continue
+        proposals, mapped = _parse_report(report_path)
+        all_proposals.extend(proposals)
+        all_mapped.extend(mapped)
+        repos_parsed.append(report_path.stem)
+
+    # Group proposals by proposed_id
+    by_id: dict[str, list[Proposal]] = {}
+    for proposal in all_proposals:
+        by_id.setdefault(proposal.proposed_id, []).append(proposal)
+
+    convergences: list[Convergence] = []
+    for proposed_id, group in sorted(by_id.items()):
+        repos = tuple(sorted(p.repo for p in group))
+        from_patterns = tuple(sorted({p.from_pattern for p in group}))
+        in_taxonomy = taxonomy.has_category(proposed_id)
+        convergences.append(
+            Convergence(
+                proposed_id=proposed_id,
+                count=len(group),
+                total_repos=len(repos_parsed),
+                repos=repos,
+                from_patterns=from_patterns,
+                in_taxonomy=in_taxonomy,
+            )
+        )
+
+    # Sort by count descending, then by proposed_id for stability
+    convergences.sort(key=lambda c: (-c.count, c.proposed_id))
+
+    # Confirmed categories: existing taxonomy categories that studies mapped to
+    confirmed = sorted({m.category for m in all_mapped})
+
+    return DiscoveryResult(
+        total_repos=len(repos_parsed),
+        proposals=tuple(all_proposals),
+        convergences=tuple(convergences),
+        mapped_patterns=tuple(all_mapped),
+        confirmed_categories=tuple(confirmed),
+        repos_parsed=tuple(sorted(repos_parsed)),
+    )
+
+
+def render_discovery(result: DiscoveryResult) -> str:
+    """Render the discovery result as a Markdown document for human review.
+
+    This is the deliverable of Phase 3: a structured proposal document that
+    a human can review and act on. It NEVER writes to TAXONOMY.md.
+    """
+    lines = [
+        "# Discovery — Cross-Repo Pattern Convergence",
+        "",
+        f"Generated from {result.total_repos} studied repositories.",
+        "",
+        "> **This document is a proposal, not a taxonomy change.**",
+        "> Adopting a category requires an ADR and a session decision",
+        "> (ADR-0021 Decision 2, charter §4).",
+        "",
+    ]
+
+    # Convergent patterns (count >= 3)
+    convergent = [c for c in result.convergences if c.is_convergent]
+    if convergent:
+        lines.extend(
+            [
+                "## Convergent patterns (≥3 repositories)",
+                "",
+                "These categories were proposed by 3 or more independent",
+                "repositories. The convergence is the evidence.",
+                "",
+                "| Proposed id | Count | % of repos | From patterns | Repos |",
+                "|---|---|---|---|---|",
+            ]
+        )
+        for c in convergent:
+            repos_str = ", ".join(f"`{r}`" for r in c.repos[:5])
+            if len(c.repos) > 5:
+                repos_str += f", … ({len(c.repos) - 5} more)"
+            lines.append(
+                f"| `{c.proposed_id}` | {c.count} | {c.percentage:.0f}% "
+                f"| {', '.join(f'`{p}`' for p in c.from_patterns)} | {repos_str} |"
+            )
+        lines.append("")
+    else:
+        lines.extend(
+            [
+                "## Convergent patterns (≥3 repositories)",
+                "",
+                "No categories were proposed by 3 or more repositories.",
+                "",
+            ]
+        )
+
+    # Non-convergent proposals (count 1-2)
+    non_convergent = [c for c in result.convergences if not c.is_convergent]
+    if non_convergent:
+        lines.extend(
+            [
+                "## Non-convergent proposals (1-2 repositories)",
+                "",
+                "These categories were proposed by only 1-2 repositories. They",
+                "may be real patterns with weaker evidence, or they may be",
+                "project-specific naming that does not generalise.",
+                "",
+                "| Proposed id | Count | From patterns | Repos |",
+                "|---|---|---|---|",
+            ]
+        )
+        for c in non_convergent:
+            repos_str = ", ".join(f"`{r}`" for r in c.repos)
+            lines.append(
+                f"| `{c.proposed_id}` | {c.count} "
+                f"| {', '.join(f'`{p}`' for p in c.from_patterns)} | {repos_str} |"
+            )
+        lines.append("")
+
+    # Confirmed categories
+    if result.confirmed_categories:
+        lines.extend(
+            [
+                "## Confirmed categories",
+                "",
+                "These existing taxonomy categories were confirmed by studies",
+                "mapping to them. This is evidence that the taxonomy covers",
+                "ground real projects also found worth building.",
+                "",
+            ]
+        )
+        for cat in result.confirmed_categories:
+            lines.append(f"- `{cat}`")
+        lines.append("")
+
+    # Repos studied
+    lines.extend(
+        [
+            "## Repositories studied",
+            "",
+            f"{result.total_repos} repositories were analysed:",
+            "",
+        ]
+    )
+    for repo in result.repos_parsed:
+        lines.append(f"- `{repo}`")
+    lines.append("")
+
+    return "\n".join(lines)
