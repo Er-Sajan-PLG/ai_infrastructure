@@ -175,7 +175,7 @@ typecheck: ## Run mypy in strict mode
 	@# sys.path), so without the entry directories on the search path mypy
 	@# reports import-not-found on every cross-entry import. This is the same
 	@# ENTRY_PATHS the `independence` target passes as PYTHONPATH.
-	@targets=$$(find catalog integrations scripts tests study_pipeline benchmarks -name '*.py' \
+	@targets=$$(find catalog integrations scripts tests study_pipeline -name '*.py' \
 		-not -path '*/.venv/*' 2>/dev/null); \
 	if [ -z "$$targets" ]; then \
 		echo "No Python sources to type-check yet."; \

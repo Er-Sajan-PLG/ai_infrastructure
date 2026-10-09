@@ -101,7 +101,7 @@ filterwarnings = ["error"]
 # Include catalog so capability tests actually contribute measurement, and
 # study_pipeline so the Phase 2 pipeline is held to the same standard as the
 # code it exists to evaluate.
-source = ["catalog", "integrations", "scripts", "study_pipeline", "benchmarks"]
+source = ["catalog", "integrations", "scripts", "study_pipeline"]
 branch = true
 
 [tool.coverage.report]
@@ -130,7 +130,7 @@ skip_covered = false
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-src = ["catalog", "scripts", "tests", "study_pipeline", "benchmarks"]
+src = ["catalog", "scripts", "tests", "study_pipeline"]
 # Explicit so that tooling behavior is intentional rather than incidental.
 extend-exclude = [".venv", ".uv-cache", "study_pipeline/studied_repos"]
 

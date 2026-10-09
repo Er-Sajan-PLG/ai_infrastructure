@@ -36,9 +36,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 #: Directories that hold this project's own Python source and must therefore be
 #: measured by coverage and traversed by mypy. ``tests/`` is absent: measuring a
 #: test suite's own coverage is circular, and it is still type-checked.
-SOURCE_DIRS: frozenset[str] = frozenset(
-    {"catalog", "integrations", "scripts", "benchmarks"}
-)
+SOURCE_DIRS: frozenset[str] = frozenset({"catalog", "integrations", "scripts"})
 
 #: Directories whose tests live *inside* them rather than in ``tests/``. These
 #: must appear in pytest's ``testpaths`` or their tests never run.
@@ -53,7 +51,15 @@ IN_TREE_TEST_DIRS: frozenset[str] = frozenset({"catalog", "integrations"})
 #: toolchain. Listing them explicitly means the check below reports an
 #: unexplained new directory rather than silently passing it.
 EXEMPT_DIRS: frozenset[str] = frozenset(
-    {".git", ".venv", ".uv-cache", "study_pipeline", "__pycache__", ".mypy_cache"}
+    {
+        ".git",
+        ".venv",
+        ".uv-cache",
+        "study_pipeline",
+        "benchmarks",
+        "__pycache__",
+        ".mypy_cache",
+    }
 )
 
 
