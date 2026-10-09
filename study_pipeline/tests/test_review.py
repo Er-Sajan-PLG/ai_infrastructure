@@ -98,9 +98,8 @@ class TestGenerateReviewDocs:
         result = discover(_REPO_ROOT)
         items = generate_review_docs(result, _REPO_ROOT)
 
-        # config, caching, and guardrails are now in the taxonomy, so they're filtered out.
-        # Only rate-limiting remains as a convergent pattern not yet in the taxonomy.
-        assert len(items) >= 1
+        # Should have at least the 4 known convergent patterns
+        assert len(items) >= 4
         # All should have count >= 3
         for item in items:
             assert item.convergence.count >= 3

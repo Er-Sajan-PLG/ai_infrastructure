@@ -272,10 +272,8 @@ def render_discovery(result: DiscoveryResult) -> str:
         "",
     ]
 
-    # Convergent patterns (count >= 3) — exclude categories already in the taxonomy
-    convergent = [
-        c for c in result.convergences if c.is_convergent and not c.in_taxonomy
-    ]
+    # Convergent patterns (count >= 3)
+    convergent = [c for c in result.convergences if c.is_convergent]
     if convergent:
         lines.extend(
             [
@@ -307,10 +305,8 @@ def render_discovery(result: DiscoveryResult) -> str:
             ]
         )
 
-    # Non-convergent proposals (count 1-2) — exclude categories already in the taxonomy
-    non_convergent = [
-        c for c in result.convergences if not c.is_convergent and not c.in_taxonomy
-    ]
+    # Non-convergent proposals (count 1-2)
+    non_convergent = [c for c in result.convergences if not c.is_convergent]
     if non_convergent:
         lines.extend(
             [
