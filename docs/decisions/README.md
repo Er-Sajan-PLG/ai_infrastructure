@@ -37,6 +37,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0030](0030-session-closure-authorization.md) | Session closure requires explicit maintainer authorization, enforced by a gate | Accepted |
 | [0031](0031-guardrails-category.md) | New taxonomy category `guardrails/` — output validation (10/25 studied repos) | Accepted |
 | [0032](0032-reliability-category.md) | New taxonomy category `reliability/` — rate limiting & retry (6/25 studied repos) | Accepted |
+| [0033](0033-vector-memory-store.md) | `vector-memory-store`: in-memory cosine similarity, stdlib-only, LRU eviction | Accepted |
 
 ## When an ADR is required
 

@@ -184,27 +184,28 @@ capabilities:
   - id: vector-memory-store
     name: In-Memory Vector Memory Store
     category: memory
-    status: DISCOVERED
+    status: TESTED
     maturity: experimental
     priority: medium — needed by retrieval and memory work, but a dict+numpy slice serves until real demand appears (charter §24.2).
     depends_on: []
-    decision: pending
+    decision: IMPLEMENT (ADR-0033) — in-memory cosine similarity, stdlib-only, LRU eviction
     description: Minimal embedding store: add, similarity-search, evict; the seam for later pluggable vector backends.
     problem: Agents and RAG need a memory interface without committing to an external vector DB (out of scope).
     inputs: ["text + embeddings"]
     outputs: ["ranked nearest items"]
-    interfaces: []
-    dependencies: []
+    interfaces: ["VectorStore.add", "VectorStore.search", "VectorStore.delete", "SearchResult"]
+    dependencies: ["Python standard library only (no runtime dependency)"]
     standards: []
-    reference_projects: []
-    research_records: []
-    implementation: ""
-    tests: ""
+    reference_projects: ["ChromaDB", "FAISS", "Qdrant", "agno vectordb", "pydantic-ai embeddings"]
+    research_records: ["research/memory/vector-memory-store.md"]
+    implementation: "catalog/memory/vector_store"
+    tests: "catalog/memory/vector_store/tests"
     benchmarks: ""
-    security: ""
+    security: "In-memory only. No persistence. No network. Embeddings are caller-provided."
     license: Apache-2.0
     provenance: original
-    last_reviewed: ""
+    compatibility: ""
+    last_reviewed: "2026-10-08"
 
   - id: basic-rag-pipeline
     name: Basic RAG Pipeline
