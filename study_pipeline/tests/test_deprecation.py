@@ -200,6 +200,16 @@ class TestDetectDeprecations:
         assert agent_loop.rounds_absent == 4
         assert agent_loop.in_taxonomy is True
 
+    def test_missing_reports_dir(self, tmp_path: Path) -> None:
+        """detect_deprecations() returns empty result when reports dir doesn't exist."""
+        (tmp_path / "TAXONOMY.md").write_text(_MINIMAL_TAXONOMY, encoding="utf-8")
+
+        result = detect_deprecations(tmp_path)
+
+        assert result.total_reports == 0
+        assert result.candidates == ()
+        assert result.occurrences == ()
+
     def test_real_reports_dir(self) -> None:
         """Run against the real studied_repos/ directory."""
         result = detect_deprecations(_REPO_ROOT)

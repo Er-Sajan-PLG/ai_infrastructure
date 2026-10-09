@@ -280,6 +280,30 @@ class TestDiscover:
         assert "test-repo" in evidence
         assert "caching" in evidence
 
+    def test_irrelevant_section_resets_section(self, tmp_path: Path) -> None:
+        """An unrelated '## ' heading sets section to None (line 158->160)."""
+        report = """\
+# test-repo
+
+## Taxonomy mapping
+
+### Already in the taxonomy
+
+| Pattern | Taxonomy category |
+|---|---|
+| `agent-loop` | `agents` |
+
+## Some other section
+
+This should not be parsed as proposals or mapped patterns.
+"""
+        path = _write_report(tmp_path, "test-repo", report)
+        proposals, mapped = _parse_report(path)
+
+        assert proposals == ()
+        assert len(mapped) == 1
+        assert mapped[0].pattern_id == "agent-loop"
+
 
 # ---------------------------------------------------------------------------
 # render_discovery
