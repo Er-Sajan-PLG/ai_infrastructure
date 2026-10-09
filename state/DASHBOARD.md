@@ -13,9 +13,9 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Field | Value |
 |---|---|
-| **Phase** | Phase 3 (Discover) complete — all 5 exit criteria met |
+| **Phase** | Phase 4 (Compose) in progress — System C done |
 | **Branch** | `master` (`feat/branch-enforcement` merged 2026-10-08, 4 commits) |
-| **Tests** | 1203 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
+| **Tests** | 1250 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
 | **Coverage** | ≥85% floor enforced, green |
 | **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
 | **Capabilities** | 6 TESTED, 5 DISCOVERED |
@@ -47,9 +47,10 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 ## Next Up
 
-1. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-2. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
-3. Phase 4 — Compose (compose TESTED capabilities into larger systems)
+1. Phase 4 System A — partial adoption (our runtime + our memory + external provider + external vector DB)
+2. Phase 4 System B — mixed (external runtime + our harness/eval/safety/observability)
+3. Phase 4 benchmarks with recorded methodology
+4. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
 
 ## Key Files
 
@@ -67,6 +68,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `9963bff`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `b19c18a`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
