@@ -188,3 +188,49 @@ class TestSystemBComposition:
         system = build_system_b()
         _OPEN_SYSTEMS.append(system)
         assert isinstance(system.recorder, TraceRecorder)
+
+    def test_run_with_exception_records_error(self, tmp_path: Path) -> None:
+        """Exception in runtime is recorded and re-raised (lines 139-141)."""
+        system = build_system_b(
+            responses=[_text_response("ok")],
+            trace_path=str(tmp_path / "trace.jsonl"),
+        )
+        _OPEN_SYSTEMS.append(system)
+
+        # Force the runtime to raise an exception
+        original_run = system.runtime.run
+
+        def _raising_run(_task: str) -> dict[str, Any]:
+            raise RuntimeError("simulated failure")
+
+        system.runtime.run = _raising_run  # type: ignore[method-assign]
+
+        with pytest.raises(RuntimeError, match="simulated failure"):
+            system.run("test task")
+
+        # Verify the trace file was written with error stop_reason
+        trace_path = tmp_path / "trace.jsonl"
+        assert trace_path.exists()
+        content = trace_path.read_text()
+        assert "error" in content
+
+        # Restore
+        system.runtime.run = original_run  # type: ignore[method-assign]
+
+    def test_evaluate_returns_zero_when_no_trace(self, tmp_path: Path) -> None:
+        """evaluate() returns zero scores when trace file doesn't exist (line 152)."""
+        system = build_system_b(
+            responses=[_text_response("ok")],
+            trace_path=str(tmp_path / "nonexistent.jsonl"),
+        )
+        _OPEN_SYSTEMS.append(system)
+
+        # TraceRecorder constructor creates the file; delete it to simulate missing trace
+        trace_path = tmp_path / "nonexistent.jsonl"
+        if trace_path.exists():
+            trace_path.unlink()
+
+        result = {"answer": "ok", "steps": 1, "tool_calls": []}
+        scores = system.evaluate(result)
+
+        assert scores == {"score": 0.0, "steps": 0.0, "tool_calls": 0.0}
