@@ -403,3 +403,83 @@ def test_infrastructure_map_to_dict() -> None:
         assert "layer_summary" in d
         assert "components" in d
         assert isinstance(d["components"], list)
+
+
+# ---------------------------------------------------------------------------
+# Layer 3 provider injection (DEBT-005 regression)
+# ---------------------------------------------------------------------------
+
+
+def test_scanner_passes_injected_provider_to_llm_layer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The provider passed to __init__ must reach scan_with_llm (DEBT-005).
+
+    Before the fix the parameter was stored and never read, so an injected
+    provider was silently replaced by a freshly built OpenAIProvider.
+    """
+    import scanner.scanner as scanner_module
+
+    captured: dict[str, object] = {}
+
+    async def fake_scan_with_llm(
+        repo_path: Path,
+        existing_components: list[object],
+        transport: object,
+        api_key: str,
+        provider: object | None = None,
+    ) -> list[object]:
+        captured["provider"] = provider
+        return []
+
+    monkeypatch.setattr(scanner_module, "scan_with_llm", fake_scan_with_llm)
+
+    fake_provider = object()
+    scanner = InfrastructureScanner(
+        llm_transport=object(),  # type: ignore[arg-type]
+        model_provider=fake_provider,  # type: ignore[arg-type]
+        api_key="test-key",
+    )
+
+    with TemporaryDirectory() as tmp:
+        (Path(tmp) / "main.py").write_text("import psycopg2")
+        scanner.scan(Path(tmp))
+
+    assert captured["provider"] is fake_provider
+
+
+def test_scanner_without_provider_passes_none_to_llm_layer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """No provider injected -> None is threaded, and Layer 3 builds its default.
+
+    The default (`OpenAIProvider`) is constructed inside `scan_with_llm` at
+    call time, not in `__init__`, so the scanner stays stdlib-only until the
+    optional layer is actually used.
+    """
+    import scanner.scanner as scanner_module
+
+    captured: dict[str, object] = {}
+
+    async def fake_scan_with_llm(
+        repo_path: Path,
+        existing_components: list[object],
+        transport: object,
+        api_key: str,
+        provider: object | None = None,
+    ) -> list[object]:
+        captured["provider"] = provider
+        return []
+
+    monkeypatch.setattr(scanner_module, "scan_with_llm", fake_scan_with_llm)
+
+    scanner = InfrastructureScanner(
+        llm_transport=object(),  # type: ignore[arg-type]
+        api_key="test-key",
+    )
+
+    with TemporaryDirectory() as tmp:
+        (Path(tmp) / "main.py").write_text("import psycopg2")
+        scanner.scan(Path(tmp))
+
+    assert captured["provider"] is None

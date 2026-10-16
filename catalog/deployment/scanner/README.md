@@ -60,7 +60,9 @@ Parses infrastructure manifests directly:
 ### Layer 3: LLM-Assisted (Optional)
 For ambiguous cases, sends repository summary to an LLM via the
 `model_provider` abstraction. Only invoked when transport + API key provided.
-Marks detections with `detection_method="llm"`.
+Marks detections with `detection_method="llm"`. The provider defaults to
+`OpenAIProvider`; any `Provider` implementation can be injected via
+`InfrastructureScanner(model_provider=...)`.
 
 All three layers are combined with deduplication. The scanner works
 fully offline — LLM layer is purely optional enhancement.

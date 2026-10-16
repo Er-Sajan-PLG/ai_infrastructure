@@ -6,15 +6,14 @@
 
 ## Active Debt
 
-| ID | Description | Impact | Trigger to Resolve | Status |
-|---|---|---|---|---|
-| DEBT-004 | `basic-rag-pipeline` capability is DISCOVERED, never researched | Resolved 2026-10-16 — researched, decided (ADR-0034) and TESTED with 42 tests (WP4) | — | Resolved |
-| DEBT-005 | `InfrastructureScanner.__init__` accepts `model_provider` param but builds its own `OpenAIProvider` internally — the passed provider is ignored | Low — cosmetic API wart, documented behavior works | Cleanup pass on scanner API (WP6) | Open |
+None. (Debts are moved to the table below in the change that resolves them.)
 
 ## Resolved
 
 | ID | Description | Resolution | Closed |
 |---|---|---|---|
+| DEBT-005 | `InfrastructureScanner.__init__` accepted a `model_provider` param but built its own `OpenAIProvider` internally — the passed provider was ignored | Honored, not removed (WP6): the provider is threaded from `__init__` through `scan()` into `scan_with_llm(provider=...)`, defaulting to `OpenAIProvider` only when `None`; two regression tests added (`catalog/deployment/scanner/tests/test_scanner.py`) | 2026-10-16 |
+| DEBT-004 | `basic-rag-pipeline` capability was DISCOVERED, never researched | Promoted to TESTED via ADR-0034: `catalog/retrieval/basic_rag_pipeline/` + spec + research + taxonomy entry, 42 tests (WP4) | 2026-10-16 |
 | DEBT-003 | `vector-memory-store` capability was DISCOVERED, never researched | Promoted to TESTED via ADR-0033: `catalog/memory/vector_store/` + spec + research + taxonomy entry on `master` (commit `3999dce`, PR #7); `make status` counts it TESTED | 2026-10-16 |
 | DEBT-001 | Infrastructure scanner was uncommitted and lacked spec/research/ADR/taxonomy | Committed: `catalog/deployment/scanner/` + spec + research + ADR-0029 + TESTED taxonomy entry, all tracked on `master` (verified via `git ls-tree -r master`) | 2026-10-08 |
 | DEBT-002 | Study pipeline enhancements (stack_detector, dependency_extractor) uncommitted | Committed: both files tracked on `master` and `HEAD`, working tree clean (verified via `git ls-tree -r` + `git status`) | 2026-10-08 |

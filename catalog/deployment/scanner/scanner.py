@@ -15,8 +15,9 @@ from typing import TYPE_CHECKING, Final
 if TYPE_CHECKING:
     # Static-only dependency for the optional LLM layer: the scanner never
     # imports model_provider at runtime (it does so lazily inside a try
-    # block), so the stdlib-only property holds. The annotation documents
-    # the transport protocol the caller must satisfy.
+    # block), so the stdlib-only property holds. The annotations document
+    # the protocols the caller must satisfy.
+    from model_provider.provider import Provider
     from model_provider.transport import Transport
 
 from .config_parsers import parse_all_configs
@@ -311,6 +312,7 @@ async def scan_with_llm(
     existing_components: list[InfraComponent],
     transport: Transport,
     api_key: str,
+    provider: Provider | None = None,
 ) -> list[InfraComponent]:
     """Layer 3: LLM-assisted detection for ambiguous cases.
 
@@ -318,8 +320,8 @@ async def scan_with_llm(
         repo_path: Path to repository
         existing_components: Already detected components
         transport: LLM transport instance
-        model_provider: Model provider instance
         api_key: API key for the provider
+        provider: Model provider instance; defaults to ``OpenAIProvider``
 
     Returns:
         Additional components detected by LLM
@@ -418,7 +420,7 @@ async def scan_with_llm(
                     Message(role=Role.USER, content=(TextBlock(text=prompt),)),
                 ],
             ),
-            provider=OpenAIProvider(),
+            provider=provider if provider is not None else OpenAIProvider(),
             transport=transport,
             api_key=api_key,
         )
@@ -477,13 +479,14 @@ class InfrastructureScanner:
     def __init__(
         self,
         llm_transport: Transport | None = None,
-        model_provider: object | None = None,
+        model_provider: Provider | None = None,
         api_key: str | None = None,
     ):
         """
         Args:
             llm_transport: Optional LLM transport for Layer 3 detection
             model_provider: Optional model provider for LLM calls
+                (defaults to ``OpenAIProvider`` inside Layer 3)
             api_key: Optional API key for LLM calls
         """
         self._llm_transport = llm_transport
@@ -521,6 +524,7 @@ class InfrastructureScanner:
                         all_components,
                         self._llm_transport,
                         self._api_key,
+                        self._model_provider,
                     )
                 )
             except Exception:
