@@ -98,7 +98,7 @@ Fill every field. Use `""` or `[]` for not-applicable or absent; empty means "no
 
 ## 4. Capability Registry
 
-Seeded with candidate Phase-1 capabilities. All are `DISCOVERED`, `decision: pending`, with **no artifacts yet** — nothing here has been studied or built. Priorities below are proposals to be re-derived by evidence (charter §24), not commitments.
+Seeded with candidate Phase-1 capabilities — at seed time all were `DISCOVERED` with `decision: pending` and **no artifacts**. Each entry below now carries its recorded decision and current lifecycle status; the seed statement is kept because how the registry began is itself part of the record (charter §4). Priorities are re-derived by evidence (charter §24), not commitments.
 
 ```yaml
 capabilities:
@@ -312,19 +312,21 @@ capabilities:
   # ---------------------------------------------------------------------
   # Discovered in Phase 2 Track 2B (25 repositories studied at pinned
   # commits). Each of these categories was ABSENT from the taxonomy tree
-  # before this phase. Each is recorded with decision: pending, because
-  # being found in many repositories is evidence that the pattern EXISTS,
-  # not that it is worth building here (charter §24).
+  # before this phase. Decisions recorded in ADR-0035 (Phase 5): DEFER for
+  # config-and-settings and response-cache (DW-014, DW-015), DOCUMENT for
+  # agent-instruction-files — being found in many repositories is evidence
+  # that the pattern EXISTS, not that it is worth building here without a
+  # consumer (charter §24).
   # ---------------------------------------------------------------------
 
   - id: config-and-settings
     name: Configuration & Settings Infrastructure
     category: config
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
-    priority: low — proposed by 15 of 25 studied repositories, but ubiquity is partly a Python packaging convention rather than an AI-infrastructure signal. Re-derive from evidence before acting (charter §24).
+    priority: low — proposed by 15 of 25 studied repositories, but ubiquity is partly a Python packaging convention rather than an AI-infrastructure signal. Re-derived against the repository in ADR-0035: no consumer of layered resolution exists.
     depends_on: []
-    decision: pending
+    decision: DEFER (ADR-0035, DW-014) — every catalog entry takes explicit constructor arguments; revisit when an entry needs precedence (defaults < file < environment) rather than injection.
     description: Settings objects and their validation, environment-variable loading and precedence, layered/overridden configuration, per-environment profiles, and secret referencing (not secret storage).
     problem: Every service needs configuration resolved from several sources with a defined precedence, and hand-rolled os.environ lookups scattered through a codebase make failure modes untraceable.
     inputs: ["environment variables", "config files", "defaults"]
@@ -333,7 +335,7 @@ capabilities:
     dependencies: []
     standards: []
     reference_projects: []
-    research_records: ["study_pipeline/studied_repos/ (15 of 25 reports propose this category)"]
+    research_records: ["research/config/config-and-settings.md", "docs/discovery/2026-10-08-convergence.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -341,16 +343,16 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: "2026-09-17"
+    last_reviewed: "2026-10-16"
 
   - id: response-cache
     name: Response Caching
     category: caching
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
     priority: low — proposed by 14 of 25; the weakest of the three Phase 2 categories, since caching is general software infrastructure and only its AI-specific form (keyed on prompt + model + parameters, avoiding a metered API call) is in scope here.
     depends_on: []
-    decision: pending
+    decision: DEFER (ADR-0035, DW-015) — no metered or remote call exists to protect, and the correctness-critical key derivation cannot be designed against imaginary callers; revisit at the first real call or repeated-request workload.
     description: Caching of model responses, embeddings and tool results; cache-key derivation, eviction policy, TTL and invalidation, in-process vs persistent storage.
     problem: An identical request billed twice is pure waste, but a cache keyed on the wrong inputs silently returns a wrong answer for a different prompt.
     inputs: ["request (prompt, model, parameters)"]
@@ -359,7 +361,7 @@ capabilities:
     dependencies: []
     standards: []
     reference_projects: []
-    research_records: ["study_pipeline/studied_repos/ (14 of 25 reports propose this category, after the vector_stores false positive was fixed)"]
+    research_records: ["research/caching/response-cache.md", "docs/discovery/2026-10-08-convergence.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -367,16 +369,16 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: "2026-09-17"
+    last_reviewed: "2026-10-16"
 
   - id: agent-instruction-files
     name: Agent Repository Configuration
     category: agent-config
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
     priority: medium — the clearest new finding of Phase 2: AGENTS.md appears in 18 of 25 studied repositories (72%), and unlike configuration this practice is both common and recent, which is what a taxonomy extension should look like.
     depends_on: []
-    decision: pending
+    decision: DOCUMENT (ADR-0035) — a repository practice, not a runtime component; this repository already instantiates it (AGENTS.md, docs, skill conventions) and the pattern is recorded here for reference.
     description: In-repository declarations of how AI agents should work: instruction files (AGENTS.md, CLAUDE.md and equivalents), in-repo skill and prompt definitions for external agents, agent-facing ignore and scope rules, and the conventions between them.
     problem: An agent working in a repository has no standard way to learn its conventions, so every project invents a layout and every agent must be taught each one.
     inputs: ["repository conventions"]
@@ -385,7 +387,7 @@ capabilities:
     dependencies: []
     standards: []
     reference_projects: []
-    research_records: ["study_pipeline/studied_repos/ (AGENTS.md in 18/25; CLAUDE.md 14/25; .claude/ or .cursor/ 10/25)"]
+    research_records: ["research/agent-config/agent-instruction-files.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -393,7 +395,7 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: "2026-09-17"
+    last_reviewed: "2026-10-16"
 
   # ---------------------------------------------------------------------
   # Added Phase 3 (ADR-0031, ADR-0032) — convergent patterns from
@@ -403,11 +405,11 @@ capabilities:
   - id: guardrails
     name: Guardrails & Output Validation
     category: guardrails
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
     priority: medium — 10/25 studied repos (40%) proposed this category; output validation is distinct from safety/governance and needs its own taxonomy leaf.
     depends_on: []
-    decision: pending
+    decision: DEFER (ADR-0035, DW-016) — no user-facing model-output boundary exists; deterministic output validators come first when one does, model-backed classifiers stay out of scope.
     description: Output moderation, content filtering, response validation, safety classifiers, and policy enforcement on model outputs.
     problem: Model output must be validated before reaching users, but no taxonomy category covered the machinery between model response and user-facing output.
     inputs: ["model output", "validation policy"]
@@ -416,7 +418,7 @@ capabilities:
     dependencies: []
     standards: []
     reference_projects: []
-    research_records: ["study_pipeline/studied_repos/ (10/25 repos proposed guardrails)"]
+    research_records: ["research/guardrails/guardrails.md", "docs/discovery/2026-10-08-convergence.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -424,16 +426,16 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: "2026-10-08"
+    last_reviewed: "2026-10-16"
 
   - id: rate-limiting
     name: Rate Limiting & Retry Infrastructure
     category: reliability
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
     priority: medium — 6/25 studied repos (24%) proposed this category; rate limiting and retry are cross-cutting infrastructure every production AI system needs.
     depends_on: []
-    decision: pending
+    decision: DEFER (ADR-0035, DW-017) — no remote provider calls exist to protect; the model_provider error taxonomy already carries retryable distinctions for the future policy (ADR-0007 D-4), and basic-rag-pipeline D-4 assigns retry to the caller.
     description: Rate limiting, retry with backoff, circuit breakers, throttling, and resilience patterns for AI API calls.
     problem: Production AI systems must handle rate limits, transient failures, and provider outages gracefully, but no taxonomy category covered this machinery.
     inputs: ["API call", "retry policy"]
@@ -442,7 +444,7 @@ capabilities:
     dependencies: []
     standards: []
     reference_projects: []
-    research_records: ["study_pipeline/studied_repos/ (6/25 repos proposed rate-limiting)"]
+    research_records: ["research/reliability/rate-limiting.md", "docs/discovery/2026-10-08-convergence.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
@@ -450,5 +452,5 @@ capabilities:
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: "2026-10-08"
+    last_reviewed: "2026-10-16"
 

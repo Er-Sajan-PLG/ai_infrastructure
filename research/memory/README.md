@@ -1,6 +1,6 @@
 # Context & Memory
 
-> **Status: no entries yet.** This directory is a declared research category (charter §2, ADR-0001). Nothing here has been studied or implemented.
+> **Status: first entry researched and built.** `vector-memory-store` is `TESTED` ([ADR-0033](../../docs/decisions/0033-vector-memory-store.md)); see its research record below.
 
 ## What it is
 
@@ -12,24 +12,27 @@ Context windows are finite and state must outlive a single call. How a system de
 
 ## How it works
 
-To be documented once the first capability in this category is studied. Research artifacts are expected at `research/memory/<capability-id>.md` and must label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6).
+Research artifacts live at `research/memory/<capability-id>.md` and label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6). The first record found that vector stores are the most common infrastructure component across studied repositories: every major framework has one, and they vary widely in interface and backend support.
 
 ## Variants & types
 
-Not yet surveyed.
+- **Vector memory store** (`vector-memory-store`) — in-memory cosine similarity over injected embeddings, stdlib-only, LRU eviction.
 
 ## Landscape
 
-Not yet surveyed. External projects studied will be registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
+External projects surveyed via the study pipeline (structural analysis only, no code executed or reused): agno (`libs/agno/agno/vectordb/` — cassandra, chroma, qdrant, pgvector, milvus, redis backends), pydantic-ai (embeddings), ragas (evaluation-focused), among others. Registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
 
 ## Our implementations
 
-None. See [`../TAXONOMY.md`](../../TAXONOMY.md) §4 for capabilities in this category and their honest lifecycle status.
+- [`vector-memory-store`](../../catalog/memory/vector_store/) — `TESTED` (ADR-0033). See [`../TAXONOMY.md`](../../TAXONOMY.md) §4 for lifecycle status.
 
 ## When to use / When not to use
 
-To be filled from evidence, not intuition.
+- **Use** when an in-process, dependency-free similarity index suffices and embeddings are supplied by the caller.
+- **Do not use** when persistence across processes, approximate-nearest-neighbour scale, or rich metadata filtering is required — none is implemented.
 
 ## References & citations
 
-None yet.
+- [Research record: vector-memory-store](vector-memory-store.md)
+- [Specification: vector-memory-store](../../specifications/vector-memory-store.md)
+- [ADR-0033](../../docs/decisions/0033-vector-memory-store.md)

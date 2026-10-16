@@ -28,10 +28,10 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0021](0021-study-pipeline-architecture.md) | Study pipeline: static-only, never executes studied code, stdlib only, emits proposals not code | Accepted |
 | [0022](0022-configuration-taxonomy-category.md) | New taxonomy category `config/` — configuration and settings infrastructure (15/25 studied repos) | Accepted |
 | [0023](0023-caching-taxonomy-category.md) | New taxonomy category `caching/` — response caching, AI-specific form (14/25 studied repos) | Accepted |
-|| [0024](0024-agent-repository-configuration.md) | New taxonomy category `agent-config/` — agent instruction files in repositories (18/25 studied repos) | Accepted |
-|| [0025](0025-execution-evidence-plane.md) | Execution evidence plane: structured proof of what happened | Accepted |
-|| [0026](0026-evaluator-verifier-separation.md) | Evaluator/Verifier separation: assessment vs truth | Accepted |
-|| [0027](0027-worker-contract.md) | Worker contract: explicit interface for agent execution | Accepted |
+| [0024](0024-agent-repository-configuration.md) | New taxonomy category `agent-config/` — agent instruction files in repositories (18/25 studied repos) | Accepted |
+| [0025](0025-execution-evidence-plane.md) | Execution evidence plane: structured proof of what happened | Accepted |
+| [0026](0026-evaluator-verifier-separation.md) | Evaluator/Verifier separation: assessment vs truth | Accepted |
+| [0027](0027-worker-contract.md) | Worker contract: explicit interface for agent execution | Accepted |
 | [0028](0028-llm-http-transport.md) | `llm-http-transport`: a stdlib socket for `model-provider-abstraction`, placed in `integrations/` | Accepted |
 | [0029](0029-infrastructure-scanner.md) | `infrastructure-scanner`: deterministic 12-layer infrastructure detection, zero runtime deps, optional LLM layer | Accepted |
 | [0030](0030-session-closure-authorization.md) | Session closure requires explicit maintainer authorization, enforced by a gate | Accepted |
@@ -39,6 +39,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0032](0032-reliability-category.md) | New taxonomy category `reliability/` — rate limiting & retry (6/25 studied repos) | Accepted |
 | [0033](0033-vector-memory-store.md) | In-memory vector store with cosine similarity, stdlib-only, LRU eviction | Accepted |
 | [0034](0034-basic-rag-pipeline.md) | Basic RAG pipeline — stdlib-only chunk→retrieve→generate with injected embedder/store/generator | Accepted |
+| [0035](0035-discovered-capability-decisions.md) | Phase 5 decisions on the five discovered capabilities — DEFER ×4 (DW-014…DW-017), DOCUMENT ×1 (agent instruction files) | Accepted |
 
 ## When an ADR is required
 

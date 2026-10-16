@@ -28,3 +28,11 @@ A spec is not implementation (charter §10). Do not add code to this directory.
 | [`react-agent-loop.md`](react-agent-loop.md) | `react-agent-loop` | ✅ TESTED — decided by [ADR-0008](../docs/decisions/0008-react-agent-loop.md) |
 | [`mcp-client.md`](mcp-client.md) | `mcp-client` | ✅ TESTED — decided by [ADR-0009](../docs/decisions/0009-mcp-client.md) |
 | [`execution-trace-recorder.md`](execution-trace-recorder.md) | `execution-trace-recorder` | ✅ TESTED — decided by [ADR-0010](../docs/decisions/0010-execution-trace-recorder.md) |
+| [`infrastructure-scanner.md`](infrastructure-scanner.md) | `infrastructure-scanner` | ✅ TESTED — decided by [ADR-0029](../docs/decisions/0029-infrastructure-scanner.md) |
+| [`vector-memory-store.md`](vector-memory-store.md) | `vector-memory-store` | ✅ TESTED — decided by [ADR-0033](../docs/decisions/0033-vector-memory-store.md) |
+| [`basic-rag-pipeline.md`](basic-rag-pipeline.md) | `basic-rag-pipeline` | ✅ TESTED — decided by [ADR-0034](../docs/decisions/0034-basic-rag-pipeline.md) |
+| [`config-and-settings.md`](config-and-settings.md) | `config-and-settings` | ⏸️ DEFERRED — decided by [ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md) ([DW-014](../docs/DEFERRED.md)) |
+| [`response-cache.md`](response-cache.md) | `response-cache` | ⏸️ DEFERRED — decided by [ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md) ([DW-015](../docs/DEFERRED.md)) |
+| [`agent-instruction-files.md`](agent-instruction-files.md) | `agent-instruction-files` | 📄 DOCUMENT — decided by [ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md) |
+| [`guardrails.md`](guardrails.md) | `guardrails` | ⏸️ DEFERRED — decided by [ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md) ([DW-016](../docs/DEFERRED.md)) |
+| [`rate-limiting.md`](rate-limiting.md) | `rate-limiting` | ⏸️ DEFERRED — decided by [ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md) ([DW-017](../docs/DEFERRED.md)) |

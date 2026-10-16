@@ -383,6 +383,123 @@ deferred:
     source: "ADR-0021 Decision 3; measured against llama_index, requests and flask"
     review_by: 2027-03-17
     adr: ADR-0021
+
+  - id: DW-014
+    title: "Configuration and settings resolution layer (defaults < file < environment)"
+    category: operability
+    current_fact: >-
+      No catalog entry resolves configuration at runtime: every entry takes
+      explicit constructor arguments, and the only environment read in
+      catalog/ is the opt-in scanner example that fetches OPENAI_API_KEY.
+    why_now_wrong: >-
+      A settings layer is justified by the consumers it resolves configuration
+      for, and there are none. Precedence machinery built with no reader
+      cannot be exercised against a real requirement, and its classic
+      failures — resolving in the wrong order, logging a resolved secret —
+      would be discovered for the first time by a real user.
+    trigger: >-
+      The first catalog entry or integration that needs layered resolution
+      (defaults < file < environment) or an environment-variable contract
+      beyond constructor injection.
+    reversal: >-
+      Start from that one consumer: a stdlib settings object with an explicit
+      precedence chain (constructor > env > file > defaults), per-source
+      validation, and secret references resolved at use, never logged. Do not
+      add per-environment profiles or hot reload until a second consumer
+      needs them.
+    effort: medium
+    source: "ADR-0035 (Phase 5 capability decisions); Phase 2 Track 2B (config proposed by 15/25 studied repos)"
+    review_by: 2027-10-16
+    adr: ADR-0035
+
+  - id: DW-015
+    title: "Response cache keyed on prompt + model + parameters"
+    category: performance
+    current_fact: >-
+      No code path makes a metered or remote model call; every model
+      interaction under test is a scripted double, and
+      integrations/llm_http_transport records that live vendor compatibility
+      has not been verified.
+    why_now_wrong: >-
+      A cache protects a billed network call, and there is no such call
+      anywhere in this repository. More importantly, the correctness
+      property — the key must include every input that changes the answer —
+      cannot be designed against imaginary callers. A cache built now would
+      be a guess about what varies between requests, which is exactly the
+      failure the taxonomy entry's security note warns about.
+    trigger: >-
+      The first code path making real metered model calls, or the first
+      workload that repeats an identical request (for example an eval
+      harness re-running the same prompt).
+    reversal: >-
+      Key on a canonical hash of every request input that can change the
+      answer (model, messages, parameters, tool set) plus a namespace
+      version; in-process LRU with TTL first, persistent storage only after
+      cross-process repetition is measured. Add a hit/miss counter so the
+      cache's value is observable, not assumed.
+    effort: medium
+    source: "ADR-0035 (Phase 5 capability decisions); Phase 2 Track 2B (caching proposed by 14/25 studied repos)"
+    review_by: 2027-10-16
+    adr: ADR-0035
+
+  - id: DW-016
+    title: "Output validation guardrails for model responses"
+    category: security
+    current_fact: >-
+      No user-facing model-output boundary exists: model output in this
+      repository is consumed only by tests, benchmarks and examples, and no
+      live model calls are made (llm_http_transport is offline-verified).
+    why_now_wrong: >-
+      Guardrails are only meaningful at a trust boundary: untrusted model
+      output flowing toward a user, a tool call, or another system. There is
+      no such flow yet, so the validation policy (what to reject, rewrite or
+      allow) would be invented rather than derived. The model-backed half of
+      the space also needs a live classifier surface this repository
+      deliberately does not have.
+    trigger: >-
+      The first integration or entry where model output reaches a
+      user-facing boundary or triggers side effects (tool invocation, config
+      change) rather than test assertions.
+    reversal: >-
+      Implement the deterministic half first: length and schema validation,
+      regex/allowlist checks, and a policy object with an explicit decision
+      (pass / reject with reason / require re-generation), modeled on the
+      error taxonomies already in the catalog. Model-backed classifiers
+      remain out of scope until a metered call path exists (see DW-015).
+    effort: medium
+    source: "ADR-0035 (Phase 5 capability decisions); Phase 3 convergence (guardrails proposed by 10/25 studied repos)"
+    review_by: 2027-10-16
+    adr: ADR-0035
+
+  - id: DW-017
+    title: "Rate limiting, retry with backoff, and circuit breaking for provider calls"
+    category: operability
+    current_fact: >-
+      No remote calls exist to protect: model-provider-abstraction is
+      protocol-only, every transport and generator exercised in tests is a
+      scripted double, and the retryable distinctions in the provider error
+      taxonomy (ADR-0007 D-4) are carried but consumed by no policy.
+    why_now_wrong: >-
+      Backoff, limiting and circuit breaking exist to manage a remote
+      dependency's failure and quota behavior; with no remote dependency,
+      parameters like window size, retry budget and breaker thresholds would
+      be invented. specifications/basic-rag-pipeline.md D-4 already assigns
+      retry responsibility to the caller, so a premature policy layer inside
+      catalog entries would also contradict a recorded design decision.
+    trigger: >-
+      The first real (network or metered) provider call path, or the first
+      scheduled multi-call workload, or the first live 429/5xx response
+      observed from a provider.
+    reversal: >-
+      Implement in one bounded module: retry with exponential backoff and
+      jitter honoring the existing retryable flags, then a token-bucket
+      limiter, then a circuit breaker only after the first two prove
+      insufficient. Keep it caller-invoked (per D-4), not woven into
+      providers.
+    effort: medium
+    source: "ADR-0035 (Phase 5 capability decisions); Phase 3 convergence (rate-limiting proposed by 6/25 studied repos)"
+    review_by: 2027-10-16
+    adr: ADR-0035
 ```
 
 ---
