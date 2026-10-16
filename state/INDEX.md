@@ -9,8 +9,8 @@
 - **Agent:** OC1 (opencode session)
 - **Branch:** `master`
 - **Task:** Finish all in-flight work and make the repository production-ready (WP1–7 per plan): gate parity fix, state/doc reconciliation, Phase 4 closure, `basic-rag-pipeline`, discovery decisions, DEBT-005 cleanup
-- **Files touched:** `Makefile`, `tests/test_ci_parity.py`, `integrations/README.md`, `.gitignore`, `integrations/system_b_mixed/tests/test_system_b.py`, `study_pipeline/tests/test_review.py`, `CHARTER.md`, `docs/phases/`, `docs/roadmap.md`, `benchmarks/README.md`, `state/` (all coordination files)
-- **Outcome:** IN PROGRESS (opened 2026-10-16 07:55 UTC). WP1 landed on `master` (`248f618`): `check-strict` ↔ `check` parity gap closed + regression test; test hygiene fixed. WP2 in flight: phase/roadmap/state reconciliation.
+- **Files touched:** `Makefile`, `tests/`, `integrations/`, `study_pipeline/tests/`, `CHARTER.md`, `docs/phases/`, `docs/roadmap.md`, `docs/decisions/0034-0035`, `docs/DEFERRED.md`, `benchmarks/`, `catalog/retrieval/basic_rag_pipeline/`, `catalog/deployment/scanner/`, `specifications/`, `research/`, `TAXONOMY.md`, `state/` (all coordination files)
+- **Outcome:** WP1–WP6 landed on `master` (`248f618`, `2d68b01`, `4802a84`, `cba5362`, `385fcdd`, `c0666d2`, `21e2f64`, `065b2a6`): gate parity fix, phase/state reconciliation, Phase 4 closure (`monolithic_rag` baseline), `basic-rag-pipeline` → TESTED (ADR-0034, 42 tests), five discovered capabilities decided (ADR-0035: 4 DEFER + 1 DOCUMENT), DEBT-005 resolved. WP7 shutdown in progress — close authorization pending (ADR-0030); `make check` 1328 passed, `make status` zero drift.
 - **Session file:** `state/sessions/20261016-0755-OC1-complete-repository.md`
 - **Plan:** `state/plans/agent-OC1-complete-repository.md`
 

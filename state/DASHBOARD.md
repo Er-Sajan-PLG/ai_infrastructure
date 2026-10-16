@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-16 (session OC1 — WP1 gate parity fix on `master` (`248f618`); phase docs, roadmap, STATE.md and this dashboard reconciled with git reality after the 2026-10-09 Phase 3/4 merge train; `make check` 1284 passed, `make status` green)
+> **Last Reconciled:** 2026-10-16 (session OC1 — WP1–WP6 landed on `master` (`248f618`..`065b2a6`): gate parity, Phase 4 closure, `basic-rag-pipeline` TESTED, 5 discovered capabilities decided (ADR-0035), DEBT-005 resolved; `make check` 1328 passed, `make status` zero drift; WP7 push + maintainer close authorization pending)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -13,28 +13,32 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Field | Value |
 |---|---|
-| **Phase** | Phase 4 (Compose) in progress — Systems A/B/C + benchmark landed; second monolithic baseline open. Phase 3 closed. |
-| **Branch** | `master` (remote CI green at `397fd5e`; local ahead: `248f618` parity fix + OC1 reconciliation) |
-| **Tests** | 1284 passing, 3 deselected (verified via `make check`, 2026-10-16) |
+| **Phase** | Phase 5 (Sustain) — live phase per `docs/roadmap.md`. Phase 3 and Phase 4 both closed in session OC1 (WP2/WP3). |
+| **Branch** | `master` (local ahead of origin `397fd5e` through `065b2a6`; push at session close) |
+| **Tests** | 1328 passing, 3 deselected (verified via `make check`, 2026-10-16) |
 | **Coverage** | ≥85% floor enforced, green |
-| **ADRs** | 34 (0000–0033 contiguous, counted from disk) |
-| **Capabilities** | 7 TESTED, 6 DISCOVERED (verified via `make status`) |
+| **ADRs** | 35 (0000–0034 contiguous, counted from disk) |
+| **Capabilities** | 8 TESTED, 5 DECIDED (verified via `make status`) |
 | **Runtime deps** | Zero (stdlib only) |
 
 ## Active Agents
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| OC1 | opencode session | `master` | Complete in-flight work + repository reconciliation (WP1–7) | Active — see [`sessions/20261016-0755-OC1-complete-repository.md`](sessions/20261016-0755-OC1-complete-repository.md) |
+| OC1 | opencode session | `master` | Complete in-flight work + repository reconciliation (WP1–7) | Active — WP1–WP6 committed; WP7 shutdown in progress, close authorization pending — see [`sessions/20261016-0755-OC1-complete-repository.md`](sessions/20261016-0755-OC1-complete-repository.md) |
 
 ## Critical Alerts
 
-- The parity bug fixed in `248f618` was the class CI cannot see: `check-strict` (what CI runs) was missing `check_integrations` (reachable from `make check`), so master was red locally and green remotely. A regression test now asserts every checker reachable from `make check` is reachable from `check-strict`.
-- Dependabot PRs #1 (actions) and #3 (dev toolchain, 14 updates) are open and green — left for the maintainer to merge.
-- Six `DISCOVERED` capabilities have no adoption decision yet (review docs exist); Phase 4's ≥2-baseline exit criterion is 1 short.
+- Session close is blocked on an explicit maintainer `Close-Authorized-By:` marker (ADR-0030) — finishing the checklist is not authorization. Until recorded, OC1 stays Active and the session file stays `Status: Active`.
+- Push of WP1–WP6 commits (local `master` ahead of origin by 7 commits) happens at WP7 shutdown; dependabot PRs #1 (actions) and #3 (dev toolchain) remain open and green for the maintainer to merge.
+- `make review` regenerates `docs/discovery/review/*.md` wholesale — the WP5 decisions deliberately live in ADR-0035 + `docs/DEFERRED.md` instead, never in those generated files.
 
 ## Recently Completed
 
+- WP6 — `InfrastructureScanner` now honors an injected `model_provider` (threaded through `scan()` into `scan_with_llm`; defaults to `OpenAIProvider` only when `None`); DEBT-005 resolved, DEBT-004 moved to Resolved (`065b2a6`, 2026-10-16)
+- WP5 — five discovered capabilities decided (ADR-0035): DEFER config-and-settings, response-cache, guardrails, rate-limiting (DW-014–017); DOCUMENT agent-instruction-files (`21e2f64`, 2026-10-16)
+- WP4 — `basic-rag-pipeline` promoted to TESTED: research + spec + ADR-0034 + 42 tests (`385fcdd`, `c0666d2`, 2026-10-16)
+- WP3 — Phase 4 closed: second monolithic baseline (`monolithic_rag`) + `make bench` now executes (`4802a84`, 2026-10-16)
 - `make check` ↔ `check-strict` parity gap closed — master was red on `check_integrations` while remote CI stayed green; regression test added (`248f618`, 2026-10-16)
 - Test hygiene: study-pipeline review test and three System B tests wrote artifacts into the repo tree; both now use `tmp_path` (2026-10-16)
 - Reconciled phase docs/roadmap/state with reality: phase 1.5/3 statuses, missing `make deprecations` target added, charter's stale "Current phase" stamp replaced (2026-10-16)
@@ -53,11 +57,10 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 ## Next Up
 
-1. Phase 4 exit criterion: second monolithic baseline comparison (WP3, session OC1)
-2. `basic-rag-pipeline` lifecycle (last Phase 1 queue item; WP4)
-3. Resolve the 6 `DISCOVERED` capabilities (review docs → ADOPT/DEFER decisions; WP5)
-4. DEBT-005: scanner `model_provider` API wart (WP6)
-5. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+1. WP7 shutdown: push WP1–WP6 commits, obtain maintainer `Close-Authorized-By` marker, then flip OC1 to Completed and release ownership
+2. Maintainer: review dependabot PRs #1 and #3
+3. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+4. Deferred capabilities (config-and-settings, response-cache, guardrails, rate-limiting): revisit at `review_by` 2027-10-16 per `docs/DEFERRED.md`
 
 ## Key Files
 
@@ -75,6 +78,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `21e2f64`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `065b2a6`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

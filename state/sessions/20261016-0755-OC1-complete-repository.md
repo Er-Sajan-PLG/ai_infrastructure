@@ -55,3 +55,22 @@ previous state. No deletions of mature infrastructure.
 - Phase 3 + Phase 4 closed with evidence; Phase 5 recorded as the live phase.
 - `basic-rag-pipeline`: full lifecycle artifacts or an honest re-block.
 - All state files reconcile with `git log` at the final commit.
+
+## Work log (WP1–WP6 — committed)
+
+| WP | Commit(s) | What landed |
+|---|---|---|
+| 1 | `248f618` | `check-strict` ↔ `check` parity (CI could stay green while master was red); regression test `tests/test_ci_parity.py`; test hygiene (`tmp_path`) |
+| 2 | `2d68b01` | `make deprecations`; phase docs, roadmap, STATE.md, dashboard reconciled; DEBT-003 closed |
+| 3 | `4802a84`, `cba5362` | Phase 4 closed: `monolithic_rag` second baseline + `make bench` executes; roadmap lifecycle-order fix |
+| 4 | `385fcdd`, `c0666d2` | `basic-rag-pipeline` → TESTED (research, spec, ADR-0034, entry, 42 tests) |
+| 5 | `21e2f64` | ADR-0035: 4 DEFER (DW-014–017) + 1 DOCUMENT; research records + deferral specs on disk; TAXONOMY/README/ADR-index repairs |
+| 6 | `065b2a6` | DEBT-005 resolved: scanner honors injected `model_provider`; 2 regression tests; DEBT-004/005 → Resolved |
+
+Gate evidence at WP6 close: `make check` **1328 passed, 3 deselected**; `make ci` exit 0 (coverage floor 85%); `make status` **zero drift** (8 TESTED, 5 DECIDED); `check_deferred` 17 items current; `check_links` 0 broken of 789.
+
+## Open at shutdown (WP7)
+
+- Push of the 7 local commits (origin still at `397fd5e`) — performed at shutdown.
+- Session close requires an explicit maintainer `Close-Authorized-By:` marker in this file (ADR-0030 / MACP V16). Until then: **Status stays Active**, REGISTRY entry stays Active, ownership not released.
+- `make review` caveat recorded: WP5 decisions live in ADR-0035 + `docs/DEFERRED.md`, never in regenerable `docs/discovery/review/*.md`.
