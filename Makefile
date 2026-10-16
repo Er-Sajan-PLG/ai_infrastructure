@@ -448,7 +448,7 @@ commit-msg: ## Validate the Conventional Commits header format (ADR-0019)
 check: lint typecheck validate links sessions test ## The full gate a session must pass before committing
 
 .PHONY: check-strict
-check-strict: lint typecheck validate-strict links phase-plan structural risks deferred sessions test ## Full gate + strict catalog + structural + registers
+check-strict: lint typecheck validate-strict links phase-plan check_integrations structural risks deferred sessions test ## Full gate + strict catalog + structural + registers
 
 .PHONY: security
 security: secrets sast sca licenses ## All security gates (SAST, SCA, secrets, licences)

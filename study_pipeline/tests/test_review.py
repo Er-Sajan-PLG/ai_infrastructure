@@ -91,12 +91,18 @@ class TestGenerateReviewDocs:
         # Index should still be written
         assert (tmp_path / "docs/discovery/review/README.md").is_file()
 
-    def test_real_repos(self) -> None:
-        """Run against the real studied_repos/ directory."""
+    def test_real_repos(self, tmp_path: Path) -> None:
+        """Run against the real studied_repos/ directory.
+
+        Output goes to tmp_path, never the repo root: regenerating review
+        documents in place from a test run would rewrite committed files
+        (observed 2026-10-16 — the run flipped generated fields and would
+        have erased any completed human review sections).
+        """
         from study_pipeline.discover import discover
 
         result = discover(_REPO_ROOT)
-        items = generate_review_docs(result, _REPO_ROOT)
+        items = generate_review_docs(result, tmp_path)
 
         # Should have at least the 4 known convergent patterns
         assert len(items) >= 4

@@ -6,7 +6,7 @@
 
 - **Convergence:** 14 of 25 studied repositories (56%) proposed this category
 - **From patterns:** `caching`
-- **In taxonomy:** no
+- **In taxonomy:** yes
 
 ## Repositories
 

@@ -59,21 +59,23 @@ def _cleanup_systems() -> Iterator[None]:
 
 
 class TestExternalRuntime:
-    def test_run_returns_answer(self) -> None:
+    def test_run_returns_answer(self, tmp_path: Path) -> None:
         system = build_system_b(
             responses=[_text_response("The answer is 42.")],
+            trace_path=str(tmp_path / "trace.jsonl"),
         )
         _OPEN_SYSTEMS.append(system)
         result = system.runtime.run("What is the answer?")
         assert result["answer"] == "The answer is 42."
         assert result["steps"] == 1
 
-    def test_run_with_tool_calls(self) -> None:
+    def test_run_with_tool_calls(self, tmp_path: Path) -> None:
         system = build_system_b(
             responses=[
                 _tool_response("add", {"a": 1, "b": 2}),
                 _text_response("done"),
             ],
+            trace_path=str(tmp_path / "trace.jsonl"),
         )
         _OPEN_SYSTEMS.append(system)
         result = system.runtime.run("Add 1 and 2.")
@@ -81,7 +83,7 @@ class TestExternalRuntime:
         assert len(result["tool_calls"]) == 1
         assert result["tool_calls"][0]["name"] == "add"
 
-    def test_max_steps(self) -> None:
+    def test_max_steps(self, tmp_path: Path) -> None:
         system = build_system_b(
             responses=[
                 _tool_response("add", {"a": 1, "b": 2}),
@@ -90,6 +92,7 @@ class TestExternalRuntime:
                 _tool_response("add", {"a": 4, "b": 5}),
                 _tool_response("add", {"a": 5, "b": 6}),
             ],
+            trace_path=str(tmp_path / "trace.jsonl"),
         )
         _OPEN_SYSTEMS.append(system)
         result = system.runtime.run("Add numbers.")

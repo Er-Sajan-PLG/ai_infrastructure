@@ -30,6 +30,14 @@ study_pipeline/studied_repos/*/checkout/
 # this repository. Nothing under this directory may ever be tracked.
 .study-workspace/
 
+# Integration/benchmark run artifacts.
+# build_system_b() defaults its trace path to the CWD, and the benchmark script
+# writes its trace next to where it is run; both are run-scoped outputs, not
+# sources. Tests pass tmp_path explicitly (fixed 2026-10-16); these entries
+# cover interactive runs.
+system_b_trace.jsonl
+benchmark_trace.jsonl
+
 # OS / editors
 .DS_Store
 .idea/

@@ -95,6 +95,10 @@ _MAKE_NOISE_RE = re.compile(r"^make(\[\d+\])?:", re.IGNORECASE)
 # nothing and would otherwise pass silently.
 MIN_EXPECTED_GATES = 5
 
+# Discovery must find at least this many checker scripts reachable from
+# `make check`. Same anti-silent-skip reasoning as MIN_EXPECTED_GATES.
+MIN_EXPECTED_CHECK_SCRIPTS = 4
+
 
 def _make_gate_manifest() -> list[str]:
     """Ask the Makefile which gates `make ci` runs.
@@ -302,6 +306,65 @@ def test_registry_lists_the_gates_it_claims() -> None:
         "`check-strict` is the package-level gate and must always be part of "
         "`make ci`; its absence means CI is not running the repository's own "
         "definition of done."
+    )
+
+
+def _scripts_run_by(target: str) -> set[str]:
+    """Return the checker scripts whose recipes `make -n <target>` prints.
+
+    `-n` prints recipes without executing them, so the set is derived from the
+    Makefile's real prerequisite expansion rather than by re-parsing it here.
+    """
+    env = dict(os.environ)
+    for key in ("MAKELEVEL", "MAKEFLAGS", "MFLAGS"):
+        env.pop(key, None)
+
+    proc = subprocess.run(  # noqa: S603 - fixed argv, no shell, target is a literal from this module
+        ["make", "--no-print-directory", "-n", target],  # noqa: S607
+        cwd=REPO_ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=env,
+    )
+    assert proc.returncode == 0, (
+        f"`make -n {target}` failed with exit {proc.returncode}. "
+        f"stderr:\n{proc.stderr}"
+    )
+    return set(re.findall(r"scripts/([a-z_]+\.py)", proc.stdout))
+
+
+def test_check_strict_is_a_superset_of_check() -> None:
+    """Every checker `make check` runs must also run under `check-strict`.
+
+    Why this test exists
+    --------------------
+    CI runs `check-strict`, not `check`. If a checker is reachable from
+    `make check` but not from `check-strict`, then `make check` can be red
+    while CI stays green — the exact local/CI divergence this repository is
+    built to prevent. That happened: `check_integrations` was a prerequisite
+    of `validate` (reachable from `check`) but was never added to
+    `check-strict`, so on 2026-10-16 `make check` failed at
+    `check_integrations` while CI on the same commit reported success. The
+    existing parity tests compare gate NAMES; this one compares the SCRIPTS
+    those gates actually execute, which is the level the divergence occurred
+    at.
+    """
+    from_check = _scripts_run_by("check")
+    from_strict = _scripts_run_by("check-strict")
+
+    assert len(from_check) >= MIN_EXPECTED_CHECK_SCRIPTS, (
+        f"`make -n check` printed only {len(from_check)} checker script(s) "
+        f"({sorted(from_check)!r}); at least {MIN_EXPECTED_CHECK_SCRIPTS} are "
+        f"expected. Discovery broke, so this test would verify nothing."
+    )
+
+    missing = sorted(from_check - from_strict)
+    assert not missing, (
+        f"`make check` runs {missing!r}, but `make check-strict` (what CI "
+        f"runs) does not. A green pipeline would not mean a green `make "
+        f"check`. Add the missing target(s) to `check-strict`'s prerequisites "
+        f"or remove them from `check`."
     )
 
 

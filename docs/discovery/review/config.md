@@ -6,7 +6,7 @@
 
 - **Convergence:** 15 of 25 studied repositories (60%) proposed this category
 - **From patterns:** `config`
-- **In taxonomy:** no
+- **In taxonomy:** yes
 
 ## Repositories
 
