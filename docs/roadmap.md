@@ -27,7 +27,7 @@ Status as of 2026-10-16: items 1–5 done; `basic-rag-pipeline` (6) is the only 
 5. `vector-memory-store` (memory) — depends on 2. ✅ TESTED (ADR-0033, 2026-10-09). Then `basic-rag-pipeline` (retrieval) — still DISCOVERED.
 6. `mcp-client` (mcp) — COMPATIBILITY candidate; narrow stdio client. ✅ TESTED
 
-For each: RESEARCHED → UNDERSTOOD → DECIDED (ADR) → DESIGNED → IMPLEMENTED → TESTED — one stage at a time, no skipping (charter §4).
+For each: RESEARCHED → UNDERSTOOD → DESIGNED → DECIDED (ADR) → IMPLEMENTED → TESTED — one stage at a time, no skipping (charter §4).
 
 ## What's deliberately NOT in Phase 1
 
