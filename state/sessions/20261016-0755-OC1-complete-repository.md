@@ -71,6 +71,6 @@ Gate evidence at WP6 close: `make check` **1328 passed, 3 deselected**; `make ci
 
 ## Open at shutdown (WP7)
 
-- Push of the 7 local commits (origin still at `397fd5e`) — performed at shutdown.
+- Push of the session commits (origin still at `397fd5e`) — performed at shutdown.
 - Session close requires an explicit maintainer `Close-Authorized-By:` marker in this file (ADR-0030 / MACP V16). Until then: **Status stays Active**, REGISTRY entry stays Active, ownership not released.
 - `make review` caveat recorded: WP5 decisions live in ADR-0035 + `docs/DEFERRED.md`, never in regenerable `docs/discovery/review/*.md`.
