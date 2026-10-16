@@ -512,7 +512,11 @@ print-entry-paths: ## Print the PYTHONPATH for entry packages (machine-readable)
 # ---------------------------------------------------------------------------
 
 .PHONY: bench
-bench: ## Run benchmarks (no-op until an implementation exists)
-	@test -d benchmarks && find benchmarks -name 'bench_*.py' -print -quit | grep -q . \
-		&& $(PY) -m pytest benchmarks -q \
-		|| echo "No benchmarks defined yet (charter §19). Nothing to run."
+bench: ## Run all benchmarks (writes benchmarks/results.md; charter §19)
+	@found=0; for b in benchmarks/bench_*.py; do \
+		[ -e "$$b" ] || continue; \
+		found=1; \
+		echo "bench: running $$b"; \
+		$(PY) "$$b" || exit 1; \
+	done; \
+	[ $$found -eq 1 ] || echo "No benchmarks defined yet (charter §19). Nothing to run."

@@ -17,12 +17,13 @@ WHERE ARE WE MORE CONSTRAINED?   WHERE ARE WE MORE MAINTAINABLE?
 
 ## Status
 
-**Partial.** One baseline exists — a hand-written `monolithic` implementation
-(single LLM call, no tools, no memory) — measured against Systems A/B/C in
-[`results.md`](results.md) (2026-10-09 run; scripted transport, no network). The
-Phase 4 exit criterion asks for **≥2 monolithic frameworks**; the second
-baseline is the open item. Current results are composition-cost comparisons,
-not framework comparisons: the baseline shares the scripted transport, so only
-per-layer overhead is visible (latency means 0.02–0.11 ms), and token counts
-read 0 because the scripted transport returns no usage — both are properties
-of the fixture, stated so the numbers are not over-read.
+**Met — two monolithic baselines present.** `make bench` runs
+[`bench_composition.py`](bench_composition.py) and regenerates
+[`results.md`](results.md) (last run 2026-10-16). The baselines are
+`monolithic` (bare single-call chain) and `monolithic_rag` (inlined retrieval
+chain); they model the monolithic shapes in the study corpus rather than
+installing third-party frameworks (zero-runtime-deps; ADR-0021 Decision 1), and
+the report says so. Standing caveats, restated in the report itself: the
+transport is scripted, so the numbers compare **composition overhead**, not
+framework quality; token counts are **fixture values** that exercise each
+system's usage-accounting path, not real tokenization.
