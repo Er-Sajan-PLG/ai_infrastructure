@@ -1,6 +1,6 @@
 # Retrieval (catalog)
 
-> **Status: no entries yet.** This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27). Empty is correct for Phase 1.
+> **Status: one entry.** `basic_rag_pipeline` is `TESTED` (ADR-0034). This directory holds independent implementations at IMPLEMENTED or later (charter §4, §27).
 
 ## What it is
 
@@ -12,11 +12,11 @@ Retrieval determines whether generated answers are grounded and auditable.
 
 ## How it works
 
-Not yet implemented. Any future entry documents its architecture in its own `README.md`.
+The first entry, [`basic_rag_pipeline/`](basic_rag_pipeline/), wires five stages — chunk, index, retrieve, augment, generate — with the embedder, an in-memory `VectorStore`, and the generator all injected. It documents its architecture in its own `README.md`.
 
 ## Variants & types
 
-None implemented.
+- **Basic RAG pipeline** — fixed-size overlapping chunking, embedding-based retrieval, single-call generation, citations reported from retrieval.
 
 ## Landscape
 
@@ -24,7 +24,11 @@ External reference projects, once studied, are registered in [`../../docs/regist
 
 ## Our implementations
 
-None. Capabilities planned for this category are listed in [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
+| Entry | Status | Notes |
+|---|---|---|
+| [`basic_rag_pipeline/`](basic_rag_pipeline/) | `TESTED` | Stdlib-only pipeline over injected seams; `ProviderGenerator` binds `model_provider` |
+
+Capabilities planned for this category are listed in [`../../TAXONOMY.md`](../../TAXONOMY.md) §4.
 
 ## When to use / When not to use
 

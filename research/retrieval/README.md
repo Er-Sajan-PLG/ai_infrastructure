@@ -24,7 +24,7 @@ External projects surveyed via the study pipeline (structural analysis only, no 
 
 ## Our implementations
 
-- `basic-rag-pipeline` — `DECIDED` (ADR-0034), implementation in progress this session under `catalog/retrieval/`. See [`../../TAXONOMY.md`](../../TAXONOMY.md) §4 for lifecycle status.
+- [`basic-rag-pipeline`](../../catalog/retrieval/basic_rag_pipeline/) — `TESTED` (ADR-0034). See [`../../TAXONOMY.md`](../../TAXONOMY.md) §4 for lifecycle status.
 
 ## When to use / When not to use
 

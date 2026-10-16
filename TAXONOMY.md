@@ -210,9 +210,9 @@ capabilities:
   - id: basic-rag-pipeline
     name: Basic RAG Pipeline
     category: retrieval
-    status: DECIDED
+    status: TESTED
     maturity: experimental
-    priority: medium — last Phase 1 queue capability; unblocked (both dependencies TESTED) and now decided.
+    priority: medium — last Phase 1 queue capability; landed 2026-10-16 (WP4).
     depends_on: [vector-memory-store, model-provider-abstraction]
     decision: IMPLEMENT (ADR-0034) — stdlib-only chunk→index→retrieve→augment→generate; embedder, store and generator injected; citations are the retrieved chunks, not parsed from model output.
     description: Chunk → embed → store → retrieve → augment prompt → generate, with citations to source chunks.
@@ -224,8 +224,8 @@ capabilities:
     standards: []
     reference_projects: ["haystack retrievers", "llama_index ingestion + node parsers", "LangChain retrieval/indexing", "ragas (evaluation plane)"]
     research_records: ["research/retrieval/basic-rag-pipeline.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/retrieval/basic_rag_pipeline"
+    tests: "catalog/retrieval/basic_rag_pipeline/tests"
     benchmarks: ""
     security: "Documents and queries are untrusted input: no eval/exec; no network or model call in the core (all seams injected). Retrieved text enters the prompt — prompt injection via documents is possible and documented; citations report the evidence that entered the prompt rather than claiming verification of model output."
     license: Apache-2.0

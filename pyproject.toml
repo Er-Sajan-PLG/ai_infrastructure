@@ -315,6 +315,9 @@ root_packages = [
     "execution_trace_recorder",
     "mcp_client",
     "react_agent_loop",
+    "vector_store",
+    "basic_rag_pipeline",
+    "scanner",
 ]
 # Required by contract 3 below, which names `agent_loop_end_to_end` as a
 # forbidden module. That package lives under integrations/ rather than in the
@@ -374,14 +377,23 @@ modules = [
 # entry must never know an integration exists. This is the contract that keeps
 # the catalog relocatable -- an entry that imported the end-to-end integration
 # could not be lifted out of this repository and still work.
+#
+# source_modules lists EVERY catalog entry package. It originally listed only
+# the first five; vector_store, basic_rag_pipeline and scanner were absent,
+# so the classes of violation this contract exists to catch were unchecked
+# for exactly those entries. Completing the list is a strengthening, not a
+# weakening: all entries currently pass (2026-10-16).
 [[tool.importlinter.contracts]]
 name = "Catalog entries never depend on an integration"
 type = "forbidden"
 source_modules = [
-    "model_provider",
-    "tool_registry",
+    "basic_rag_pipeline",
     "execution_trace_recorder",
     "mcp_client",
+    "model_provider",
     "react_agent_loop",
+    "scanner",
+    "tool_registry",
+    "vector_store",
 ]
 forbidden_modules = ["agent_loop_end_to_end", "llm_http_transport"]

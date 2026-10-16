@@ -8,7 +8,7 @@
 
 | ID | Description | Impact | Trigger to Resolve | Status |
 |---|---|---|---|---|
-| DEBT-004 | `basic-rag-pipeline` capability is DISCOVERED, never researched | Low — last Phase 1 queue item | Next capability session (WP4) | Open |
+| DEBT-004 | `basic-rag-pipeline` capability is DISCOVERED, never researched | Resolved 2026-10-16 — researched, decided (ADR-0034) and TESTED with 42 tests (WP4) | — | Resolved |
 | DEBT-005 | `InfrastructureScanner.__init__` accepts `model_provider` param but builds its own `OpenAIProvider` internally — the passed provider is ignored | Low — cosmetic API wart, documented behavior works | Cleanup pass on scanner API (WP6) | Open |
 
 ## Resolved
