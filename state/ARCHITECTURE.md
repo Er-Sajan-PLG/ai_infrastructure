@@ -28,13 +28,14 @@ ai_infrastructure/
 │   ├── plans/             # Active plans
 │   ├── conflicts/         # Documented conflicts
 │   └── archive/           # Compressed old sessions
-├── catalog/               # Implementation library
+├── catalog/               # Implementation library (7 TESTED entries)
 │   ├── tools/tool_registry/
 │   ├── models/model_provider/
 │   ├── agents/react_agent_loop/
 │   ├── protocols/mcp_client/
 │   ├── observability/execution_trace_recorder/
-│   └── infrastructure/scanner/  (uncommitted)
+│   ├── memory/vector_store/
+│   └── deployment/scanner/
 ├── research/              # Study findings by category
 ├── specifications/        # Designs before code
 ├── integrations/          # Compositions into working systems

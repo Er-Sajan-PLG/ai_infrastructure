@@ -4,6 +4,29 @@
 
 ---
 
+## Session: 2026-10-16 — Complete In-Flight Work + Production-Readiness (OC1)
+
+- **Agent:** OC1 (opencode session)
+- **Branch:** `master`
+- **Task:** Finish all in-flight work and make the repository production-ready (WP1–7 per plan): gate parity fix, state/doc reconciliation, Phase 4 closure, `basic-rag-pipeline`, discovery decisions, DEBT-005 cleanup
+- **Files touched:** `Makefile`, `tests/test_ci_parity.py`, `integrations/README.md`, `.gitignore`, `integrations/system_b_mixed/tests/test_system_b.py`, `study_pipeline/tests/test_review.py`, `CHARTER.md`, `docs/phases/`, `docs/roadmap.md`, `benchmarks/README.md`, `state/` (all coordination files)
+- **Outcome:** IN PROGRESS (opened 2026-10-16 07:55 UTC). WP1 landed on `master` (`248f618`): `check-strict` ↔ `check` parity gap closed + regression test; test hygiene fixed. WP2 in flight: phase/roadmap/state reconciliation.
+- **Session file:** `state/sessions/20261016-0755-OC1-complete-repository.md`
+- **Plan:** `state/plans/agent-OC1-complete-repository.md`
+
+---
+
+## Session: 2026-10-08/09 — Phase 3 Close-Out + Phase 4 Systems (PR merge train — no session file recorded)
+
+- **Agent:** (none — PR merge train; recorded retrospectively 2026-10-16 by OC1)
+- **Branch:** `master`
+- **Task:** Merge Phase 3 machinery and build Phase 4 Systems A/B/C + benchmark
+- **Files touched:** `study_pipeline/`, `TAXONOMY.md`, `docs/decisions/0031–0033`, `catalog/memory/vector_store/`, `integrations/system_{a,b,c}_*`, `benchmarks/`
+- **Outcome:** Landed via PRs #5–#11 (2026-10-09): Phase 3 tools + `guardrails`/`reliability` adoption; `vector-memory-store` → TESTED (ADR-0033); Systems A/B/C; benchmark + first baseline (`397fd5e`). State files were never reconciled for this work — repaired by OC1 on 2026-10-16.
+- **Session file:** none (recorded honestly rather than backfilled)
+
+---
+
 ## Session: 2026-10-08 — Phase 3 Discover (HERMES)
 
 - **Agent:** HERMES (longcat-2.5-preview-free)

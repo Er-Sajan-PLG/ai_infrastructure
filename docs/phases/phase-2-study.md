@@ -1,6 +1,6 @@
 # Phase 2 — Study
 
-**Status:** 🟩 Complete — **Tracks 2A and 2B done.** 25 repositories studied, 3 new taxonomy categories (ADR-0022/0023/0024), 25 registry entries. One criterion partially met; see the trade-offs note under Track 2B.
+**Status:** 🟩 Complete — **Tracks 2A and 2B done.** 25 repositories studied, 6 new taxonomy categories (ADR-0022–0027), 25 registry entries. One criterion partially met; see the trade-offs note under Track 2B.
 **Charter basis:** §29 (automated study system), §30 — *"Build the study pipeline; point it at 20–30 major repos."*
 **Depends on:** [Phase 1](phase-1-seed.md) complete; [Phase 1.5](phase-1.5-hardening.md) complete (the pipeline lands under the hardened gates)
 **Architecture:** [ADR-0021](../decisions/0021-study-pipeline-architecture.md)

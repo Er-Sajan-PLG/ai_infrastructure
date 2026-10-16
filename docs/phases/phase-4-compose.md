@@ -1,7 +1,7 @@
 # Phase 4 — Compose
 
-**Status:** ⬜ Not started
-**Charter basis:** §30 — *"Build integration examples showing how components compose into complete AI systems (System A/B/C from §31). Benchmark composed systems against monolithic frameworks."*
+**Status:** 🟨 In progress (Systems A/B/C landed 2026-10-09 via PRs #8–#10; benchmark + first baseline via PR #11; one exit criterion open — comparison against ≥2 monolithic baselines, tracked as WP3 of session OC1)
+**Charter basis:** §30 — *"Integration examples; benchmark composed systems against monolithic frameworks."* (The System A/B/C sketches are this plan's own design.)
 **Depends on:** [Phase 1](phase-1-seed.md) (needs components), [Phase 2](phase-2-study.md) (needs baselines)
 
 ## Goal
@@ -12,15 +12,15 @@ monolithic frameworks (charter §19).
 
 ## Exit criteria
 
-- [ ] `integrations/` contains three working systems mirroring charter §31:
-  - **System A** — partial adoption: our runtime + our memory + external provider + external vector DB
-  - **System B** — mixed: external runtime + our harness/eval/safety/observability
-  - **System C** — entirely composed from `ai_infrastructure`
-- [ ] Each integration has tests and a documented reproduce command
-- [ ] Benchmarks exist with recorded methodology and environment (charter §19)
-- [ ] Benchmark comparison against ≥2 monolithic frameworks
-- [ ] Results report **where we are worse**, not only better
-- [ ] No component was modified to make an integration work — that would mean the boundary is wrong
+- [x] `integrations/` contains three working systems mirroring charter §31:
+  - **System A** — partial adoption: our runtime + our memory + external provider + external vector DB — `integrations/system_a_partial/`
+  - **System B** — mixed: external runtime + our harness/eval/safety/observability — `integrations/system_b_mixed/`
+  - **System C** — entirely composed from `ai_infrastructure` — `integrations/system_c_internal/`
+- [x] Each integration has tests and a documented reproduce command (per-integration READMEs; suite green in `make check`)
+- [x] Benchmarks exist with recorded methodology and environment (charter §19) — `benchmarks/README.md` (methodology) + `benchmarks/results.md` (recorded run)
+- [ ] Benchmark comparison against ≥2 monolithic frameworks — 1 of 2 present (hand-written monolithic baseline); second baseline pending (WP3, session OC1)
+- [x] Results report **where we are worse**, not only better — see "Where the composed system loses" in `benchmarks/results.md`
+- [x] No component was modified to make an integration work — that would mean the boundary is wrong (verified: integration PRs #8–#10 touched `integrations/` only)
 
 ## Method
 

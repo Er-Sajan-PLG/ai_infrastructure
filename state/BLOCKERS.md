@@ -32,6 +32,6 @@ execution-trace-recorder ──→ (standalone)
 
 ## Notes
 
-- `vector-memory-store` and `basic-rag-pipeline` are the only remaining Phase 1 capabilities (both DISCOVERED)
-- Phase 3 (Discover) is not blocked — it can start when ready
-- `feat/branch-enforcement` merged to `master` 2026-10-08; next is repo creation + push (maintainer-ordered)
+- Phase 3 (Discover) closed 2026-10-16; Phase 4 (Compose) in progress — the open item is the second monolithic baseline (exit criterion)
+- `basic-rag-pipeline` is the only remaining Phase 1 capability (DISCOVERED, unblocked since `vector-memory-store` → TESTED 2026-10-09)
+- Six `DISCOVERED` capabilities await adoption decisions; review docs exist under `docs/discovery/review/`

@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-08 (CI fixed and green on remote; two commits: setup-uv cache fix + inventory.py unreadable directory fix)
+> **Last Reconciled:** 2026-10-16 (session OC1 — WP1 gate parity fix on `master` (`248f618`); phase docs, roadmap, STATE.md and this dashboard reconciled with git reality after the 2026-10-09 Phase 3/4 merge train; `make check` 1284 passed, `make status` green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -13,43 +13,51 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Field | Value |
 |---|---|
-| **Phase** | Phase 2 complete; Phase 3 (Discover) not started |
-| **Branch** | `master` (`feat/branch-enforcement` merged 2026-10-08, 4 commits) |
-| **Tests** | 1141 passing, 3 deselected (verified via `make check` on this branch, 2026-10-08) |
+| **Phase** | Phase 4 (Compose) in progress — Systems A/B/C + benchmark landed; second monolithic baseline open. Phase 3 closed. |
+| **Branch** | `master` (remote CI green at `397fd5e`; local ahead: `248f618` parity fix + OC1 reconciliation) |
+| **Tests** | 1284 passing, 3 deselected (verified via `make check`, 2026-10-16) |
 | **Coverage** | ≥85% floor enforced, green |
-| **ADRs** | 30 (0000–0029 contiguous, counted from disk) |
-| **Capabilities** | 6 TESTED, 5 DISCOVERED |
+| **ADRs** | 34 (0000–0033 contiguous, counted from disk) |
+| **Capabilities** | 7 TESTED, 6 DISCOVERED (verified via `make status`) |
 | **Runtime deps** | Zero (stdlib only) |
 
 ## Active Agents
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| — | — | — | — | — |
-
-_(No active agents. Register in REGISTRY.md when starting work.)_
+| OC1 | opencode session | `master` | Complete in-flight work + repository reconciliation (WP1–7) | Active — see [`sessions/20261016-0755-OC1-complete-repository.md`](sessions/20261016-0755-OC1-complete-repository.md) |
 
 ## Critical Alerts
 
-- Remote is live (`github.com/Er-Sajan-PLG/ai_infrastructure`, public, `master` pushed 2026-10-08). CI green on remote (run `37810460662`, 2026-10-08). Two fixes landed: (1) removed `enable-cache: true` from setup-uv (no `uv.lock` in repo), (2) added `OSError` guards to `inventory.py` for unreadable directories.
+- The parity bug fixed in `248f618` was the class CI cannot see: `check-strict` (what CI runs) was missing `check_integrations` (reachable from `make check`), so master was red locally and green remotely. A regression test now asserts every checker reachable from `make check` is reachable from `check-strict`.
+- Dependabot PRs #1 (actions) and #3 (dev toolchain, 14 updates) are open and green — left for the maintainer to merge.
+- Six `DISCOVERED` capabilities have no adoption decision yet (review docs exist); Phase 4's ≥2-baseline exit criterion is 1 short.
 
 ## Recently Completed
 
+- `make check` ↔ `check-strict` parity gap closed — master was red on `check_integrations` while remote CI stayed green; regression test added (`248f618`, 2026-10-16)
+- Test hygiene: study-pipeline review test and three System B tests wrote artifacts into the repo tree; both now use `tmp_path` (2026-10-16)
+- Reconciled phase docs/roadmap/state with reality: phase 1.5/3 statuses, missing `make deprecations` target added, charter's stale "Current phase" stamp replaced (2026-10-16)
+- `vector-memory-store` → TESTED (ADR-0033; `catalog/memory/vector_store/`; 7th capability) — merged 2026-10-09 (PR #7)
+- Phase 4 Systems A/B/C in `integrations/` (PRs #8–#10, 2026-10-09); benchmark harness + first monolithic baseline (`benchmarks/results.md`, PR #11)
+- Phase 3 — Discover closed: convergence detection, review workflow, deprecation flagging; `guardrails` + `reliability` categories adopted (ADR-0031/0032)
 - MACP protocol bootstrapped + trial-run (`state/`, AGENTS.md, STATE.md)
-- `infrastructure-scanner` completed to TESTED (6th capability: 73 tests, spec, research, ADR-0029)
-- Repo-wide mypy repaired (226→0 errors; 313 suppressions removed; MYMYATH fix)
+- `infrastructure-scanner` completed to TESTED (spec, research, ADR-0029)
+- Repo-wide mypy repaired (226→0 errors; 313 suppressions removed)
 - Study-pipeline stack/dependency extraction; integration consistency checker
 - MACP amendments P1–P6 implemented (`docs/macp-protocol.md` canonical + `docs/macp-protocol-review.md` rationale, AGENTS.md repointed; P7 deferred)
 - Phase 0 — Foundation (charter, taxonomy, registry, ADR process)
 - Phase 1 — Seed (5 capabilities TESTED: tool-registry, model-provider-abstraction, react-agent-loop, mcp-client, execution-trace-recorder)
 - Phase 1.5 — Hardening (all gates enforced, 601 tests, 90.03% coverage)
-- Phase 2 — Study (25 repos studied, 18 trade-offs, 3 new categories discovered)
+- Phase 2 — Study (25 repos studied, 18 trade-offs, 6 new categories: ADR-0022–0027)
 
 ## Next Up
 
-1. Phase 3 — Discover (automate taxonomy discovery)
-2. Remaining Phase 1 capabilities: vector-memory-store, basic-rag-pipeline
-3. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
+1. Phase 4 exit criterion: second monolithic baseline comparison (WP3, session OC1)
+2. `basic-rag-pipeline` lifecycle (last Phase 1 queue item; WP4)
+3. Resolve the 6 `DISCOVERED` capabilities (review docs → ADOPT/DEFER decisions; WP5)
+4. DEBT-005: scanner `model_provider` API wart (WP6)
+5. State-rot prevention P7 (machine-checked drift): deferred until P1–P6 have run long enough to reveal residual failures
 
 ## Key Files
 
@@ -67,6 +75,6 @@ _(No active agents. Register in REGISTRY.md when starting work.)_
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `c3ea364`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `248f618`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

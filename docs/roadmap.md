@@ -2,30 +2,30 @@
 
 ## Current phase
 
-**Phase 1 — Seed** (charter §30). Establish taxonomy, registry, documentation standards, and the first handful of end-to-end capabilities.
+**Phase 4 — Compose** (charter §30). Systems A/B/C and the benchmark comparison are built; remaining: a second monolithic baseline (exit criterion) and the `basic-rag-pipeline` lifecycle work. Phase 3 (Discover) is closed.
 
 | Phase | Status | Plan |
 |---|---|---|
 | 0 — Foundation *(ADR-0005)* | ✅ Complete | [`phases/phase-0-foundation.md`](phases/phase-0-foundation.md) |
 | 1 — Seed | ✅ Complete | [`phases/phase-1-seed.md`](phases/phase-1-seed.md) |
-| 1.5 — Hardening | ✅ Complete | [`phases/phase-1.5-hardening.md`](phases/phase-1.5-hardening.md) |
-| 2 — Study | 🟩 **Complete** — Tracks 2A+2B done; 18 trade-offs assessed; 3 ADRs derived | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
-| 3 — Discover | ⬜ Not started | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
-| 4 — Compose | ⬜ Not started | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
+| 1.5 — Hardening | ✅ Complete — 19/20 items DONE; item 15 has a recorded deviation | [`phases/phase-1.5-hardening.md`](phases/phase-1.5-hardening.md) |
+| 2 — Study | 🟩 **Complete** — Tracks 2A+2B done; 18 trade-offs assessed; 6 taxonomy categories added (ADR-0022–0027) | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
+| 3 — Discover | ✅ Complete — convergence detection, review workflow, deprecation flagging; 2 categories adopted (ADR-0031/0032) | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
+| 4 — Compose | 🟨 **In progress** — Systems A/B/C + benchmark done; 1 of 2 monolithic baselines present | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
 | 5 — Sustain | ⬜ Not started | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
 
 Executable plans — including exit criteria — live in [`docs/phases/`](phases/). Read the current phase's plan before starting work.
 
-## Phase 1 queue
+## Phase 1 queue (historical — 6 of 7 promoted)
 
-Priority order per charter §24 (dependency + verifiability first). Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
+Status as of 2026-10-16: items 1–5 done; `basic-rag-pipeline` (6) is the only remaining Phase 1 capability, still `DISCOVERED`. Original priority order per charter §24 (dependency + verifiability first). Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
 
-1. `tool-registry` (tools) — no dependencies, consumed by almost everything.
-2. `model-provider-abstraction` (models) — no dependencies, consumed by everything above.
-3. `react-agent-loop` (agents) — depends on 1+2; first end-to-end composition.
-4. `execution-trace-recorder` (observability) — enables honest evaluation of 3.
-5. `vector-memory-store` (memory), then `basic-rag-pipeline` (retrieval) — depends on 2/5.
-6. `mcp-client` (mcp) — COMPATIBILITY candidate; narrow stdio client.
+1. `tool-registry` (tools) — no dependencies, consumed by almost everything. ✅ TESTED
+2. `model-provider-abstraction` (models) — no dependencies, consumed by everything above. ✅ TESTED
+3. `react-agent-loop` (agents) — depends on 1+2; first end-to-end composition. ✅ TESTED
+4. `execution-trace-recorder` (observability) — enables honest evaluation of 3. ✅ TESTED
+5. `vector-memory-store` (memory) — depends on 2. ✅ TESTED (ADR-0033, 2026-10-09). Then `basic-rag-pipeline` (retrieval) — still DISCOVERED.
+6. `mcp-client` (mcp) — COMPATIBILITY candidate; narrow stdio client. ✅ TESTED
 
 For each: RESEARCHED → UNDERSTOOD → DECIDED (ADR) → DESIGNED → IMPLEMENTED → TESTED — one stage at a time, no skipping (charter §4).
 
@@ -133,3 +133,5 @@ For each: RESEARCHED → UNDERSTOOD → DECIDED (ADR) → DESIGNED → IMPLEMENT
 - **Session (CI fix — two commits).** Remote CI was red on every run. Root cause: `setup-uv` had `enable-cache: true` but the repo has no `uv.lock` (it uses `requirements-dev.txt` as its lock file), so the action errored before any gate ran. Removed the cache option. CI then ran the real gates and exposed a second defect: `inventory.py` crashed with `PermissionError` on unreadable directories (`_count_nested_manifests`, `_detect_packages`, `_detect_markers` all had unguarded `is_file()`/`iterdir()` calls). Added `try/except OSError` guards mirroring `_walk`. **1159 tests pass**, CI green on remote (run `37810460662`). Commits `2353698` + `9e1c13c`.
 - **Session (Phase 3 — Discover, four commits).** Built cross-repo convergence detection (`study_pipeline/discover.py`, 14 tests), review workflow (`study_pipeline/review.py`, 7 tests), and deprecation detection (`study_pipeline/deprecation.py`, 10 tests). `make discover` reads all 25 study reports, extracts proposed categories, and ranks by convergence. Found 4 convergent patterns: `config` (15/25, 60%), `caching` (14/25, 56%), `guardrails` (10/25, 40%), `rate-limiting` (6/25, 24%). `make review` generates review documents with ADOPT/DEFER/REJECT checklists. Adopted 2 new categories via ADR-0031 (`guardrails/`) and ADR-0032 (`reliability/`), fixed pattern rules for `config`/`caching` (were using wrong category names), and added taxonomy entries. `make deprecations` flags taxonomy categories that appear in <3 studies and are absent from ≥2 — 0 candidates found (all categories well-represented). Phase 3 exit criteria 1-5 all met. **1203 tests pass** (was 1159; +44 new). Commits `3b546cd` + `8be12ad` + `b8cd5dc` + `e7a3b2f`.
 - **Session (MACP amendments P1–P6 + state auto-sync).** The protocol text is now canonical at [`docs/macp-protocol.md`](macp-protocol.md) with refined P1+P3, P2+P4, P6, and revised P5 integrated; the adversarial review is preserved verbatim at [`docs/macp-protocol-review.md`](macp-protocol-review.md); P7 deferred by design. Separately, session records rotted 3× in one open session — always hand-written git facts, then git moved — so `scripts/sync_state.py` now regenerates branch/HEAD/commit-list blocks inside marked sections on every commit (pre-commit hook stages exactly modified files; `--check` serves the terminal loop; `make sync-state` for manual runs). Only git-derived facts are automated; prose and judgment stay human. Two bugs found while building it: a test fixture that never left `master` (empty list, correctly reported), and timestamps inside generated blocks breaking idempotency across time — removed entirely, pinned by regression test, dirty trees disclosed instead of hidden. Suite **1141 tests**, all gates green.
+- **Session (Phase 3 close-out + Phase 4 systems — PR merge train, landed 2026-10-09; no session file was recorded, reconciled 2026-10-16).** PRs #5–#6 merged Phase 3 machinery (convergence detection, review workflow, deprecation flagging) and adopted `guardrails` (ADR-0031) + `reliability` (ADR-0032); PR #7 promoted `vector-memory-store` to TESTED (ADR-0033, `catalog/memory/vector_store/`); PRs #8–#10 built Systems A/B/C in `integrations/`; PR #11 added the benchmark harness and first monolithic baseline (`benchmarks/results.md`, run 2026-10-09). **1283 tests** at `397fd5e` (1284 after the parity regression test added in `248f618`). Phase 3 closed; Phase 4 still short of its ≥2-framework criterion — the second baseline is the next open item. The state files were never reconciled after these merges, which is what session OC1 repairs.
+- **Session (OC1 — complete in-flight work + production-readiness pass; in progress).** Fixed the red-on-master gate (`check-strict` was missing `check_integrations`; parity regression test added — commit `248f618` — so CI can no longer stay green while `make check` is red) and repaired test hygiene: two test paths wrote run artifacts into the repository tree (study-pipeline review docs, `system_b_trace.jsonl`) and now use `tmp_path`. Reconciled the phase docs, roadmap, and `state/` with git reality (phase 1.5/3/4 statuses, `make deprecations` target that the docs claimed but the Makefile lacked, charter's stale "Current phase" stamp replaced by a pointer to this file). Open work: second monolithic baseline (Phase 4 exit criterion), `basic-rag-pipeline` lifecycle, 6 `DISCOVERED` capability decisions, DEBT-005.

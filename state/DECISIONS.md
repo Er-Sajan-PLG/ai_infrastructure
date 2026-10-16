@@ -135,3 +135,7 @@
 ## ADR-0032: Reliability Category
 **Decision:** Add `reliability/` category (6/25 repos, 24% convergence). Rate limiting, retry, backoff infrastructure.
 **Status:** Accepted
+
+## ADR-0033: Vector Memory Store
+**Decision:** IMPLEMENT `vector-memory-store` (stdlib-only cosine similarity, LRU eviction, exact search) — unblocks `basic-rag-pipeline` and Phase 4 System A; no ANN, O(n·d) documented limit.
+**Status:** Accepted

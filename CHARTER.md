@@ -305,7 +305,7 @@ The pipeline **never executes, imports or installs the code it studies**, and it
 | **4 — Compose** | Integration examples; benchmark composed systems against monolithic frameworks. |
 | **5 — Sustain** | Community, periodic re-study, deprecation, continuous monitoring. |
 
-Current phase: **Phase 1 — Seed** (repository skeleton established; no capabilities seeded yet).
+Current phase: tracked in [`docs/roadmap.md`](docs/roadmap.md) (the live status source; this line is deliberately not a status stamp — the one that said "Phase 1 — Seed" was stale by the time Phase 4 was underway).
 
 ---
 

@@ -7,7 +7,7 @@ Compositions of catalog components into working systems (charter §17, §31). An
 - Integrations **consume** catalog components through their public interfaces; they do not patch or fork them.
 - Every integration states which catalog entries it uses and at which taxonomy status, so a reader can see what it actually proves.
 - Demonstrating composition requires running it: each integration carries its own tests and a documented command to reproduce.
-- Prefer integration examples mirroring charter §31's System A / B / C sketches: partial adoption, mixed external + internal components, and fully internal.
+- Prefer integration examples mirroring the [Phase 4 plan](../docs/phases/phase-4-compose.md)'s System A / B / C sketches: partial adoption, mixed external + internal components, and fully internal.
 
 ## Status
 

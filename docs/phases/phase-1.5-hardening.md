@@ -1,6 +1,6 @@
 # Phase 1.5 — Hardening
 
-**Status:** 📋 Planned (approved 2026-09-16, not started)
+**Status:** ✅ Complete (closed 2026-09-17; items 1–14 and 16–20 DONE, item 15 deferred with the deviation recorded below; every rule this phase claimed is enforced — `docs/standards.md` maps each to its check)
 **Charter basis:** §18 (testing and verification), §20 (standards are enforced), §22 (dependency and review gates), §30 (growth model — added by [ADR-0011](../decisions/0011-phase-1-5-hardening.md))
 **Depends on:** [Phase 1](phase-1-seed.md) ✅ complete (5 of 5 categories `TESTED`, no drift)
 **Blocks:** [Phase 2](phase-2-study.md) — do not start Phase 2 while these exit criteria are unmet

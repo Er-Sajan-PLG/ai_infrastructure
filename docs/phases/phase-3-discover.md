@@ -1,6 +1,6 @@
 # Phase 3 — Discover
 
-**Status:** ⬜ Not started
+**Status:** ✅ Complete (work landed 2026-10-08/09 via PRs #5–#6 and the taxonomy-expansion commits; reconciled 2026-10-16 in session OC1 — this document was stale, all criteria below verified against artifacts)
 **Charter basis:** §30 — *"Automate discovery — the pipeline identifies new patterns not yet in the taxonomy and proposes new categories."*
 **Depends on:** [Phase 2](phase-2-study.md) complete
 
@@ -14,9 +14,9 @@ repositories to find convergent patterns.
 
 - [x] Cross-repo pattern convergence detection (same pattern, many implementations) — `study_pipeline/discover.py` + `make discover`
 - [x] The pipeline proposes new taxonomy categories with evidence, not guesses — `docs/discovery/2026-10-08-convergence.md` (4 convergent patterns: config 15/25, caching 14/25, guardrails 10/25, rate-limiting 6/25)
-- [ ] A review workflow exists for accepting/rejecting proposed categories — pending (needs ADR for each adoption)
-- [ ] The taxonomy has grown from Phase 1's 7 categories, with each addition traceable to evidence — pending (Phase 2 added 6 categories; Phase 3 proposals are ready for review)
-- [ ] Obsolete patterns are flagged for deprecation (charter §23) — not yet implemented
+- [x] A review workflow exists for accepting/rejecting proposed categories — `study_pipeline/review.py` + `make review` (7 tests, 2026-10-08); per-pattern ADOPT/DEFER/REJECT checklists in `docs/discovery/review/`; adoption requires an ADR (ADR-0021 Decision 2)
+- [x] The taxonomy has grown, with each addition traceable to evidence — Phase 2 added `config` (ADR-0022), `caching` (ADR-0023), `agent-config` (ADR-0024), `evidence-plane` (ADR-0025), `evaluation` (ADR-0026), `worker-contract` (ADR-0027); Phase 3 added `guardrails` (ADR-0031) and `reliability` (ADR-0032) from convergence evidence
+- [x] Obsolete patterns are flagged for deprecation (charter §23) — `study_pipeline/deprecation.py` (10 tests) + `make deprecations`; run on 2026-10-16: 13 patterns observed, 0 deprecation candidates (all tracked categories well-represented)
 
 ## Method
 
@@ -35,4 +35,7 @@ repositories to find convergent patterns.
 
 ## Next action
 
-Deferred until Phase 2 yields enough cross-repo data to cluster.
+Phase closed. The review documents in `docs/discovery/review/` (4 convergent
+patterns) remain open proposals (ADOPT/DEFER/REJECT); resolving them — and the
+taxonomy's 6 `DISCOVERED` capabilities — is later work, not Phase 3 machinery.
+Machinery follow-ups (if any) belong in `state/DEBT.md`.
