@@ -1,6 +1,6 @@
 # Retrieval & Knowledge
 
-> **Status: no entries yet.** This directory is a declared research category (charter §2, ADR-0001). Nothing here has been studied or implemented.
+> **Status: first entry researched.** `basic-rag-pipeline` is `DECIDED` (ADR-0034); see its research record below.
 
 ## What it is
 
@@ -12,24 +12,27 @@ Grounding generation in external knowledge is how systems answer about things th
 
 ## How it works
 
-To be documented once the first capability in this category is studied. Research artifacts are expected at `research/retrieval/<capability-id>.md` and must label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6).
+Research artifacts live at `research/retrieval/<capability-id>.md` and label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6). The first record found the ecosystem's convergent stage sequence — chunk → embed → index → retrieve → augment → generate — with retrieval and generation separated in every major framework.
 
 ## Variants & types
 
-Not yet surveyed.
+- **Basic RAG pipeline** (`basic-rag-pipeline`) — fixed-size chunking with overlap, embedding-based retrieval, single-call generation, citations reported from retrieval.
 
 ## Landscape
 
-Not yet surveyed. External projects studied will be registered in [`../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) with the charter §11 schema.
+External projects surveyed via the study pipeline (structural analysis only, no code executed or reused): haystack (`components/retrievers/`, `components/retrievers/in_memory/`), llama_index (`core/ingestion`, `core/chat_engine`, node-parser integrations), LangChain (`langchain_core/indexing`, `document_loaders`), ragas (evaluation metrics over RAG samples). Registered in [`../../docs/registry/RESEARCH_REGISTRY.md`](../../docs/registry/RESEARCH_REGISTRY.md) per the charter §11 schema.
 
 ## Our implementations
 
-None. See [`../TAXONOMY.md`](../../TAXONOMY.md) §4 for capabilities in this category and their honest lifecycle status.
+- `basic-rag-pipeline` — `DECIDED` (ADR-0034), implementation in progress this session under `catalog/retrieval/`. See [`../../TAXONOMY.md`](../../TAXONOMY.md) §4 for lifecycle status.
 
 ## When to use / When not to use
 
-To be filled from evidence, not intuition.
+- **Use** when answers must be grounded in caller-provided documents and the retrieval behind each answer must be inspectable.
+- **Do not use** when documents need token-exact chunking, reranking, hybrid search, metadata filtering, or citation verification against model output — all deferred (specification §4).
 
 ## References & citations
 
-None yet.
+- [Research record: basic-rag-pipeline](basic-rag-pipeline.md)
+- [Specification: basic-rag-pipeline](../../specifications/basic-rag-pipeline.md)
+- [ADR-0034](../../docs/decisions/0034-basic-rag-pipeline.md)

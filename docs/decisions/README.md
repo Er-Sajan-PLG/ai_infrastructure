@@ -38,6 +38,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0031](0031-guardrails-category.md) | New taxonomy category `guardrails/` — output validation (10/25 studied repos) | Accepted |
 | [0032](0032-reliability-category.md) | New taxonomy category `reliability/` — rate limiting & retry (6/25 studied repos) | Accepted |
 | [0033](0033-vector-memory-store.md) | In-memory vector store with cosine similarity, stdlib-only, LRU eviction | Accepted |
+| [0034](0034-basic-rag-pipeline.md) | Basic RAG pipeline — stdlib-only chunk→retrieve→generate with injected embedder/store/generator | Accepted |
 
 ## When an ADR is required
 

@@ -210,27 +210,27 @@ capabilities:
   - id: basic-rag-pipeline
     name: Basic RAG Pipeline
     category: retrieval
-    status: DISCOVERED
+    status: DECIDED
     maturity: experimental
-    priority: medium — depends on vector store and model abstraction; documents ingest→chunk→retrieve→answer end-to-end.
+    priority: medium — last Phase 1 queue capability; unblocked (both dependencies TESTED) and now decided.
     depends_on: [vector-memory-store, model-provider-abstraction]
-    decision: pending
+    decision: IMPLEMENT (ADR-0034) — stdlib-only chunk→index→retrieve→augment→generate; embedder, store and generator injected; citations are the retrieved chunks, not parsed from model output.
     description: Chunk → embed → store → retrieve → augment prompt → generate, with citations to source chunks.
     problem: Ground model answers in provided documents with inspectable retrieval.
     inputs: ["documents", "query"]
     outputs: ["answer", "retrieved chunks with sources"]
-    interfaces: []
-    dependencies: []
+    interfaces: ["BasicRagPipeline.index", "BasicRagPipeline.retrieve", "BasicRagPipeline.answer", "chunk_text", "build_prompt", "RagAnswer", "Citation"]
+    dependencies: ["Python standard library only (no runtime dependency)"]
     standards: []
-    reference_projects: []
-    research_records: []
+    reference_projects: ["haystack retrievers", "llama_index ingestion + node parsers", "LangChain retrieval/indexing", "ragas (evaluation plane)"]
+    research_records: ["research/retrieval/basic-rag-pipeline.md"]
     implementation: ""
     tests: ""
     benchmarks: ""
-    security: ""
+    security: "Documents and queries are untrusted input: no eval/exec; no network or model call in the core (all seams injected). Retrieved text enters the prompt — prompt injection via documents is possible and documented; citations report the evidence that entered the prompt rather than claiming verification of model output."
     license: Apache-2.0
     provenance: original
-    last_reviewed: ""
+    last_reviewed: "2026-10-16"
 
   - id: mcp-client
     name: MCP Client (stdio transport)
