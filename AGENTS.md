@@ -11,7 +11,7 @@ This repository operates under a charter and the **MACP (Multi-Agent Coordinatio
 
 ## MACP Startup Sequence (mandatory before any work)
 
-1. **Git reconnaissance** — `git status`, `git branch -vva`, `git log --oneline -10`
+1. **Git hygiene & reconnaissance** — verify working tree is clean (`git status`); always pull before push (`git pull --rebase`); and always create a new branch (`git checkout -b <branch>`) before starting any new work.
 2. **Read `state/DASHBOARD.md`** — check "Last Reconciled" timestamp; confirm the checked-out branch matches its Branch field, HALT on mismatch
 3. **Read `state/REGISTRY.md`** — check for active agents and file ownership conflicts
 4. **Read `state/BLOCKERS.md`** — confirm your task isn't blocked
