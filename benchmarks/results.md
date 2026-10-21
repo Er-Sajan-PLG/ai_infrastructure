@@ -1,12 +1,12 @@
 # Benchmark Report — Composed Systems vs Monolithic Baselines
 
-Generated: 2026-10-16 08:19:29 UTC
+Generated: 2026-10-21 01:45:30 UTC
 
 ## Methodology
 
 - **Task**: 'What is the capital of France?'
 - **Iterations**: 10 per system
-- **Environment**: Python 3.14.7, Linux-6.18.55-1-lts-x86_64-with-glibc2.44, no network
+- **Environment**: Python 3.14.8, Linux-6.18.55-1-lts-x86_64-with-glibc2.44, no network
 - **Transport**: `ScriptedTransport` (canned responses, shared by every row)
 - **Provider**: `OpenAIProvider` (scripted)
 
@@ -18,11 +18,11 @@ Generated: 2026-10-16 08:19:29 UTC
 
 | System | Latency (ms) | Tokens (fixture) | Notes |
 |---|---|---|---|
-| monolithic | 0.02 | 35 | Single LLM call, no tools, no memory |
-| monolithic_rag | 0.02 | 35 | Inlined retrieval chain: retrieve + prompt + call in one class |
-| system_c | 0.07 | 35 | Our loop + registry + provider |
-| system_a | 0.10 | 35 | Our loop + memory + external embedder |
-| system_b | 0.08 | 0 | External runtime + our trace recorder (no usage tracking) |
+| monolithic | 0.16 | 35 | Single LLM call, no tools, no memory |
+| monolithic_rag | 0.10 | 35 | Inlined retrieval chain: retrieve + prompt + call in one class |
+| system_c | 0.19 | 35 | Our loop + registry + provider |
+| system_a | 0.13 | 35 | Our loop + memory + external embedder |
+| system_b | 0.11 | 0 | External runtime + our trace recorder (no usage tracking) |
 
 ## Analysis
 
@@ -63,11 +63,11 @@ Generated: 2026-10-16 08:19:29 UTC
     "system": "monolithic",
     "n": 10,
     "latency_ms": {
-      "mean": 0.02417959985905327,
-      "median": 0.01711599725240376,
-      "stdev": 0.016278009434593628,
-      "min": 0.013642002159031108,
-      "max": 0.06331799886538647
+      "mean": 0.16067749966168776,
+      "median": 0.08717449964024127,
+      "stdev": 0.219527876841039,
+      "min": 0.07060900679789484,
+      "max": 0.7817220030119643
     },
     "tokens": {
       "mean": 35,
@@ -90,11 +90,11 @@ Generated: 2026-10-16 08:19:29 UTC
     "system": "monolithic_rag",
     "n": 10,
     "latency_ms": {
-      "mean": 0.023778199829393998,
-      "median": 0.020004001271445304,
-      "stdev": 0.008028208705833761,
-      "min": 0.018676997569855303,
-      "max": 0.044162999984109774
+      "mean": 0.09770070028025657,
+      "median": 0.08757549949223176,
+      "stdev": 0.025822277753583832,
+      "min": 0.08228399383369833,
+      "max": 0.16585399862378836
     },
     "tokens": {
       "mean": 35,
@@ -117,11 +117,11 @@ Generated: 2026-10-16 08:19:29 UTC
     "system": "system_c",
     "n": 10,
     "latency_ms": {
-      "mean": 0.06571690028067678,
-      "median": 0.052523000704240985,
-      "stdev": 0.03345495583734442,
-      "min": 0.04973999966750853,
-      "max": 0.15868999980739318
+      "mean": 0.18786549917422235,
+      "median": 0.17405700054951012,
+      "stdev": 0.07018764223669073,
+      "min": 0.1333069958491251,
+      "max": 0.3753749915631488
     },
     "tokens": {
       "mean": 35,
@@ -144,11 +144,11 @@ Generated: 2026-10-16 08:19:29 UTC
     "system": "system_a",
     "n": 10,
     "latency_ms": {
-      "mean": 0.09605190025467891,
-      "median": 0.0842454992380226,
-      "stdev": 0.02737249309213324,
-      "min": 0.07460499909939244,
-      "max": 0.14721700063091703
+      "mean": 0.13362820318434387,
+      "median": 0.12520600284915417,
+      "stdev": 0.027886939445722896,
+      "min": 0.11365600221324712,
+      "max": 0.2058580139419064
     },
     "tokens": {
       "mean": 35,
@@ -171,11 +171,11 @@ Generated: 2026-10-16 08:19:29 UTC
     "system": "system_b",
     "n": 10,
     "latency_ms": {
-      "mean": 0.07825190041330643,
-      "median": 0.06115200085332617,
-      "stdev": 0.04788294564452714,
-      "min": 0.050714003009488806,
-      "max": 0.20868600040557794
+      "mean": 0.10513059969525784,
+      "median": 0.08430650632362813,
+      "stdev": 0.05679400769934047,
+      "min": 0.07525099499616772,
+      "max": 0.26053500187117606
     },
     "tokens": {
       "mean": 0,

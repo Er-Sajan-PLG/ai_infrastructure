@@ -37,4 +37,4 @@ Machinery
 
 ## Status
 
-5 catalog entries across 5 of 20 declared categories (see `TAXONOMY.md`). 1 end-to-end integration. 5 specifications, 5 research records. The repository is past skeleton — see `docs/roadmap.md` for the current phase and queue.
+8 catalog entries across 8 declared categories (see `TAXONOMY.md`). 5 integrations in `integrations/`. 8 specifications, 8 research records, 36 Architecture Decision Records (ADRs). Unified package interface via `ai_infrastructure/`. The repository is production-ready — see `docs/roadmap.md` for phase details.

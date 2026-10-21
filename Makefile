@@ -175,7 +175,7 @@ typecheck: ## Run mypy in strict mode
 	@# sys.path), so without the entry directories on the search path mypy
 	@# reports import-not-found on every cross-entry import. This is the same
 	@# ENTRY_PATHS the `independence` target passes as PYTHONPATH.
-	@targets=$$(find catalog integrations scripts tests study_pipeline -name '*.py' \
+	@targets=$$(find catalog integrations scripts tests study_pipeline ai_infrastructure -name '*.py' \
 		-not -path '*/.venv/*' 2>/dev/null); \
 	if [ -z "$$targets" ]; then \
 		echo "No Python sources to type-check yet."; \
@@ -352,7 +352,7 @@ sast: ## Static security analysis (bandit AND ruff S — they are not equivalent
 	@# exclusions are done by PATH, because bandit's per-plugin `skips` globs
 	@# do not reliably apply. Rationale: docs/decisions/0018.
 	$(RUFF) check .
-	@prod=$$(find catalog integrations scripts -name '*.py' \
+	@prod=$$(find catalog integrations scripts ai_infrastructure -name '*.py' \
 		-not -path '*/tests/*' -not -path '*/examples/*'); \
 	if [ -z "$$prod" ]; then \
 		echo "sast: no production sources yet; nothing to scan."; \

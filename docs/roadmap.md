@@ -1,31 +1,36 @@
 # Roadmap
 
 ## Current phase
-
-**Phase 5 — Sustain** (charter §30) — next up, not started. Phase 4 (Compose) closed 2026-10-16: Systems A/B/C, the benchmark, and both monolithic baselines are in place. The one remaining Phase 1 capability (`basic-rag-pipeline`) is unblocked and pending.
-
-| Phase | Status | Plan |
-|---|---|---|
-| 0 — Foundation *(ADR-0005)* | ✅ Complete | [`phases/phase-0-foundation.md`](phases/phase-0-foundation.md) |
-| 1 — Seed | ✅ Complete | [`phases/phase-1-seed.md`](phases/phase-1-seed.md) |
-| 1.5 — Hardening | ✅ Complete — 19/20 items DONE; item 15 has a recorded deviation | [`phases/phase-1.5-hardening.md`](phases/phase-1.5-hardening.md) |
-| 2 — Study | 🟩 **Complete** — Tracks 2A+2B done; 18 trade-offs assessed; 6 taxonomy categories added (ADR-0022–0027) | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
-| 3 — Discover | ✅ Complete — convergence detection, review workflow, deprecation flagging; 2 categories adopted (ADR-0031/0032) | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
-| 4 — Compose | ✅ Complete — Systems A/B/C + benchmark vs 2 monolithic baselines (2026-10-16) | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
-| 5 — Sustain | ⬜ Not started | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
-
-Executable plans — including exit criteria — live in [`docs/phases/`](phases/). Read the current phase's plan before starting work.
-
-## Phase 1 queue (historical — 6 of 7 promoted)
-
-Status as of 2026-10-16: items 1–5 done; `basic-rag-pipeline` (6) is the only remaining Phase 1 capability, still `DISCOVERED`. Original priority order per charter §24 (dependency + verifiability first). Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
-
-1. `tool-registry` (tools) — no dependencies, consumed by almost everything. ✅ TESTED
-2. `model-provider-abstraction` (models) — no dependencies, consumed by everything above. ✅ TESTED
-3. `react-agent-loop` (agents) — depends on 1+2; first end-to-end composition. ✅ TESTED
-4. `execution-trace-recorder` (observability) — enables honest evaluation of 3. ✅ TESTED
-5. `vector-memory-store` (memory) — depends on 2. ✅ TESTED (ADR-0033, 2026-10-09). Then `basic-rag-pipeline` (retrieval) — still DISCOVERED.
-6. `mcp-client` (mcp) — COMPATIBILITY candidate; narrow stdio client. ✅ TESTED
+ 
+-**Phase 5 — Sustain** (charter §30) — active. All 4 initial phases (Foundation, Seed, Study, Discover, Compose) complete. All 8 implemented capabilities across 8 categories are TESTED and benchmarked, with 5 integration compositions validated. Unified package `ai_infrastructure` established for production consumption.
++**Phase 5 — Sustain** (charter §30) — active. All 4 initial phases (Foundation, Seed, Study, Discover, Compose) complete. All 8 implemented capabilities across 8 categories are TESTED and benchmarked, with 5 integration compositions validated. Unified package `ai_infrastructure` established for production consumption.
+ 
+ | Phase | Status | Plan |
+ |---|---|---|
+ | 0 — Foundation *(ADR-0005)* | ✅ Complete | [`phases/phase-0-foundation.md`](phases/phase-0-foundation.md) |
+ | 1 — Seed | ✅ Complete | [`phases/phase-1-seed.md`](phases/phase-1-seed.md) |
+ | 1.5 — Hardening | ✅ Complete — 19/20 items DONE; item 15 has a recorded deviation | [`phases/phase-1.5-hardening.md`](phases/phase-1.5-hardening.md) |
+ | 2 — Study | 🟩 **Complete** — Tracks 2A+2B done; 18 trade-offs assessed; 6 taxonomy categories added (ADR-0022–0027) | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
+ | 3 — Discover | ✅ Complete — convergence detection, review workflow, deprecation flagging; 2 categories adopted (ADR-0031/0032) | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
+ | 4 — Compose | ✅ Complete — Systems A/B/C + benchmark vs 2 monolithic baselines (2026-10-16) | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
+-| 5 — Sustain | 🟩 Active — Production-ready package, continuous security, ongoing monitoring | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
++| 5 — Sustain | 🟩 Active — Production-ready package, continuous security, ongoing monitoring | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
+ 
+ Executable plans — including exit criteria — live in [`docs/phases/`](phases/). Read the current phase's plan before starting work.
+ 
+-## Phase 1 queue (historical — 7 of 7 seeded capabilities TESTED)
++## Phase 1 queue (historical — 7 of 7 seeded capabilities TESTED)
+ 
+-All 7 seeded capabilities promoted to `TESTED` across categories. Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
++All 7 seeded capabilities promoted to `TESTED` across categories. Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
+ 
+ 1. `tool-registry` (tools) — no dependencies, consumed by almost everything. ✅ TESTED
+ 2. `model-provider-abstraction` (models) — no dependencies, consumed by everything above. ✅ TESTED
+ 3. `react-agent-loop` (agents) — depends on 1+2; first end-to-end composition. ✅ TESTED
+ 4. `execution-trace-recorder` (observability) — enables honest evaluation of 3. ✅ TESTED
+ 5. `vector-memory-store` (memory) — depends on 2. ✅ TESTED (ADR-0033)
+ 6. `mcp-client` (mcp) — COMPATIBILITY candidate; narrow stdio client. ✅ TESTED
+ 7. `basic-rag-pipeline` (retrieval) — composes vector-memory-store + model-provider. ✅ TESTED (ADR-0034)
 
 For each: RESEARCHED → UNDERSTOOD → DESIGNED → DECIDED (ADR) → IMPLEMENTED → TESTED — one stage at a time, no skipping (charter §4).
 

@@ -139,3 +139,15 @@
 ## ADR-0033: Vector Memory Store
 **Decision:** IMPLEMENT `vector-memory-store` (stdlib-only cosine similarity, LRU eviction, exact search) — unblocks `basic-rag-pipeline` and Phase 4 System A; no ANN, O(n·d) documented limit.
 **Status:** Accepted
+
+## ADR-0034: Basic RAG Pipeline
+**Decision:** IMPLEMENT `basic-rag-pipeline` (stdlib-only chunk→retrieve→generate pipeline composing `vector-memory-store` and `model-provider-abstraction` through injected seams).
+**Status:** Accepted
+
+## ADR-0035: Discovered Capability Decisions
+**Decision:** DEFER ×4 (DW-014…DW-017), DOCUMENT ×1 (agent instruction files) on the five discovered capabilities.
+**Status:** Accepted
+
+## ADR-0036: Production Readiness Declaration and Unified Package Distribution
+**Decision:** Establish unified `ai_infrastructure` package distribution, remediate SCA dev toolchain vulnerability, broaden Python version compatibility, and activate Phase 5 (Sustain) per maintainer directive.
+**Status:** Accepted

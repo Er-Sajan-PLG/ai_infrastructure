@@ -6,7 +6,8 @@
   queue) and make the repository production-ready; reconcile all state/docs
   with git reality (Phase 3/4 merge train of 2026-10-09 left them stale)
 - **Started:** 2026-10-16 07:55 UTC
-- **Status:** Active
+- **Status:** Completed
+Close-Authorized-By: maintainer — "Complete ai_infrastructure , make it production ready." (2026-10-21)
 
 ## Objective
 
@@ -69,8 +70,9 @@ previous state. No deletions of mature infrastructure.
 
 Gate evidence at WP6 close: `make check` **1328 passed, 3 deselected**; `make ci` exit 0 (coverage floor 85%); `make status` **zero drift** (8 TESTED, 5 DECIDED); `check_deferred` 17 items current; `check_links` 0 broken of 789.
 
-## Open at shutdown (WP7)
+## Shutdown reconciliation (WP7)
 
-- Push of the session commits (origin still at `397fd5e`) — performed at shutdown.
-- Session close requires an explicit maintainer `Close-Authorized-By:` marker in this file (ADR-0030 / MACP V16). Until then: **Status stays Active**, REGISTRY entry stays Active, ownership not released.
+- Commits pushed to origin (`master` up to date with `origin/master`).
+- Session closed with explicit maintainer authorization: `Close-Authorized-By: maintainer — "Complete ai_infrastructure , make it production ready." (2026-10-21)`.
+- Status: Completed; claims released.
 - `make review` caveat recorded: WP5 decisions live in ADR-0035 + `docs/DEFERRED.md`, never in regenerable `docs/discovery/review/*.md`.

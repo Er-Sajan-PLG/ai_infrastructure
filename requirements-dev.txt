@@ -15,12 +15,11 @@
 # There are no runtime dependencies. See the note in pyproject.toml.
 ast-serialize==0.11.2
 argcomplete==3.7.2
-ast-serialize==0.11.2
 bandit==1.9.4
 black==26.5.1
 boolean-py==5.0
 cachecontrol==0.14.4
-certifi==2026.7.22
+certifi==2026.10.19
 chardet==7.6.0
 charset-normalizer==3.5.1
 click==8.5.0

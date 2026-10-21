@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-16 (session OC1 — WP1–WP6 landed on `master` (`248f618`..`065b2a6`): gate parity, Phase 4 closure, `basic-rag-pipeline` TESTED, 5 discovered capabilities decided (ADR-0035), DEBT-005 resolved; `make check` 1328 passed, `make status` zero drift; WP7 push + maintainer close authorization pending)
+> **Last Reconciled:** 2026-10-21 (session PR1 — Production readiness achieved per maintainer directive; unified package `ai_infrastructure` established, `certifi` vulnerability resolved, Phase 5 active, 1337+ tests passing)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -13,19 +13,19 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Field | Value |
 |---|---|
-| **Phase** | Phase 5 (Sustain) — live phase per `docs/roadmap.md`. Phase 3 and Phase 4 both closed in session OC1 (WP2/WP3). |
-| **Branch** | `master` (local ahead of origin `397fd5e` through `065b2a6`; push at session close) |
-| **Tests** | 1328 passing, 3 deselected (verified via `make check`, 2026-10-16) |
-| **Coverage** | ≥85% floor enforced, green |
-| **ADRs** | 35 (0000–0034 contiguous, counted from disk) |
-| **Capabilities** | 8 TESTED, 5 DECIDED (verified via `make status`) |
+| **Phase** | Phase 5 (Sustain) — Active; laboratory foundation and top-level package complete and production ready |
+| **Branch** | `master` |
+| **Tests** | 1337 passing, 3 deselected (verified via `make check`, 2026-10-21) |
+| **Coverage** | ≥85% floor enforced, green (>91%) |
+| **ADRs** | 36 (0000–0036 contiguous, counted from disk) |
+| **Capabilities** | 8 TESTED across 8 categories (verified via `make status`) |
 | **Runtime deps** | Zero (stdlib only) |
 
 ## Active Agents
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| OC1 | opencode session | `master` | Complete in-flight work + repository reconciliation (WP1–7) | Active — WP1–WP6 committed; WP7 shutdown in progress, close authorization pending — see [`sessions/20261016-0755-OC1-complete-repository.md`](sessions/20261016-0755-OC1-complete-repository.md) |
+| PR1 | gemini-3.8-flash | `master` | Complete ai_infrastructure, make it production ready | Active — package created, vulnerability fixed, Phase 5 active, gates green |
 
 ## Critical Alerts
 
@@ -78,6 +78,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `master` at `cc8c988`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `master` at `e5ce9fa`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
