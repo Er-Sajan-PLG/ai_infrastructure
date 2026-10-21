@@ -49,9 +49,10 @@ SOURCE_DIRS: frozenset[str] = frozenset(
 IN_TREE_TEST_DIRS: frozenset[str] = frozenset({"catalog", "integrations"})
 
 #: Directories that may contain Python but are deliberately out of scope.
-#: ``study_pipeline/`` is Phase 2 machinery (charter §29) and ``.venv`` is the
-#: toolchain. Listing them explicitly means the check below reports an
-#: unexplained new directory rather than silently passing it.
+#: ``study_pipeline/`` is Phase 2 machinery (charter §29), ``benchmarks/`` and
+#: ``examples/`` are runnable harnesses/demonstrations (charter §18, §19), and
+#: ``.venv`` is the toolchain. Listing them explicitly means the check below
+#: reports an unexplained new directory rather than silently passing it.
 EXEMPT_DIRS: frozenset[str] = frozenset(
     {
         ".git",
@@ -59,6 +60,7 @@ EXEMPT_DIRS: frozenset[str] = frozenset(
         ".uv-cache",
         "study_pipeline",
         "benchmarks",
+        "examples",
         "__pycache__",
         ".mypy_cache",
     }
