@@ -454,3 +454,29 @@ capabilities:
     compatibility: ""
     last_reviewed: "2026-10-16"
 
+  - id: evaluation-framework
+    name: Evaluation Framework
+    category: evaluation
+    status: TESTED
+    maturity: experimental
+    priority: high — required by charter §18 for honest evaluation; enables all downstream capabilities
+    depends_on: [tool-registry, model-provider-abstraction, react-agent-loop, execution-trace-recorder]
+    decision: IMPLEMENT (ADR-0037) — protocol-first, deterministic evaluators first, LLM-as-judge via injected ModelCaller
+    description: Composable evaluation system with deterministic evaluators (schema, length, citation coverage, exact match, tool calls), RAG triad (faithfulness, answer relevance, context precision/recall), agent evaluators (logical consistency, execution efficiency, plan adherence, tool selection, tool calling), and LLM-as-judge adapter.
+    problem: Without evaluation primitives, claims about agent quality, RAG correctness, or tool reliability cannot be substantiated.
+    inputs: ["system input", "system output", "context (retrieved docs, trace, tools)"]
+    outputs: ["EvaluationResult (score, pass/fail, reasoning)", "SuiteResult (aggregated)"]
+    interfaces: ["Evaluator protocol", "EvaluationSuite", "EvaluationResult", "SuiteResult", "evaluate_trace", "evaluate_steps", "evaluate_rag"]
+    dependencies: ["Python standard library only (no runtime dependency)"]
+    standards: []
+    reference_projects: ["RAGAS", "TruLens", "DeepEval", "LangSmith", "OpenInference"]
+    research_records: ["research/evaluation/evaluation-framework.md"]
+    implementation: "catalog/evaluation/evaluation_framework"
+    tests: "catalog/evaluation/evaluation_framework/tests"
+    benchmarks: ""
+    security: "Deterministic evaluators require no model calls; LLM-as-judge uses injected ModelCaller with explicit threshold"
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-10-22"
+

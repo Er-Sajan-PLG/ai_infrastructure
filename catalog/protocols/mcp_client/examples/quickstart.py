@@ -60,7 +60,7 @@ class ScriptedTransport:
     # `timeout` is part of the Transport protocol. A scripted double answers
     # immediately, so it has nothing to time out on -- but the parameter has to
     # stay for the class to satisfy the protocol structurally.
-    def receive(self, timeout: float) -> bytes | None:  # noqa: ARG002
+    def receive(self, timeout: float) -> bytes | None:
         if not self._replies:
             return None
         reply = self._replies.pop(0)
