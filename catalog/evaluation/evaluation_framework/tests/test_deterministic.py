@@ -26,8 +26,7 @@ for _cat in (
     "evaluation",
 ):
     _p = str(_catalog_root / _cat)
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+    sys.path.insert(0, _p)
 
 import pytest  # noqa: E402
 from basic_rag_pipeline import Citation, RagAnswer  # noqa: E402
@@ -339,3 +338,44 @@ class TestToolCallValidator:
         result = validator.evaluate(input="", output="not an agent result")
         assert result.score == 0.0
         assert not result.passed
+
+
+class TestDeterministicCoverage:
+    def test_schema_threshold(self) -> None:
+        with pytest.raises(ValueError):
+            SchemaValidator({"type": "object"}, threshold=2.0)
+
+    def test_length_validations(self) -> None:
+        with pytest.raises(ValueError):
+            LengthValidator(min_chars=-1)
+        with pytest.raises(ValueError):
+            LengthValidator(max_chars=-1)
+        with pytest.raises(ValueError):
+            LengthValidator(min_tokens=-1)
+        with pytest.raises(ValueError):
+            LengthValidator(max_tokens=-1)
+        with pytest.raises(ValueError):
+            LengthValidator(min_chars=5, max_chars=3)
+        with pytest.raises(ValueError):
+            LengthValidator(min_tokens=5, max_tokens=3)
+        with pytest.raises(ValueError):
+            LengthValidator(threshold=2.0)
+
+    def test_length_max_tokens_violation(self) -> None:
+        v = LengthValidator(max_tokens=1)
+        r = v.evaluate(input=None, output="a" * 100)
+        assert not r.passed
+
+    def test_citation_coverage_validations(self) -> None:
+        with pytest.raises(ValueError):
+            CitationCoverage(min_citations=-1)
+        with pytest.raises(ValueError):
+            CitationCoverage(threshold=2.0)
+
+    def test_exact_match_threshold(self) -> None:
+        with pytest.raises(ValueError):
+            ExactMatch("x", threshold=2.0)
+
+    def test_tool_call_validator_threshold(self) -> None:
+        with pytest.raises(ValueError):
+            ToolCallValidator(expected_calls=[], threshold=2.0)

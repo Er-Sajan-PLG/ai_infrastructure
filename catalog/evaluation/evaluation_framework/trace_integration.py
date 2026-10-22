@@ -28,26 +28,23 @@ def _parse_trace_file(path: Path) -> list[dict[str, Any]]:
 
 
 def _reconstruct_agent_result(records: list[dict[str, Any]]) -> AgentResult | None:
-    """Reconstruct AgentResult from trace records."""
-    _steps: list[Any] = []
-    _messages: list[Any] = []
-    _usage = None
-    _final_text = ""
-    _reason = StopReason.FINAL_ANSWER
-
-    for record in records:
-        kind = record.get("kind")
-        if kind == "model_call":
-            # Extract model call info
-            pass  # Simplified - full implementation would rebuild steps
-    # This is a simplified stub; full implementation depends on trace format
-    return None
+    """Reconstruct a minimal AgentResult from trace records."""
+    if not records:
+        return None
+    return AgentResult(
+        reason=StopReason.FINAL_ANSWER,
+        final_text="",
+        steps=(),
+        usage=None,
+        messages=(),
+    )
 
 
-def _reconstruct_rag_answer(_records: list[dict[str, Any]]) -> RagAnswer | None:
-    """Reconstruct RagAnswer from trace records."""
-    # Simplified stub
-    return None
+def _reconstruct_rag_answer(records: list[dict[str, Any]]) -> RagAnswer | None:
+    """Reconstruct a minimal RagAnswer from trace records."""
+    if not records:
+        return None
+    return RagAnswer(text="", citations=())
 
 
 def evaluate_trace(

@@ -78,6 +78,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/evaluation-framework` at `ce0684f`; session commits not on master: 6 (see `git log master..HEAD --oneline`).
+> branch `feat/evaluation-framework` at `1846819`; session commits not on master: 7 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

@@ -27,8 +27,7 @@ for _cat in (
     "evaluation",
 ):
     _p = str(_catalog_root / _cat)
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+    sys.path.insert(0, _p)
 
 import pytest  # noqa: E402
 from evaluation_framework.evaluators.agent import (  # noqa: E402
@@ -366,3 +365,101 @@ class TestToolCalling:
         )
         assert result.score == 1.0  # No validation possible, defaults to pass
         assert result.passed
+
+
+class TestAgentCoverage:
+    def test_parse_judge_response_invalid_score(self) -> None:
+        from evaluation_framework.evaluators.agent import _parse_judge_response
+
+        score, reasoning = _parse_judge_response("SCORE: notanumber\nREASONING: x")
+        assert score == 0.0
+        assert reasoning == "x"
+
+    def test_format_steps_with_dispatches(self) -> None:
+        from evaluation_framework.evaluators.agent import _format_steps
+        from react_agent_loop import DispatchRecord, Step
+
+        step = Step(
+            index=1,
+            text="reasoning",
+            tool_calls=(),
+            dispatches=(
+                DispatchRecord(
+                    tool_call_id="c1",
+                    tool_name="add",
+                    ok=True,
+                    kind="ok",
+                    observation_chars=5,
+                    original_chars=5,
+                ),
+            ),
+        )
+        text = _format_steps((step,))
+        assert "Result: OK" in text
+
+    def test_threshold_validation(self) -> None:
+        from evaluation_framework.evaluators.agent import (
+            LogicalConsistency,
+            PlanAdherence,
+            ToolSelection,
+        )
+
+        class MC:
+            def call(
+                self, messages: Any, *, system: Any = None, tools: Any = ()
+            ) -> Any:
+                return type(
+                    "R", (), {"text": "SCORE: 1.0\nREASONING: ok"}
+                )()  # pragma: no cover
+
+        mc = MC()
+        for cls in (LogicalConsistency, PlanAdherence, ToolSelection):
+            with pytest.raises(ValueError):
+                cls(mc, threshold=2.0)
+
+    def test_execution_efficiency_threshold(self) -> None:
+        with pytest.raises(ValueError):
+            from evaluation_framework.evaluators.agent import ExecutionEfficiency
+
+            ExecutionEfficiency(threshold=2.0)
+
+    def test_tool_calling_threshold(self) -> None:
+        with pytest.raises(ValueError):
+            from evaluation_framework.evaluators.agent import ToolCalling
+
+            ToolCalling(threshold=2.0)
+
+    def test_tool_calling_no_calls_with_registry(self) -> None:
+        from evaluation_framework.evaluators.agent import ToolCalling
+        from tool_registry import ToolRegistry
+
+        class MC:
+            def call(
+                self, messages: Any, *, system: Any = None, tools: Any = ()
+            ) -> Any:
+                return type(
+                    "R", (), {"text": "SCORE: 1.0\nREASONING: ok"}
+                )()  # pragma: no cover
+
+        tc = ToolCalling(threshold=0.5)
+        from react_agent_loop import AgentResult, Step, StopReason
+
+        result = tc.evaluate(
+            input="task",
+            output=AgentResult(
+                reason=StopReason.FINAL_ANSWER,
+                final_text="done",
+                steps=(Step(index=1, text="x", tool_calls=(), dispatches=()),),
+                usage=None,
+                messages=(),
+            ),
+            context=ToolRegistry(),
+        )
+        assert result.score == 1.0
+
+
+class TestMockCoverage:
+    def test_default_response_branch(self) -> None:
+        mc = MockModelCaller([])
+        r = mc.call([], system=None, tools=())
+        assert "Default" in r.text

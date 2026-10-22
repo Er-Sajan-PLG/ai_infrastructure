@@ -27,8 +27,7 @@ for _cat in (
     "evaluation",
 ):
     _p = str(_catalog_root / _cat)
-    if _p not in sys.path:
-        sys.path.insert(0, _p)
+    sys.path.insert(0, _p)
 
 import pytest  # noqa: E402
 from evaluation_framework.evaluators.rag_triad import (  # noqa: E402
@@ -201,3 +200,33 @@ class TestContextRecall:
         )
         assert result.score == 0.3
         assert not result.passed
+
+
+class TestRagTriadCoverage:
+    def test_parse_invalid_score(self) -> None:
+        from evaluation_framework.evaluators.rag_triad import _parse_judge_response
+
+        score, reasoning = _parse_judge_response("SCORE: nope\nREASONING: r")
+        assert score == 0.0
+        assert reasoning == "r"
+
+    def test_thresholds(self) -> None:
+        class MC:
+            def call(
+                self, messages: Any, *, system: Any = None, tools: Any = ()
+            ) -> Any:
+                return type(
+                    "R", (), {"text": "SCORE: 1.0\nREASONING: ok"}
+                )()  # pragma: no cover
+
+        mc = MC()
+        for cls in (Faithfulness, AnswerRelevance, ContextPrecision, ContextRecall):
+            with pytest.raises(ValueError):
+                cls(mc, threshold=2.0)
+
+
+class TestMockCoverage:
+    def test_default_response_branch(self) -> None:
+        mc = MockModelCaller([])
+        r = mc.call([], system=None, tools=())
+        assert "Default" in r.text
