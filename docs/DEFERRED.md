@@ -442,35 +442,6 @@ deferred:
     review_by: 2027-10-16
     adr: ADR-0035
 
-  - id: DW-016
-    title: "Output validation guardrails for model responses"
-    category: security
-    current_fact: >-
-      No user-facing model-output boundary exists: model output in this
-      repository is consumed only by tests, benchmarks and examples, and no
-      live model calls are made (llm_http_transport is offline-verified).
-    why_now_wrong: >-
-      Guardrails are only meaningful at a trust boundary: untrusted model
-      output flowing toward a user, a tool call, or another system. There is
-      no such flow yet, so the validation policy (what to reject, rewrite or
-      allow) would be invented rather than derived. The model-backed half of
-      the space also needs a live classifier surface this repository
-      deliberately does not have.
-    trigger: >-
-      The first integration or entry where model output reaches a
-      user-facing boundary or triggers side effects (tool invocation, config
-      change) rather than test assertions.
-    reversal: >-
-      Implement the deterministic half first: length and schema validation,
-      regex/allowlist checks, and a policy object with an explicit decision
-      (pass / reject with reason / require re-generation), modeled on the
-      error taxonomies already in the catalog. Model-backed classifiers
-      remain out of scope until a metered call path exists (see DW-015).
-    effort: medium
-    source: "ADR-0035 (Phase 5 capability decisions); Phase 3 convergence (guardrails proposed by 10/25 studied repos)"
-    review_by: 2027-10-16
-    adr: ADR-0035
-
   - id: DW-017
     title: "Rate limiting, retry with backoff, and circuit breaking for provider calls"
     category: operability

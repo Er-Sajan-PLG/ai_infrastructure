@@ -2,44 +2,74 @@
 
 - **Capability id:** `guardrails`
 - **Name:** Guardrails & Output Validation
-- **Lifecycle status:** `DECIDED` — **DEFER** ([ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md), [DW-016](../docs/DEFERRED.md))
-- **Date:** 2026-10-16
-
-> **This is a deferral specification.** It exists because the lifecycle model
-> requires a DESIGNED artifact before a DECIDE-stage claim, and because the
-> deferral's trigger is only actionable if the design questions are already
-> pinned. It deliberately does **not** design interfaces for consumers that
-> do not exist (charter §24).
+- **Lifecycle status:** `TESTED` — **IMPLEMENT** ([ADR-0038](../docs/decisions/0038-guardrails-deterministic.md))
+- **Date:** 2026-10-22
 
 ## Problem statement and who needs it
 
 Before model output reaches a user, a tool call, or another system, something
 must decide whether it is allowed — and say why when it is not. The consumer
-is the first integration or entry where model output crosses a trust
-boundary. Today no such boundary exists: model output is consumed only by
-tests, benchmarks and examples, which is why the capability is deferred.
+is any caller that sits at a trust boundary; today the capability ships as a
+library the caller invokes (there is no auto-wired boundary yet). Model-backed
+classifiers remain out of scope ([DW-015](../docs/DEFERRED.md)).
 
 ## Interfaces and data flow
 
-**No interfaces are designed at this stage.** When the trigger fires, the
-design must answer these questions first:
+```
+model output (str)
+  -> Validator.validate(output) -> ValidationResult
+  -> GuardrailPolicy.check(output) -> GuardrailOutcome
+       decision in {PASS, FLAG, REJECT}
+       reasons: content-free tuple[str, ...]
+  -> caller owns the rejection path
+```
 
-1. **Policy shape** — what does a policy object declare (rules, severity,
-   actions), and is the decision vocabulary `pass / reject-with-reason /
-   require re-generation`?
-2. **Validator set** — which deterministic validators exist first (length,
-   structural/schema checks, regex and allowlist checks), modeled on the
-   error taxonomies already in the catalog?
-3. **Placement** — where does validation sit relative to the caller
-   (`basic-rag-pipeline`'s answer surface, an agent loop's final step, a
-   tool-call boundary), and who owns the rejection path?
-4. **Reason reporting** — required rejection reasons must be actionable
-   without echoing the offending content (the leak problem is the same one
-   `execution-trace-recorder` solved with its redaction posture).
+Key types:
 
-Data flow (sketch, not a design): model output → validator chain → policy
-decision → pass (forward) / reject (reason to caller) / regenerate (caller's
-choice, not the guardrail's).
+- `Severity` — `WARNING | ERROR`.
+- `GuardrailDecision` — `PASS | FLAG | REJECT`. There is deliberately no
+  `REGENERATE`: re-generation is a caller choice, not a guardrail action.
+- `ValidationResult(validator, passed, severity, reason, metadata)` — `reason`
+  is required on failure and forbidden on pass; it never carries the rejected
+  content.
+- `Validator` — `Protocol` with `name: str` and `validate(text: str)`.
+- `GuardrailOutcome(policy, decision, results)` — `allowed`, `failures`,
+  `reasons`.
+- `GuardrailPolicy(name, validators, on_error=REJECT, on_warning=FLAG)` — runs
+  every validator (never short-circuits).
+- `Rails(input_policy=None, output_policy=None)` — caller-invoked placement at
+  a boundary; at least one rail required.
+
+Deterministic validators (stdlib only):
+
+- `LengthBoundValidator(min_chars, max_chars, severity)` — inclusive bounds.
+- `JsonSchemaValidator(schema)` — composes `tool_registry.schema` (`check_schema`
+  at construction, `validate_arguments` at runtime).
+- `RegexMatchValidator(pattern, mode="deny"|"allow")` — deny fails on match,
+  allow fails on no match.
+- `AllowlistValidator(terms, case_sensitive)` — fails when no term present.
+- `DenylistValidator(terms, case_sensitive)` — fails when any term present; the
+  configured term may be named (configuration, not model content).
+- `PIIValidator(kinds)` — email, phone, SSN, credit card (Luhn-checked), API
+  key; reports kinds and counts only.
+- `OneLineValidator(max_lines)` — structural.
+- `ValidJsonValidator()` — structural.
+
+### Design answers (pinned at DECIDED, resolved here)
+
+1. **Policy shape** — `GuardrailPolicy(validators, on_error, on_warning)`; decision
+   vocabulary is `PASS | FLAG | REJECT`. `REJECT` is the only blocking decision.
+2. **Validator set** — deterministic first (list above); model-backed classifiers
+   stay out of scope.
+3. **Placement** — caller-invoked at the boundary; the guardrail returns a
+   decision and the caller owns the rejection path. `Rails` holds input/output
+   policies for pre/post-model placement.
+4. **Reason reporting** — reasons name the rule and counts/positions only; PII
+   and regex matches never echo the matched content. Denylist/allowlist may name
+   the configured term.
+
+Data flow: model output → validator chain → policy decision → pass (forward) /
+reject (reason to caller) / flag (caller's choice).
 
 ## Invariants and failure modes
 
@@ -49,38 +79,36 @@ choice, not the guardrail's).
   become a leak channel).
 - Deterministic first: a validator that cannot be exercised without a live
   model call is a later stage, not the first implementation.
+- `GuardrailPolicy.check` runs every validator — no short-circuit — so a caller
+  sees all reasons at once.
+- Validation results and rejection reasons are constructed from the rule, never
+  from instructions found inside model output (prompt-injection safety).
 - Failure modes to design against: validation bypass (a path around the
-  guardrail), policy drift between the two kinds of mechanism (deterministic
-  vs classifier), and rejection reasons that are content-free but useless.
+  guardrail), policy drift between deterministic and classifier mechanisms, and
+  rejection reasons that are content-free but useless.
 
 ## Security implications and trust boundaries
 
-The guardrail **is** a trust boundary (taxonomy security note): untrusted
-model output enters, a policy decision leaves. It must not become a bypass
-for prompt injection — specifically, validation results and rejection
-reasons must never be constructed from instructions found inside model
-output.
+The guardrail **is** a trust boundary: untrusted model output enters, a policy
+decision leaves. It must not become a bypass for prompt injection — validation
+results and rejection reasons are constructed from the rule, never from
+instructions found inside the output, and PII or regex matches are reported by
+count and position, never echoed.
 
 ## Dependencies and standards
 
-- `depends_on`: none.
-- Standards: none claimed. JSON-Schema-style validation is the natural
-  deterministic starting point given `tool-registry`'s schema posture, but
-  no format standard is adopted in this deferral.
+- `depends_on`: `tool-registry` (JSON Schema validation via public interface).
+- Standards: JSON Schema 2020-12 subset (tool-registry's supported subset).
 
 ## Testing strategy (§18) and benchmark plan (§19)
 
-When built:
-
-- One test per validator on pass and reject paths; hostile fixtures for regex
-  and allowlist checks.
-- Policy decision tests: pass / reject-with-reason / regenerate, including
-  the "reason carries no content" assertion.
-- Placement tests: a request through the composed path cannot skip the
-  validator chain.
-- Benchmark: only meaningful once a live call path exists (shared with
-  [DW-015](../docs/DEFERRED.md)); deterministic validators are cheap and
-  need correctness evidence, not throughput evidence.
+- One test per validator on pass and reject paths; hostile fixtures for regex,
+  allowlist and PII.
+- Policy decision tests: PASS / FLAG / REJECT, including the "reason carries no
+  content" assertion.
+- Chain test: a request through the composed policy runs every validator.
+- Benchmark: deterministic validators are cheap; correctness evidence, not
+  throughput evidence.
 
 ## Out of scope
 
@@ -93,5 +121,5 @@ When built:
 ## References
 
 - [Research record](../research/guardrails/guardrails.md)
-- [ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md) — decision
+- [ADR-0038](../docs/decisions/0038-guardrails-deterministic.md) — decision
 - [ADR-0031](../docs/decisions/0031-guardrails-category.md) — taxonomy category

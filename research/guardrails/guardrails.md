@@ -1,9 +1,9 @@
 # Research Record: Guardrails & Output Validation
 
 - **Capability:** `guardrails` (category: guardrails)
-- **Status:** `RESEARCHED` — convergence-level evidence only; no deep per-implementation study (§3 explains why that is sufficient for a deferral)
-- **Date:** 2026-10-16
-- **Decision:** see [ADR-0035](../../docs/decisions/0035-discovered-capability-decisions.md) *(DEFER, DW-016)*
+- **Status:** `UNDERSTOOD` — deterministic half implemented per ADR-0038 (Phase 5A.2 of the implementation plan). Model-backed classifiers remain deferred (DW-015).
+- **Date:** 2026-10-22
+- **Decision:** see [ADR-0038](../../docs/decisions/0038-guardrails-deterministic.md) *(IMPLEMENT, deterministic half)*
 - **Sources:** [ADR-0031](../../docs/decisions/0031-guardrails-category.md), [convergence report](../../docs/discovery/2026-10-08-convergence.md), study pipeline reports (`study_pipeline/studied_repos/`), [TAXONOMY.md](../../TAXONOMY.md) §4
 
 Claims are labelled per charter §6:

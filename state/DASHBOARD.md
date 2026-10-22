@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-21 (session PR1 — Production readiness achieved per maintainer directive; unified package `ai_infrastructure` established, `certifi` vulnerability resolved, Phase 5 active, 1337+ tests passing)
+> **Last Reconciled:** 2026-10-22 (session HERMES — Phase 5A.2 guardrails deterministic half → TESTED)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -15,17 +15,17 @@ An independent AI infrastructure laboratory — research repository, architectur
 |---|---|
 | **Phase** | Phase 5 (Sustain) — Active; laboratory foundation and top-level package complete and production ready |
 | **Branch** | `master` |
-| **Tests** | 1337 passing, 3 deselected (verified via `make check`, 2026-10-21) |
+| **Tests** | 1481 passing, 3 deselected (verified via `make check`, 2026-10-22) |
 | **Coverage** | ≥85% floor enforced, green (>91%) |
-| **ADRs** | 36 (0000–0036 contiguous, counted from disk) |
-| **Capabilities** | 8 TESTED across 8 categories (verified via `make status`) |
+| **ADRs** | 39 (0000–0038 contiguous, counted from disk) |
+| **Capabilities** | 10 TESTED across 10 categories (verified via `make status`) |
 | **Runtime deps** | Zero (stdlib only) |
 
 ## Active Agents
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| SU1 | gemini-3.8-flash | `feat/package-examples-and-sustain` | Package quickstart examples and sustainment operations | Active — quickstart example created & tested, gates green |
+| HERMES | meituan/longcat-2.5-preview:free | `feat/guardrails-deterministic` | Phase 5A.2 — guardrails (deterministic half) to TESTED | Active — implementation complete, gates green |
 
 ## Critical Alerts
 
@@ -35,6 +35,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 ## Recently Completed
 
+- Phase 5A.2 — `guardrails` (deterministic half) → TESTED (HERMES, 2026-10-22): Validator protocol, GuardrailPolicy (PASS/FLAG/REJECT), Rails, deterministic validators (length, JSON schema, regex, allowlist, denylist, PII, one-line, valid-JSON); ADR-0038; DW-016 removed (10 TESTED capabilities)
 - WP6 — `InfrastructureScanner` now honors an injected `model_provider` (threaded through `scan()` into `scan_with_llm`; defaults to `OpenAIProvider` only when `None`); DEBT-005 resolved, DEBT-004 moved to Resolved (`065b2a6`, 2026-10-16)
 - WP5 — five discovered capabilities decided (ADR-0035): DEFER config-and-settings, response-cache, guardrails, rate-limiting (DW-014–017); DOCUMENT agent-instruction-files (`21e2f64`, 2026-10-16)
 - WP4 — `basic-rag-pipeline` promoted to TESTED: research + spec + ADR-0034 + 42 tests (`385fcdd`, `c0666d2`, 2026-10-16)
@@ -78,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/evaluation-framework` at `1846819`; session commits not on master: 7 (see `git log master..HEAD --oneline`).
+> branch `feat/guardrails-deterministic` at `bc1d369`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

@@ -329,14 +329,16 @@ skips = ["B101"]
 
 [tool.importlinter]
 root_packages = [
-    "model_provider",
-    "tool_registry",
-    "execution_trace_recorder",
-    "mcp_client",
-    "react_agent_loop",
-    "vector_store",
     "basic_rag_pipeline",
+    "evaluation_framework",
+    "execution_trace_recorder",
+    "guardrails",
+    "mcp_client",
+    "model_provider",
+    "react_agent_loop",
     "scanner",
+    "tool_registry",
+    "vector_store",
 ]
 # Required by contract 3 below, which names `agent_loop_end_to_end` as a
 # forbidden module. That package lives under integrations/ rather than in the
@@ -407,7 +409,9 @@ name = "Catalog entries never depend on an integration"
 type = "forbidden"
 source_modules = [
     "basic_rag_pipeline",
+    "evaluation_framework",
     "execution_trace_recorder",
+    "guardrails",
     "mcp_client",
     "model_provider",
     "react_agent_loop",
