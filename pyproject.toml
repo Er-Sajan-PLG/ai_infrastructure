@@ -204,10 +204,15 @@ ignore = [
 # VectorStore uses `id` as a parameter name — it is the interface contract
 # (caller-assigned IDs), not a local variable choice.
 "catalog/memory/vector_store/**" = ["A001", "A002"]
+# Evaluation framework tests use `input` as a protocol parameter name in fakes.
+"catalog/evaluation/evaluation_framework/tests/test_evaluation.py" = ["A002", "A006"]
+# Evaluation Framework uses `input` as a protocol parameter name — it is the
+# Evaluator contract (input/output/context), not a local variable choice.
+"catalog/evaluation/evaluation_framework/**" = ["A002", "ARG002"]
 # Examples exist to be read and run, so printing is their purpose, not a stray
 # debug leftover. /tmp paths here are deliberate attack payloads in
 # injection-boundary demonstrations, not temp-file handling.
-"catalog/**/examples/**" = ["T20", "TID252", "S108", "INP001"]
+"catalog/**/examples/**" = ["T20", "TID252", "S108", "INP001", "ARG"]
 "examples/**" = ["T20", "ARG", "S108", "INP001"]
 # An integration is a composition of capabilities, and it must be as relocatable
 # as they are (charter section 31): it imports its own modules relatively so it

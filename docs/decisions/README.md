@@ -41,6 +41,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0034](0034-basic-rag-pipeline.md) | Basic RAG pipeline — stdlib-only chunk→retrieve→generate with injected embedder/store/generator | Accepted |
 | [0035](0035-discovered-capability-decisions.md) | Phase 5 decisions on the five discovered capabilities — DEFER ×4 (DW-014…DW-017), DOCUMENT ×1 (agent instruction files) | Accepted |
 | [0036](0036-production-readiness-and-unified-package.md) | Production readiness declaration and unified top-level package distribution | Accepted |
+| [0037](0037-evaluation-framework.md) | Evaluation Framework — Independent Implementation | Accepted |
 
 ## When an ADR is required
 
