@@ -214,3 +214,9 @@ def test_scanner_via_unified_api() -> None:
     assert isinstance(result, InfrastructureMap)
     assert result.total_components >= 1
     assert result.layers_covered >= 1
+
+
+def test_quickstart_example_runs() -> None:
+    from examples.ai_infrastructure_quickstart.quickstart import main as quickstart_main
+
+    quickstart_main()

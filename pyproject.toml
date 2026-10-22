@@ -208,6 +208,7 @@ ignore = [
 # debug leftover. /tmp paths here are deliberate attack payloads in
 # injection-boundary demonstrations, not temp-file handling.
 "catalog/**/examples/**" = ["T20", "TID252", "S108", "INP001"]
+"examples/**" = ["T20", "ARG", "S108", "INP001"]
 # An integration is a composition of capabilities, and it must be as relocatable
 # as they are (charter section 31): it imports its own modules relatively so it
 # can be lifted out of this repository and still work. The same reasoning that

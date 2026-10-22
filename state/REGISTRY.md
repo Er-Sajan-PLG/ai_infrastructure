@@ -8,6 +8,7 @@
 
 | Agent ID | Model | Branch | Task | Started | Status | Files Owned |
 |---|---|---|---|---|---|---|
+| SU1 | gemini-3.8-flash | `feat/package-examples-and-sustain` | Package quickstart examples and sustainment operations | 2026-10-21 07:30 UTC | Active | `examples/`, `pyproject.toml`, `tests/test_ai_infrastructure_api.py` |
 | PR1 | gemini-3.8-flash | `master` | Complete ai_infrastructure and make it production-ready | 2026-10-21 01:05 UTC | Completed (production readiness achieved; claims released) | _(released)_ |
 | OC1 | opencode session | `master` | Complete in-flight work + repository reconciliation (WP1–7, see plan) | 2026-10-16 07:55 UTC | Completed (session closed with maintainer authorization; claims released) | _(released)_ |
 | R001 | opencode session | `master` (was `feat/branch-enforcement`; merged 2026-10-08) | Branch state reconciliation + V16 gate (see session file) | 2026-10-08 03:34 UTC | Inactive (>24h; superseded — merge-or-discard decision resolved by merge) | _(released)_ |
@@ -28,7 +29,7 @@
 
 | Agent ID | Files/Directories | Claimed At | Status |
 |---|---|---|---|
-| — | — | — | — |
+| SU1 | `examples/`, `pyproject.toml`, `tests/test_ai_infrastructure_api.py` | 2026-10-21 07:30 UTC | Active |
 
 ---
 
