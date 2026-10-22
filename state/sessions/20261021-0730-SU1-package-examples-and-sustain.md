@@ -19,3 +19,7 @@
 - `examples/`
 - `pyproject.toml`
 - `tests/test_ai_infrastructure_api.py`
+
+## Coordination
+
+- `[COORDINATION]` HERMES 2026-10-22: SU1 is inactive (>24h) and PR #13 has landed, so HERMES claims `pyproject.toml` for the guardrails session (additive per-file lint ignores + import-linter package lists). SU1's `examples/` and `tests/test_ai_infrastructure_api.py` claims are untouched and released.

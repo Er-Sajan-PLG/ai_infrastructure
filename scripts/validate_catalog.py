@@ -40,6 +40,7 @@ CATEGORIES: tuple[str, ...] = (
     "memory",
     "retrieval",
     "evaluation",
+    "guardrails",
     "safety",
     "governance",
     "orchestration",

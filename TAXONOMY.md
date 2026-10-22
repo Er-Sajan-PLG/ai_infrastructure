@@ -405,28 +405,28 @@ capabilities:
   - id: guardrails
     name: Guardrails & Output Validation
     category: guardrails
-    status: DECIDED
+    status: TESTED
     maturity: experimental
     priority: medium — 10/25 studied repos (40%) proposed this category; output validation is distinct from safety/governance and needs its own taxonomy leaf.
-    depends_on: []
-    decision: DEFER (ADR-0035, DW-016) — no user-facing model-output boundary exists; deterministic output validators come first when one does, model-backed classifiers stay out of scope.
+    depends_on: [tool-registry]
+    decision: IMPLEMENT (ADR-0038) — deterministic half: Validator protocol, GuardrailPolicy with PASS/FLAG/REJECT, Rails, deterministic validators (length, JSON schema, regex, allowlist, denylist, PII, one-line, valid-JSON). Model-backed classifiers stay out of scope (DW-015).
     description: Output moderation, content filtering, response validation, safety classifiers, and policy enforcement on model outputs.
     problem: Model output must be validated before reaching users, but no taxonomy category covered the machinery between model response and user-facing output.
     inputs: ["model output", "validation policy"]
     outputs: ["validated output", "rejection reason"]
-    interfaces: []
-    dependencies: []
+    interfaces: ["Validator", "ValidationResult", "GuardrailPolicy", "GuardrailOutcome", "GuardrailDecision", "Rails"]
+    dependencies: ["tool-registry (schema validation via public interface)"]
     standards: []
     reference_projects: []
     research_records: ["research/guardrails/guardrails.md", "docs/discovery/2026-10-08-convergence.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/guardrails/guardrails/"
+    tests: "catalog/guardrails/guardrails/tests/"
     benchmarks: ""
-    security: "A guardrail that validates model output is a trust boundary — it must not become a bypass for prompt injection."
+    security: "A guardrail that validates model output is a trust boundary — it must not become a bypass for prompt injection. Reasons are content-free; PII/regex matches reported by count and position only."
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: "2026-10-16"
+    last_reviewed: "2026-10-22"
 
   - id: rate-limiting
     name: Rate Limiting & Retry Infrastructure
