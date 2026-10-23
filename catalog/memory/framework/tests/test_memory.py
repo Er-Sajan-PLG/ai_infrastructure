@@ -32,6 +32,7 @@ from framework import (  # noqa: E402
     InMemoryMemory,
     LRUEviction,
     MemoryItem,
+    TTLEviction,
     WholeTextExtractor,
     cosine,
 )
@@ -150,6 +151,82 @@ def test_lru_policy_select() -> None:
         MemoryItem(id="3", text="c", created_at=3.0, scope="s"),
     ]
     assert LRUEviction().select(items, 2) == ("1",)
+
+
+def test_lru_policy_no_overflow() -> None:
+    items = [MemoryItem(id="1", text="a", created_at=1.0, scope="s")]
+    assert LRUEviction().select(items, 5) == ()
+
+
+def test_ttl_policy_no_expired() -> None:
+    items = [
+        MemoryItem(
+            id="1", text="a", created_at=1.0, scope="s", metadata={"expires_at": 100.0}
+        )
+    ]
+    assert TTLEviction(now=1.0).select(items, 1) == ()
+
+
+def test_importance_policy_no_overflow() -> None:
+    items = [MemoryItem(id="1", text="a", created_at=1.0, scope="s")]
+    assert ImportanceEviction().select(items, 5) == ()
+
+
+def test_hash_embedder_validates_dimensions() -> None:
+    with pytest.raises(ValueError):
+        HashEmbedder(dimensions=0)
+
+
+def test_cosine_zero_vector() -> None:
+    assert cosine((0.0, 0.0), (1.0, 0.0)) == 0.0
+
+
+def test_ttl_eviction() -> None:
+    mem = InMemoryMemory()
+    mem.add("expired", scope="u", metadata={"expires_at": 1.0})
+    mem.add("fresh", scope="u", metadata={"expires_at": 100.0})
+    mem.add("extra", scope="u", metadata={"expires_at": 100.0})
+    evicted = mem.evict(TTLEviction(now=50.0), capacity=2)
+    assert evicted == 1
+
+
+def test_ttl_eviction_none_expired() -> None:
+    mem = InMemoryMemory()
+    mem.add("a", scope="u", metadata={"expires_at": 100.0})
+    assert mem.evict(TTLEviction(now=1.0), capacity=2) == 0
+
+
+def test_search_skips_unknown_store_ids() -> None:
+    mem = InMemoryMemory()
+    mid = mem.add("hello", scope="u")
+    # Simulate store returning an id absent from _items.
+    del mem._items[mid]
+    assert mem.search("hello", scope="u", k=2) == ()
+
+
+def test_consolidate_skips_already_removed() -> None:
+    mem = InMemoryMemory()
+    mem.add("dup", scope="u")
+    mem.add("dup", scope="u")
+    mem.add("dup", scope="u")
+    removed = mem.consolidate(threshold=0.0)
+    assert removed >= 2
+
+
+def test_clear_scope_with_store() -> None:
+    mem = InMemoryMemory()
+    mem.add("a", scope="x")
+    mem.clear(scope="x")
+    assert len(mem) == 0
+    assert mem.search("a", scope="x") == ()
+
+
+def test_clear_all_clears_store() -> None:
+    mem = InMemoryMemory()
+    mem.add("a", scope="u")
+    mem.clear()
+    assert len(mem) == 0
+    assert mem.search("a", scope="u") == ()
 
 
 def test_evict_no_overflow() -> None:

@@ -134,10 +134,10 @@ class InMemoryMemory:
 
     def clear(self, scope: str | None = None) -> None:
         if scope is None:
+            ids = list(self._items)
             self._items.clear()
             if self.store is not None:
-                # Rebuild an empty store by removing all.
-                for mid in list(self._items):
+                for mid in ids:
                     self.store.delete(mid)
             return
         sc = scope
