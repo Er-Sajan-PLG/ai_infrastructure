@@ -8,6 +8,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
+import subprocess  # noqa: E402
+
 import pytest  # noqa: E402
 
 import check_wheel  # noqa: E402
@@ -60,6 +62,22 @@ def test_validate_wheel_no_metadata() -> None:
 
 def test_main_builds_clean_wheel() -> None:
     assert main() == 0
+
+
+def test_build_failure_surfaces_stderr(monkeypatch: pytest.MonkeyPatch) -> None:
+    from typing import ClassVar
+
+    class _R:
+        returncode: ClassVar[int] = 1
+        stdout: ClassVar[str] = "out"
+        stderr: ClassVar[str] = "err"
+        args: ClassVar[list[str]] = ["x"]
+
+    def _runner(*a: object, **k: object) -> _R:
+        return _R()
+
+    with pytest.raises(subprocess.CalledProcessError):
+        check_wheel._build(Path("/tmp"), runner=_runner)
 
 
 def test_main_no_wheel_produced(monkeypatch: pytest.MonkeyPatch) -> None:

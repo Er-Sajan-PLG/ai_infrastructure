@@ -79,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `chore/stabilization-truth` at `db8abeb`; session commits not on master: 2 (see `git log master..HEAD --oneline`).
+> branch `chore/stabilization-truth` at `e15d413`; session commits not on master: 4 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

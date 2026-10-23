@@ -20,6 +20,7 @@ import sys
 import tempfile
 import zipfile
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -67,8 +68,8 @@ def validate_wheel(names: list[str]) -> int:
     return 0
 
 
-def _build(outdir: Path) -> list[Path]:
-    result = subprocess.run(  # noqa: S603
+def _build(outdir: Path, runner: Any = subprocess.run) -> list[Path]:
+    result = runner(
         [sys.executable, "-m", "build", "--wheel", "--outdir", str(outdir)],
         cwd=ROOT,
         capture_output=True,
