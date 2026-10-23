@@ -2,7 +2,7 @@
 
 - **Capability id:** `rate-limiting`
 - **Name:** Rate Limiting & Retry Infrastructure
-- **Lifecycle status:** `DECIDED` — **DEFER** ([ADR-0035](../docs/decisions/0035-discovered-capability-decisions.md), [DW-017](../docs/DEFERRED.md))
+- **Lifecycle status:** `IMPLEMENTED` — re-decided from DEFER to IMPLEMENT (ADR-0041); trigger fired (model-gateway TESTED)
 - **Date:** 2026-10-16
 
 > **This is a deferral specification.** It exists because the lifecycle model

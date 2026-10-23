@@ -483,11 +483,11 @@ capabilities:
   - id: rate-limiting
     name: Rate Limiting & Retry Infrastructure
     category: reliability
-    status: DECIDED
+    status: TESTED
     maturity: experimental
     priority: medium — 6/25 studied repos (24%) proposed this category; rate limiting and retry are cross-cutting infrastructure every production AI system needs.
-    depends_on: []
-    decision: DEFER (ADR-0035, DW-017) — no remote provider calls exist to protect; the model_provider error taxonomy already carries retryable distinctions for the future policy (ADR-0007 D-4), and basic-rag-pipeline D-4 assigns retry to the caller.
+    depends_on: [model-provider-abstraction]
+    decision: IMPLEMENT (ADR-0041) — trigger fired (model-gateway TESTED); token bucket + retry + resilient executor; caller-invoked; zero runtime deps. Promoted to TESTED 2026-10-23.
     description: Rate limiting, retry with backoff, circuit breakers, throttling, and resilience patterns for AI API calls.
     problem: Production AI systems must handle rate limits, transient failures, and provider outages gracefully, but no taxonomy category covered this machinery.
     inputs: ["API call", "retry policy"]
@@ -497,14 +497,14 @@ capabilities:
     standards: []
     reference_projects: []
     research_records: ["research/reliability/rate-limiting.md", "docs/discovery/2026-10-08-convergence.md"]
-    implementation: ""
-    tests: ""
+    implementation: "catalog/reliability/rate_limiting/"
+    tests: "catalog/reliability/rate_limiting/tests/"
     benchmarks: ""
-    security: ""
+    security: "Bounded retry and limiter waits; no unbounded retry; resource exhaustion (amplified retries) mitigated by caps and jitter."
     license: Apache-2.0
     provenance: original
     compatibility: ""
-    last_reviewed: "2026-10-16"
+    last_reviewed: "2026-10-23"
 
   - id: evaluation-framework
     name: Evaluation Framework
