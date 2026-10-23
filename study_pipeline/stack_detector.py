@@ -933,7 +933,7 @@ def parse_declared_dependencies(repo_path: Path) -> dict[str, list[str]]:
         try:
             import xml.etree.ElementTree as ET
 
-            tree = ET.parse(pom)  # noqa: S314 -- local trusted pom.xml
+            tree = ET.parse(pom)  # noqa: S314 -- local trusted pom.xml  # nosec B314
             ns = {"m": "http://maven.apache.org/POM/4.0.0"}
             for dep in tree.findall(".//m:dependency", ns):
                 group_id = dep.find("m:groupId", ns)

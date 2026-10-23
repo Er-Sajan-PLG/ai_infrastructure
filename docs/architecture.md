@@ -37,4 +37,4 @@ Machinery
 
 ## Status
 
-8 catalog entries across 8 declared categories (see `TAXONOMY.md`). 5 integrations in `integrations/`. 8 specifications, 8 research records, 36 Architecture Decision Records (ADRs). Unified package interface via `ai_infrastructure/`. The repository is production-ready — see `docs/roadmap.md` for phase details.
+13 catalog entries across 11 declared categories (see `TAXONOMY.md`). 5 integrations in `integrations/`. 16 specifications, 16 research records, 42 Architecture Decision Records (ADRs). Unified package interface via `ai_infrastructure/`. The repository is production-ready — see `docs/roadmap.md` for phase details.

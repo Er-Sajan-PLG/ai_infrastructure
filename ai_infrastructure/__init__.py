@@ -199,6 +199,10 @@ from model_provider.providers import (  # noqa: E402
 
 # 3. Agents: react-agent-loop
 # 7c. Reliability: rate-limiting
+# NOTE (ADR-0042): rate-limiting's `Clock`, `SystemClock`, and `RateLimitError`
+# are intentionally NOT re-exported at the root to avoid colliding with
+# execution-trace-recorder's `Clock`/`SystemClock` and model-provider's
+# `RateLimitError`. They remain reachable via `from rate_limiting import ...`.
 from rate_limiting import (  # noqa: E402
     ResilientExecutor,
     RetryPolicy,

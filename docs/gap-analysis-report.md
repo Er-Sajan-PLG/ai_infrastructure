@@ -1,14 +1,14 @@
 # ai_infrastructure Gap Analysis Report
 
-**Generated:** 2026-10-22  
+**Generated:** 2026-10-22 (current-state figures reconciled 2026-10-23)  
 **Repository State:** Phase 5 (Sustain) — Production Ready Foundation  
-**Current Capabilities:** 8 TESTED across 8 categories, 1,338 tests, 91% coverage, zero runtime deps
+**Current Capabilities:** 13 TESTED across 11 categories, 1,570 tests, 92.32% coverage, zero runtime deps
 
 ---
 
 ## Executive Summary
 
-The repository has a **solid, production-ready foundation** with 8 fully tested, stdlib-only capabilities. However, it covers only ~27% of the taxonomy tree (8 of 30+ categories) and ~20% of the public AI infrastructure landscape. This report catalogs every gap between the current state and a comprehensive AI infrastructure platform.
+The repository has a **solid, production-ready foundation** with 13 fully tested, stdlib-only capabilities. It covers ~45% of the taxonomy tree (13 of 29 declared categories) and ~20% of the public AI infrastructure landscape. This report catalogs every gap between the current state and a comprehensive AI infrastructure platform.
 
 ---
 
@@ -24,13 +24,18 @@ The repository has a **solid, production-ready foundation** with 8 fully tested,
 | 6 | **Vector Memory Store** | `memory` | TESTED | In-memory cosine similarity, LRU eviction, stdlib-only, pluggable backend seam | 137 |
 | 7 | **Basic RAG Pipeline** | `retrieval` | TESTED | Chunk→embed→store→retrieve→augment→generate, injected embedder/store/generator, citations | 312 |
 | 8 | **Infrastructure Scanner** | `deployment` | TESTED | 12-layer detection, keyword scanning + config parsing, optional LLM enhancement | ~1500 |
+| 9 | **Model Gateway** | `models` | TESTED | Routing, fallback, cost tracking over model-provider-abstraction | 22 tests |
+| 10 | **Memory Framework** | `memory` | TESTED | Consolidation, eviction, search over vector-memory-store | 26 tests |
+| 11 | **Guardrails** | `guardrails` | TESTED | Input/output validation, policy enforcement | 46 tests |
+| 12 | **Rate Limiting** | `reliability` | TESTED | Token-bucket/limiting with retry integration | 28 tests |
+| 13 | **Evaluation Framework** | `evaluation` | TESTED | Deterministic + LLM-judge evaluators, composite scoring | 110 tests |
 
 **Cross-cutting guarantees:**
 - Zero runtime dependencies (stdlib only)
 - mypy strict — 0 errors
-- 91% test coverage (floor: 85%)
+- 92.32% test coverage (floor: 85%)
 - Structural independence via import-linter
-- Unified package `ai_infrastructure` exports 102 symbols
+- Unified package `ai_infrastructure` exports 175 symbols
 
 ---
 
@@ -42,8 +47,8 @@ From `docs/DEFERRED.md` — correctly not done yet, with specific triggers:
 |----|------------|----------|----------------------------|
 | DW-014 | **Config & Settings** | `config` | First catalog entry needs layered resolution (defaults < file < env) |
 | DW-015 | **Response Cache** | `caching` | First metered/remote model call path or repeated-request workload |
-| DW-016 | **Guardrails** | `guardrails` | First user-facing model-output boundary or side-effect trigger |
-| DW-017 | **Rate Limiting** | `reliability` | First real provider call, scheduled multi-call workload, or live 429/5xx |
+| DW-016 | **Guardrails** | `guardrails` | IMPLEMENTED (2026-10-23) — now TESTED; see §1 |
+| DW-017 | **Rate Limiting** | `reliability` | IMPLEMENTED (2026-10-23) — now TESTED; see §1 |
 | — | **Agent Instruction Files** | `agent-config` | **DOCUMENTED** — already instantiated as AGENTS.md, skills, conventions |
 
 ---

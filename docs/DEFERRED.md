@@ -441,36 +441,6 @@ deferred:
     source: "ADR-0035 (Phase 5 capability decisions); Phase 2 Track 2B (caching proposed by 14/25 studied repos)"
     review_by: 2027-10-16
     adr: ADR-0035
-
-  - id: DW-017
-    title: "Rate limiting, retry with backoff, and circuit breaking for provider calls"
-    category: operability
-    current_fact: >-
-      No remote calls exist to protect: model-provider-abstraction is
-      protocol-only, every transport and generator exercised in tests is a
-      scripted double, and the retryable distinctions in the provider error
-      taxonomy (ADR-0007 D-4) are carried but consumed by no policy.
-    why_now_wrong: >-
-      Backoff, limiting and circuit breaking exist to manage a remote
-      dependency's failure and quota behavior; with no remote dependency,
-      parameters like window size, retry budget and breaker thresholds would
-      be invented. specifications/basic-rag-pipeline.md D-4 already assigns
-      retry responsibility to the caller, so a premature policy layer inside
-      catalog entries would also contradict a recorded design decision.
-    trigger: >-
-      The first real (network or metered) provider call path, or the first
-      scheduled multi-call workload, or the first live 429/5xx response
-      observed from a provider.
-    reversal: >-
-      Implement in one bounded module: retry with exponential backoff and
-      jitter honoring the existing retryable flags, then a token-bucket
-      limiter, then a circuit breaker only after the first two prove
-      insufficient. Keep it caller-invoked (per D-4), not woven into
-      providers.
-    effort: medium
-    source: "ADR-0035 (Phase 5 capability decisions); Phase 3 convergence (rate-limiting proposed by 6/25 studied repos)"
-    review_by: 2027-10-16
-    adr: ADR-0035
 ```
 
 ---

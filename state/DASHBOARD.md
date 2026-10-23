@@ -79,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `chore/session-closeout-rate-limiting` at `2cd0803`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `chore/stabilization-truth` at `367700d`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

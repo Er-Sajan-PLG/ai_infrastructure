@@ -735,7 +735,7 @@ def parse_java_dependencies(repo_path: Path) -> list[Dependency]:
         try:
             import xml.etree.ElementTree as ET
 
-            tree = ET.parse(pom)  # noqa: S314 -- local trusted pom.xml
+            tree = ET.parse(pom)  # noqa: S314 -- local trusted pom.xml  # nosec B314
             ns_uri = "http://maven.apache.org/POM/4.0.0"
             # Use full namespace URI in XPath since pom.xml typically has default namespace
             for dep in tree.findall(f".//{{{ns_uri}}}dependency"):
