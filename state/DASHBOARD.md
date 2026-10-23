@@ -23,14 +23,12 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 ## Active Agents
 
-| Agent ID | Model | Branch | Task | Status |
-|---|---|---|---|---|
-| HERMES | meituan/longcat-2.5-preview:free | `feat/model-gateway-impl` | model-gateway IMPLEMENTED → TESTED (22 tests, ADR-0039) | Active — TESTED; gates green |
+_(none — all sessions closed by maintainer directive 2026-10-23; claims released)_
 
 ## Critical Alerts
 
-- Session close is blocked on an explicit maintainer `Close-Authorized-By:` marker (ADR-0030) — finishing the checklist is not authorization. Until recorded, OC1 stays Active and the session file stays `Status: Active`.
-- Push of WP1–WP6 commits (local `master` ahead of origin by 7 commits) happens at WP7 shutdown; dependabot PRs #1 (actions) and #3 (dev toolchain) remain open and green for the maintainer to merge.
+- All sessions closed 2026-10-23 (memory-framework, model-gateway, rate-limiting, stabilization). Next work starts on a new branch in a new session.
+- Passkey not yet configured; close authorization recorded as maintainer directive 2026-10-23 (ADR-0030 marker). Configure passkey before next close cycle.
 - `make review` regenerates `docs/discovery/review/*.md` wholesale — the WP5 decisions deliberately live in ADR-0035 + `docs/DEFERRED.md` instead, never in those generated files.
 
 ## Recently Completed
@@ -79,6 +77,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `chore/stabilization-truth` at `e15d413`; session commits not on master: 4 (see `git log master..HEAD --oneline`).
+> branch `chore/session-closure-2026-10-23` at `f47bfce`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
