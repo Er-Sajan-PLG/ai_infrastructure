@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-23 (session HERMES — memory-framework IMPLEMENTED → TESTED; 15 tests; make check green)
+> **Last Reconciled:** 2026-10-23 (session HERMES — memory-framework IMPLEMENTED → TESTED; PR #18 merged; master; 1542 tests; make check green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,7 +14,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 5 (Sustain) — Active; laboratory foundation and top-level package complete and production ready |
-| **Branch** | `feat/memory-framework` |
+| **Branch** | `master` |
 | **Tests** | 1531 passing, 3 deselected (verified via `make check`, 2026-10-23) |
 | **Coverage** | ≥85% floor enforced, green (>91%) |
 | **ADRs** | 41 (0000–0040 contiguous, counted from disk) |
@@ -79,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/memory-framework` at `e52bbc4`; session commits not on master: 1 (see `git log master..HEAD --oneline`).
+> branch `chore/session-closeout-memory-framework` at `2e5e816`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
