@@ -33,5 +33,5 @@ execution-trace-recorder ──→ (standalone)
 ## Notes
 
 - Phase 4 (Compose) closed 2026-10-16 (second monolithic baseline landed; `make bench` wired).
-- All 8 capabilities (`tool-registry`, `model-provider-abstraction`, `react-agent-loop`, `execution-trace-recorder`, `mcp-client`, `infrastructure-scanner`, `vector-memory-store`, `basic-rag-pipeline`) are fully implemented and TESTED.
+- All 13 capabilities (`tool-registry`, `model-provider-abstraction`, `model-gateway`, `react-agent-loop`, `vector-memory-store`, `memory-framework`, `basic-rag-pipeline`, `mcp-client`, `execution-trace-recorder`, `infrastructure-scanner`, `guardrails`, `rate-limiting`, `evaluation-framework`) are fully implemented and TESTED.
 - Phase 5 (Sustain) is Active: unified package `ai_infrastructure` established, vulnerability remediation verified, and repository is production-ready.

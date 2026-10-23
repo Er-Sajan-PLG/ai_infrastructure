@@ -17,4 +17,4 @@ Small, runnable demonstrations of individual catalog capabilities and of minimal
 
 ## Status
 
-8 catalog entries across 8 categories, each with a runnable example, plus the unified `ai_infrastructure` package quickstart. All examples run with zero runtime dependencies and zero network calls.
+13 catalog entries across 11 categories, each with a runnable example, plus the unified `ai_infrastructure` package quickstart. All examples run with zero runtime dependencies and zero network calls.

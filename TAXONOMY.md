@@ -486,7 +486,7 @@ capabilities:
     status: TESTED
     maturity: experimental
     priority: medium — 6/25 studied repos (24%) proposed this category; rate limiting and retry are cross-cutting infrastructure every production AI system needs.
-    depends_on: [model-provider-abstraction]
+    depends_on: []
     decision: IMPLEMENT (ADR-0041) — trigger fired (model-gateway TESTED); token bucket + retry + resilient executor; caller-invoked; zero runtime deps. Promoted to TESTED 2026-10-23.
     description: Rate limiting, retry with backoff, circuit breakers, throttling, and resilience patterns for AI API calls.
     problem: Production AI systems must handle rate limits, transient failures, and provider outages gracefully, but no taxonomy category covered this machinery.
@@ -512,7 +512,7 @@ capabilities:
     status: TESTED
     maturity: experimental
     priority: high — required by charter §18 for honest evaluation; enables all downstream capabilities
-    depends_on: [tool-registry, model-provider-abstraction, react-agent-loop, execution-trace-recorder]
+    depends_on: [tool-registry, react-agent-loop, basic-rag-pipeline, vector-memory-store]
     decision: IMPLEMENT (ADR-0037) — protocol-first, deterministic evaluators first, LLM-as-judge via injected ModelCaller
     description: Composable evaluation system with deterministic evaluators (schema, length, citation coverage, exact match, tool calls), RAG triad (faithfulness, answer relevance, context precision/recall), agent evaluators (logical consistency, execution efficiency, plan adherence, tool selection, tool calling), and LLM-as-judge adapter.
     problem: Without evaluation primitives, claims about agent quality, RAG correctness, or tool reliability cannot be substantiated.

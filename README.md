@@ -31,11 +31,11 @@ The goal is **not** to build another agent framework. The goal is to understand 
 ## Current status
 
 **Phase 5 — Sustain / Production-Ready.** Laboratory foundation complete and operational:
-- **8 capabilities implemented & tested** across 8 taxonomy categories (Tools, Models, Agents, Observability, Protocols, Deployment, Memory, Retrieval).
+- **13 capabilities implemented & tested** across 11 taxonomy categories (Tools, Models, Agents, Observability, Protocols, Deployment, Memory, Retrieval, Guardrails, Reliability, Evaluation).
 - **Zero runtime dependencies** (pure Python standard library only).
 - **5 integration compositions** in [`integrations/`](integrations/) demonstrating end-to-end multi-provider workflows, transport seams, RAG, and tracing.
 - **Unified package interface** via `ai_infrastructure` with full PEP 561 type hinting alongside granular individual `catalog/` entry consumption.
-- **Comprehensive test suite**: 1337+ tests passing with >91% coverage (exceeding the 85% floor).
+- **Comprehensive test suite**: 1570 tests passing with 92.32% coverage (exceeding the 85% floor).
 - **Enforced quality & security gates**: `make check-strict`, `make ci`, static analysis (Bandit + Ruff), secret scanning (Gitleaks), dual-source SCA (PyPI + OSV.dev), and licensing audit.
 
 ## Getting started

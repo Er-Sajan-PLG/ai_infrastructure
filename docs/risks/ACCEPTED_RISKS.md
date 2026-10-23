@@ -187,6 +187,27 @@ risks:
     accepted_on: 2026-09-17
     review_by: 2027-09-17
     tool: ruff S607
+  - id: AR-007
+    title: "study_pipeline parses trusted local pom.xml with stdlib xml.etree (B314)"
+    kind: normative
+    scope: "study_pipeline/dependency_extractor.py, study_pipeline/stack_detector.py (ET.parse calls)"
+    rationale: accepted_cost
+    rationale_ref: ADR-0021
+    statement: >-
+      Bandit B314 flags xml.etree.ElementTree.parse on potentially untrusted
+      XML (XXE / billion-laughs). The two call sites parse pom.xml files found
+      on the local filesystem of a repository being studied; they are not
+      network input and are not user-supplied. defusedxml would remove the
+      theoretical risk but would add the first runtime dependency to a
+      zero-runtime-deps repository (charter section 22) for a surface that
+      has no untrusted input. The risk is accepted deliberately: input is
+      bounded to local files under the studied repo, parse errors are caught
+      and skipped, and the noqa/nosec comments cite this entry.
+    accepted_by: maintainer
+    accepted_on: 2026-10-23
+    review_by: 2027-10-23
+    tool: bandit B314
+
 ```
 
 ---

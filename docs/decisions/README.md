@@ -46,6 +46,8 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0039](0039-model-gateway.md) | Model Gateway / Provider Proxy (IMPLEMENT) | Accepted |
 | [0040](0040-memory-framework.md) | Memory Framework (IMPLEMENT) | Accepted |
 | [0041](0041-rate-limiting.md) | Rate Limiting (IMPLEMENT) | Accepted |
+| [0042](0042-public-api-namespace-policy.md) | Public API Namespace Policy (Hybrid) | Accepted |
+| [0043](0043-framework-boundary.md) | Framework Boundary (What ai_infrastructure Is Not) | Accepted |
 
 ## When an ADR is required
 

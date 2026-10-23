@@ -352,7 +352,7 @@ sast: ## Static security analysis (bandit AND ruff S — they are not equivalent
 	@# exclusions are done by PATH, because bandit's per-plugin `skips` globs
 	@# do not reliably apply. Rationale: docs/decisions/0018.
 	$(RUFF) check .
-	@prod=$$(find catalog integrations scripts ai_infrastructure -name '*.py' \
+	@prod=$$(find catalog integrations scripts ai_infrastructure study_pipeline -name '*.py' \
 		-not -path '*/tests/*' -not -path '*/examples/*'); \
 	if [ -z "$$prod" ]; then \
 		echo "sast: no production sources yet; nothing to scan."; \
@@ -418,6 +418,18 @@ deferred: ## Verify the deferred-work register is well-formed and current
 	@# register, and reports observable triggers that may have fired.
 	$(PY) scripts/check_deferred.py
 
+.PHONY: doc-sync
+doc-sync: ## Verify narrative state docs agree with authoritative repository counts
+	@# Catches the stale-state class of drift: a document naming a number
+	@# that no longer matches the repository (e.g. "8 capabilities" when the
+	@# taxonomy says 13) is a failure, not a nit. Scopes current-state docs
+	@# only; historical records (ADRs, sessions, roadmap) are excluded.
+	$(PY) scripts/check_doc_sync.py
+
+.PHONY: wheel-check
+wheel-check: ## Build the wheel and assert it contains no pycache/pyc/test artifacts
+	$(PY) scripts/check_wheel.py
+
 .PHONY: sessions
 sessions: ## Verify no session claims completion without maintainer authorization
 	@# A session may only be marked Completed/Closed with an explicit
@@ -454,7 +466,7 @@ commit-msg: ## Validate the Conventional Commits header format (ADR-0019)
 check: lint typecheck validate links sessions test ## The full gate a session must pass before committing
 
 .PHONY: check-strict
-check-strict: lint typecheck validate-strict links phase-plan check_integrations structural risks deferred sessions test ## Full gate + strict catalog + structural + registers
+check-strict: lint typecheck validate-strict links phase-plan check_integrations structural risks deferred doc-sync sessions test ## Full gate + strict catalog + structural + registers + doc sync
 
 .PHONY: security
 security: secrets sast sca licenses ## All security gates (SAST, SCA, secrets, licences)
