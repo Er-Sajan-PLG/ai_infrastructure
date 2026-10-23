@@ -24,21 +24,64 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 FORBIDDEN_SUFFIXES = (".pyc", ".pyo", ".pyd")
-FORBIDDEN_PATH_PARTS = ("__pycache__", "/tests/", "/test_", "conftest.py")
 FORBIDDEN_NAMES = {"conftest.py"}
+
+
+def check_names(names: list[str]) -> list[str]:
+    """Return a list of violation descriptions for the given wheel entry names."""
+    violations: list[str] = []
+    for n in names:
+        if any(n.endswith(s) for s in FORBIDDEN_SUFFIXES):
+            violations.append(f"forbidden suffix: {n}")
+        if "__pycache__" in n.split("/"):
+            violations.append(f"pycache dir: {n}")
+        if "/tests/" in n or "/test_" in n:
+            violations.append(f"test artifact: {n}")
+        if n.rsplit("/", 1)[-1] in FORBIDDEN_NAMES:
+            violations.append(f"dev file: {n}")
+    return violations
+
+
+def validate_wheel(names: list[str]) -> int:
+    """Validate a list of wheel entry names. Return 0 on success, 1 on failure."""
+    violations = check_names(names)
+    if violations:
+        print("FAIL: wheel contains forbidden entries:")
+        for v in violations:
+            print(f"  - {v}")
+        return 1
+
+    py_sources = [n for n in names if n.endswith(".py")]
+    metadata = [n for n in names if n.endswith(".dist-info/METADATA")]
+    if not py_sources:
+        print("FAIL: wheel contains no Python sources")
+        return 1
+    if not metadata:
+        print("FAIL: wheel contains no METADATA")
+        return 1
+
+    print(
+        f"OK: {len(names)} entries, {len(py_sources)} .py sources, "
+        f"{len(metadata)} metadata file(s); no pycache/pyc/test artifacts."
+    )
+    return 0
+
+
+def _build(outdir: Path) -> list[Path]:
+    subprocess.run(  # noqa: S603
+        [sys.executable, "-m", "build", "--wheel", "--outdir", str(outdir)],
+        cwd=ROOT,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return list(outdir.glob("*.whl"))
 
 
 def main() -> int:
     with tempfile.TemporaryDirectory() as td:
         outdir = Path(td)
-        subprocess.run(  # noqa: S603
-            [sys.executable, "-m", "build", "--wheel", "--outdir", str(outdir)],
-            cwd=ROOT,
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        wheels = list(outdir.glob("*.whl"))
+        wheels = _build(outdir)
         if not wheels:
             print("FAIL: no wheel produced")
             return 1
@@ -48,38 +91,7 @@ def main() -> int:
         with zipfile.ZipFile(wheel) as z:
             names = z.namelist()
 
-        violations: list[str] = []
-        for n in names:
-            if any(n.endswith(s) for s in FORBIDDEN_SUFFIXES):
-                violations.append(f"forbidden suffix: {n}")
-            if "__pycache__" in n.split("/"):
-                violations.append(f"pycache dir: {n}")
-            if any(part in n for part in ("/tests/", "/test_")):
-                violations.append(f"test artifact: {n}")
-            if n.rsplit("/", 1)[-1] in FORBIDDEN_NAMES:
-                violations.append(f"dev file: {n}")
-
-        if violations:
-            print("FAIL: wheel contains forbidden entries:")
-            for v in violations:
-                print(f"  - {v}")
-            return 1
-
-        # Positive assertions.
-        py_sources = [n for n in names if n.endswith(".py")]
-        metadata = [n for n in names if n.endswith(".dist-info/METADATA")]
-        if not py_sources:
-            print("FAIL: wheel contains no Python sources")
-            return 1
-        if not metadata:
-            print("FAIL: wheel contains no METADATA")
-            return 1
-
-        print(
-            f"OK: {len(names)} entries, {len(py_sources)} .py sources, "
-            f"{len(metadata)} metadata file(s); no pycache/pyc/test artifacts."
-        )
-        return 0
+        return validate_wheel(names)
 
 
 if __name__ == "__main__":
