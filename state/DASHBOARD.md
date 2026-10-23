@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-23 (session HERMES — Phase 5B.1 model-gateway → DECIDED; git hygiene: pull + branch/PR cleanup)
+> **Last Reconciled:** 2026-10-23 (session HERMES — model-gateway IMPLEMENTED → TESTED; 22 tests; make check green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,18 +14,18 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 5 (Sustain) — Active; laboratory foundation and top-level package complete and production ready |
-| **Branch** | `feat/model-gateway` |
-| **Tests** | 1481 passing, 3 deselected (verified via `make check`, 2026-10-22) |
+| **Branch** | `feat/model-gateway-impl` |
+| **Tests** | 1516 passing, 3 deselected (verified via `make check`, 2026-10-23) |
 | **Coverage** | ≥85% floor enforced, green (>91%) |
 | **ADRs** | 40 (0000–0039 contiguous, counted from disk) |
-| **Capabilities** | 10 TESTED across 10 categories (verified via `make status`) |
+| **Capabilities** | 11 TESTED across 11 categories (verified via `make status`) |
 | **Runtime deps** | Zero (stdlib only) |
 
 ## Active Agents
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| HERMES | meituan/longcat-2.5-preview:free | `feat/model-gateway` | Phase 5B.1 — model-gateway to DECIDED (research + spec + ADR-0039) | Active — DECIDED; implementation next session |
+| HERMES | meituan/longcat-2.5-preview:free | `feat/model-gateway-impl` | model-gateway IMPLEMENTED → TESTED (22 tests, ADR-0039) | Active — TESTED; gates green |
 
 ## Critical Alerts
 
@@ -79,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/model-gateway` at `5e6dfa7`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `feat/model-gateway-impl` at `94cb3cd`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
