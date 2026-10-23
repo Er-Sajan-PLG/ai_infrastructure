@@ -8,7 +8,7 @@
 
 | Agent ID | Model | Branch | Task | Started | Status | Files Owned |
 |---|---|---|---|---|---|---|
-| HERMES | meituan/longcat-2.5-preview:free | `master` | memory-framework IMPLEMENTED → TESTED (25 tests, PR #18 merged); model-gateway TESTED (PR #17) | 2026-10-23 | Active | `catalog/memory/framework/`, `catalog/models/gateway/`, `ai_infrastructure/__init__.py`, `pyproject.toml`, `TAXONOMY.md`, `state/`, `docs/roadmap.md` |
+| HERMES | meituan/longcat-2.5-preview:free | `master` | rate-limiting TESTED (PR #20 merged); memory-framework TESTED (PR #18); model-gateway TESTED (PR #17) | 2026-10-23 | Active | `catalog/reliability/rate_limiting/`, `catalog/memory/framework/`, `catalog/models/gateway/`, `ai_infrastructure/__init__.py`, `pyproject.toml`, `TAXONOMY.md`, `state/`, `docs/roadmap.md` |
 | SU1 | gemini-3.8-flash | `feat/package-examples-and-sustain` | Package quickstart examples and sustainment operations | 2026-10-21 07:30 UTC | Inactive (>24h; PR #13 landed; ownership of `pyproject.toml` transferred to HERMES) | _(released)_ |
 | PR1 | gemini-3.8-flash | `master` | Complete ai_infrastructure and make it production-ready | 2026-10-21 01:05 UTC | Completed (production readiness achieved; claims released) | _(released)_ |
 | OC1 | opencode session | `master` | Complete in-flight work + repository reconciliation (WP1–7, see plan) | 2026-10-16 07:55 UTC | Completed (session closed with maintainer authorization; claims released) | _(released)_ |
