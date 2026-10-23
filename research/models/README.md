@@ -1,6 +1,6 @@
 # Models
 
-> **Status: 1 study.** Provider wire formats (OpenAI, Anthropic, Gemini) and four existing abstractions were surveyed for `model-provider-abstraction`.
+> **Status: 2 studies.** Provider wire formats (OpenAI, Anthropic, Gemini) and four existing abstractions surveyed for `model-provider-abstraction`; routing/fallback/load-balancing surveyed for `model-gateway`.
 
 ## What it is
 
@@ -15,6 +15,7 @@ Every component above needs a model call. Normalizing provider differences, erro
 Research artifacts live at `research/models/<capability-id>.md` and label claims FACT / OBSERVATION / INFERENCE / DESIGN OPINION (charter §6).
 
 - [`model-provider-abstraction.md`](model-provider-abstraction.md) — where three providers diverge, and why the abstraction owns shape rather than transport.
+- [`model-gateway.md`](model-gateway.md) — routing, fallback, load balancing, cost tracking; gateway owns routing, not shape or socket (Phase 5B.1).
 
 ## Variants & types
 

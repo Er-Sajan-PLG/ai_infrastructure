@@ -155,6 +155,32 @@ capabilities:
     compatibility: ""
     last_reviewed: "2026-09-15"
 
+  - id: model-gateway
+    name: Model Gateway / Provider Proxy
+    category: models
+    status: DECIDED
+    maturity: experimental
+    priority: high — centralises routing, fallback, load balancing, cost tracking and health checks across providers; unblocks rate-limiting (5B.4) and real eval/guardrails
+    depends_on: [model-provider-abstraction]
+    decision: IMPLEMENT (ADR-0039) — protocol-first, composes ModelProvider, zero runtime deps, sync-first; rate limiting and circuit breaking injected
+    description: Routing, fallback, load balancing, cost tracking, and health-check hooks across multiple model providers and deployments.
+    problem: Components calling more than one model or provider re-implement selection, fallback, retry, load balancing, cost accounting and health tracking ad hoc.
+    inputs: ["request (model name + messages + params)", "provider registry", "health state"]
+    outputs: ["ChatResponse", "StreamDelta iterator", "cost accounting", "trace events"]
+    interfaces: ["Gateway", "GatewayRequest", "ProviderRegistry", "ProviderEntry", "RoutingStrategy", "Router", "FallbackChain", "CooldownTracker", "CostTracker", "HealthCheck"]
+    dependencies: ["Python standard library only (no runtime dependency)"]
+    standards: ["OpenAI Chat Completions wire format"]
+    reference_projects: ["LiteLLM", "Portkey", "OpenRouter", "Vercel AI Gateway"]
+    research_records: ["research/models/model-gateway.md"]
+    implementation: ""
+    tests: ""
+    benchmarks: ""
+    security: "Gateway is a routing boundary, not a trust boundary; provider credentials stay in injected adapters."
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-10-23"
+
   - id: react-agent-loop
     name: ReAct Agent Loop
     category: agents

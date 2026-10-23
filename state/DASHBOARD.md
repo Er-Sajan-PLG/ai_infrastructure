@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-22 (session HERMES — Phase 5A.2 guardrails deterministic half → TESTED)
+> **Last Reconciled:** 2026-10-23 (session HERMES — Phase 5B.1 model-gateway → DECIDED; git hygiene: pull + branch/PR cleanup)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,10 +14,10 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 5 (Sustain) — Active; laboratory foundation and top-level package complete and production ready |
-| **Branch** | `master` |
+| **Branch** | `feat/model-gateway` |
 | **Tests** | 1481 passing, 3 deselected (verified via `make check`, 2026-10-22) |
 | **Coverage** | ≥85% floor enforced, green (>91%) |
-| **ADRs** | 39 (0000–0038 contiguous, counted from disk) |
+| **ADRs** | 40 (0000–0039 contiguous, counted from disk) |
 | **Capabilities** | 10 TESTED across 10 categories (verified via `make status`) |
 | **Runtime deps** | Zero (stdlib only) |
 
@@ -25,7 +25,7 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 | Agent ID | Model | Branch | Task | Status |
 |---|---|---|---|---|
-| HERMES | meituan/longcat-2.5-preview:free | `feat/guardrails-deterministic` | Phase 5A.2 — guardrails (deterministic half) to TESTED | Active — implementation complete, gates green |
+| HERMES | meituan/longcat-2.5-preview:free | `feat/model-gateway` | Phase 5B.1 — model-gateway to DECIDED (research + spec + ADR-0039) | Active — DECIDED; implementation next session |
 
 ## Critical Alerts
 
@@ -79,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/guardrails-deterministic` at `bc1d369`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `feat/model-gateway` at `5e6dfa7`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
