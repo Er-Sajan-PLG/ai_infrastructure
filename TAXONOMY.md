@@ -233,6 +233,32 @@ capabilities:
     compatibility: ""
     last_reviewed: "2026-10-08"
 
+  - id: memory-framework
+    name: Memory Framework (API Class)
+    category: memory
+    status: TESTED
+    maturity: experimental
+    priority: medium — composes vector-memory-store with the memory lifecycle (extraction, consolidation, eviction, scoping); needed by agent memory.
+    depends_on: [vector-memory-store]
+    decision: IMPLEMENT (ADR-0040) — protocol-first, composes VectorStore, extraction/embedding injected, no model calls in core, zero runtime deps. Promoted to TESTED 2026-10-23.
+    description: Memory lifecycle over the vector store: extraction, deduplication, consolidation, eviction policies, and scoping.
+    problem: The vector store owns retrieval but none of the memory lifecycle; components re-implement extraction, consolidation, eviction and scoping ad hoc.
+    inputs: ["text", "query", "scope"]
+    outputs: ["MemoryId", "MemoryItem tuple", "consolidated count", "evicted count"]
+    interfaces: ["Memory", "MemoryItem", "Extractor", "Embedder", "EvictionPolicy"]
+    dependencies: ["vector-memory-store", "model-provider-abstraction (injected ModelCaller)"]
+    standards: []
+    reference_projects: ["Mem0", "Zep/Graphiti", "Letta/MemGPT", "LangMem", "Cognee", "Supermemory"]
+    research_records: ["research/memory/memory-framework.md"]
+    implementation: "catalog/memory/framework/"
+    tests: "catalog/memory/framework/tests/"
+    benchmarks: ""
+    security: "In-memory only. No persistence. No network. Extraction and embedding are injected."
+    license: Apache-2.0
+    provenance: original
+    compatibility: ""
+    last_reviewed: "2026-10-23"
+
   - id: basic-rag-pipeline
     name: Basic RAG Pipeline
     category: retrieval
