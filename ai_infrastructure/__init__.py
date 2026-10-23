@@ -104,6 +104,21 @@ from execution_trace_recorder import (  # noqa: E402
     WriteFailures,
 )
 
+# 7b. Memory: memory-framework
+from framework import (  # noqa: E402
+    EvictionPolicy,
+    Extractor,
+    HashEmbedder,
+    ImportanceEviction,
+    InMemoryMemory,
+    LRUEviction,
+    Memory,
+    MemoryItem,
+    TTLEviction,
+    WholeTextExtractor,
+    cosine,
+)
+
 # 2b. Models: model-gateway
 from gateway import (  # noqa: E402
     AllFallbacksExhaustedError,
@@ -284,8 +299,10 @@ __all__ = [
     "EvaluationResult",
     "EvaluationSuite",
     "Evaluator",
+    "EvictionPolicy",
     "ExactMatch",
     "ExecutionEfficiency",
+    "Extractor",
     "FailureKind",
     "Faithfulness",
     "FinishDelta",
@@ -296,6 +313,9 @@ __all__ = [
     "GuardrailDecision",
     "GuardrailOutcome",
     "GuardrailPolicy",
+    "HashEmbedder",
+    "ImportanceEviction",
+    "InMemoryMemory",
     "InMemoryProviderRegistry",
     "InfraComponent",
     "InfrastructureMap",
@@ -303,6 +323,7 @@ __all__ = [
     "InvalidSchemaError",
     "JsonSchemaValidator",
     "LLMJudgeAdapter",
+    "LRUEviction",
     "LengthBoundValidator",
     "LengthValidator",
     "LogicalConsistency",
@@ -313,6 +334,8 @@ __all__ = [
     "MCPTimeoutError",
     "MCPToolFailure",
     "MCPTransportError",
+    "Memory",
+    "MemoryItem",
     "Message",
     "ModelCallHandle",
     "NoHealthyDeploymentError",
@@ -350,6 +373,7 @@ __all__ = [
     "StreamDelta",
     "SuiteResult",
     "SystemClock",
+    "TTLEviction",
     "TextBlock",
     "TextDelta",
     "Tool",
@@ -382,6 +406,7 @@ __all__ = [
     "ValidationResult",
     "Validator",
     "VectorStore",
+    "WholeTextExtractor",
     "WireRequest",
     "WireResponse",
     "WriteFailures",
@@ -391,6 +416,7 @@ __all__ = [
     "chat",
     "chunk_text",
     "collect_stream",
+    "cosine",
     "evaluate_rag",
     "evaluate_steps",
     "evaluate_trace",

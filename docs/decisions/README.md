@@ -44,6 +44,7 @@ Records of significant decisions, per charter §12. Format defined by [ADR-0000]
 | [0037](0037-evaluation-framework.md) | Evaluation Framework — Independent Implementation | Accepted |
 | [0038](0038-guardrails-deterministic.md) | Guardrails — Deterministic Half (IMPLEMENT) | Accepted |
 | [0039](0039-model-gateway.md) | Model Gateway / Provider Proxy (IMPLEMENT) | Accepted |
+| [0040](0040-memory-framework.md) | Memory Framework (IMPLEMENT) | Accepted |
 
 ## When an ADR is required
 

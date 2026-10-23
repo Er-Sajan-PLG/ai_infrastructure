@@ -1,6 +1,6 @@
 # Context & Memory
 
-> **Status: first entry researched and built.** `vector-memory-store` is `TESTED` ([ADR-0033](../../docs/decisions/0033-vector-memory-store.md)); see its research record below.
+> **Status: 2 studies.** `vector-memory-store` is `TESTED` ([ADR-0033](../../docs/decisions/0033-vector-memory-store.md)); `memory-framework` is `DECIDED` ([ADR-0040](../../docs/decisions/0040-memory-framework.md)). See their research records below.
 
 ## What it is
 
@@ -17,6 +17,7 @@ Research artifacts live at `research/memory/<capability-id>.md` and label claims
 ## Variants & types
 
 - **Vector memory store** (`vector-memory-store`) — in-memory cosine similarity over injected embeddings, stdlib-only, LRU eviction.
+- **Memory framework** (`memory-framework`) — lifecycle over the store: extraction, consolidation, eviction policies, scoping.
 
 ## Landscape
 
