@@ -1,7 +1,7 @@
 # Research Record: Rate Limiting & Retry Infrastructure
 
 - **Capability:** `rate-limiting` (category: reliability)
-- **Status:** `RESEARCHED` — convergence-level evidence only; no deep per-implementation study (§3 explains why that is sufficient for a deferral)
+- **Status:** `IMPLEMENTED` — trigger fired (model-gateway TESTED); re-decided from DEFER to IMPLEMENT (ADR-0041)
 - **Date:** 2026-10-16
 - **Decision:** see [ADR-0035](../../docs/decisions/0035-discovered-capability-decisions.md) *(DEFER, DW-017)*
 - **Sources:** [ADR-0032](../../docs/decisions/0032-reliability-category.md), [convergence report](../../docs/discovery/2026-10-08-convergence.md), [ADR-0007](../../docs/decisions/0007-model-provider-abstraction.md), study pipeline reports (`study_pipeline/studied_repos/`)

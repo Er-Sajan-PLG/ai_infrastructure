@@ -30,6 +30,7 @@ from pathlib import Path
 # Category directories declared in TAXONOMY.md §1. A category directory holds
 # entries; its own README.md is category documentation, not an entry.
 CATEGORIES: tuple[str, ...] = (
+    "reliability",
     "primitives",
     "runtime",
     "agents",

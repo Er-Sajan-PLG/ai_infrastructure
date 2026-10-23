@@ -14,11 +14,11 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 5 (Sustain) — Active; laboratory foundation and top-level package complete and production ready |
-| **Branch** | `master` |
-| **Tests** | 1531 passing, 3 deselected (verified via `make check`, 2026-10-23) |
+| **Branch** | `feat/rate-limiting` |
+| **Tests** | 1570 passing, 3 deselected (verified via `make check`, 2026-10-23) |
 | **Coverage** | ≥85% floor enforced, green (>91%) |
-| **ADRs** | 41 (0000–0040 contiguous, counted from disk) |
-| **Capabilities** | 12 TESTED across 12 categories (verified via `make status`) |
+| **ADRs** | 42 (0000–0041 contiguous, counted from disk) |
+| **Capabilities** | 13 TESTED across 13 categories (verified via `make status`) |
 | **Runtime deps** | Zero (stdlib only) |
 
 ## Active Agents
@@ -79,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `chore/session-closeout-memory-framework` at `2e5e816`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `feat/rate-limiting` at `3c95da8`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->

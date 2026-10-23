@@ -35,6 +35,7 @@ if _CATALOG_DIR is not None:
         "protocols",
         "deployment",
         "memory",
+        "reliability",
         "retrieval",
         "evaluation",
         "guardrails",
@@ -197,6 +198,15 @@ from model_provider.providers import (  # noqa: E402
 )
 
 # 3. Agents: react-agent-loop
+# 7c. Reliability: rate-limiting
+from rate_limiting import (  # noqa: E402
+    ResilientExecutor,
+    RetryPolicy,
+    TokenBucket,
+    is_retryable,
+    retry,
+    retry_after,
+)
 from react_agent_loop import (  # noqa: E402
     Agent,
     AgentResult,
@@ -362,6 +372,8 @@ __all__ = [
     "RegexMatchValidator",
     "RegistryDispatcher",
     "RepetitionTracker",
+    "ResilientExecutor",
+    "RetryPolicy",
     "Role",
     "Router",
     "RoutingStrategy",
@@ -376,6 +388,7 @@ __all__ = [
     "TTLEviction",
     "TextBlock",
     "TextDelta",
+    "TokenBucket",
     "Tool",
     "ToolCallAccumulator",
     "ToolCallBlock",
@@ -421,10 +434,13 @@ __all__ = [
     "evaluate_steps",
     "evaluate_trace",
     "exact_match_suite",
+    "is_retryable",
     "length_suite",
     "make_request",
     "project_tools",
     "rag_evaluation_suite",
+    "retry",
+    "retry_after",
     "run",
     "scan_keywords",
     "schema_validation_suite",
