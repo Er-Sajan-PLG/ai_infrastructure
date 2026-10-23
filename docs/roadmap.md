@@ -2,8 +2,7 @@
 
 ## Current phase
  
--**Phase 5 — Sustain** (charter §30) — active. All 4 initial phases (Foundation, Seed, Study, Discover, Compose) complete. All 8 implemented capabilities across 8 categories are TESTED and benchmarked, with 5 integration compositions validated. Unified package `ai_infrastructure` established for production consumption.
-+**Phase 5 — Sustain** (charter §30) — active. All 4 initial phases (Foundation, Seed, Study, Discover, Compose) complete. All 8 implemented capabilities across 8 categories are TESTED and benchmarked, with 5 integration compositions validated. Unified package `ai_infrastructure` established for production consumption.
+**Phase 5 — Sustain** (charter §30) — active. All 4 initial phases (Foundation, Seed, Study, Discover, Compose) complete. All 13 implemented capabilities across 13 categories are TESTED and benchmarked (verified via `make status`), with 5 integration compositions validated. Unified package `ai_infrastructure` established for production consumption.
  
  | Phase | Status | Plan |
  |---|---|---|
@@ -13,16 +12,13 @@
  | 2 — Study | 🟩 **Complete** — Tracks 2A+2B done; 18 trade-offs assessed; 6 taxonomy categories added (ADR-0022–0027) | [`phases/phase-2-study.md`](phases/phase-2-study.md) |
  | 3 — Discover | ✅ Complete — convergence detection, review workflow, deprecation flagging; 2 categories adopted (ADR-0031/0032) | [`phases/phase-3-discover.md`](phases/phase-3-discover.md) |
  | 4 — Compose | ✅ Complete — Systems A/B/C + benchmark vs 2 monolithic baselines (2026-10-16) | [`phases/phase-4-compose.md`](phases/phase-4-compose.md) |
--| 5 — Sustain | 🟩 Active — Production-ready package, continuous security, ongoing monitoring | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
-+| 5 — Sustain | 🟩 Active — Production-ready package, continuous security, ongoing monitoring | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
+ | 5 — Sustain | 🟩 Active — Production-ready package, continuous security, ongoing monitoring | [`phases/phase-5-sustain.md`](phases/phase-5-sustain.md) |
  
  Executable plans — including exit criteria — live in [`docs/phases/`](phases/). Read the current phase's plan before starting work.
  
--## Phase 1 queue (historical — 7 of 7 seeded capabilities TESTED)
-+## Phase 1 queue (historical — 7 of 7 seeded capabilities TESTED)
+## Phase 1 queue (historical — 7 of 7 seeded capabilities TESTED)
  
--All 7 seeded capabilities promoted to `TESTED` across categories. Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
-+All 7 seeded capabilities promoted to `TESTED` across categories. Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
+All 7 seeded capabilities promoted to `TESTED` across categories. Sources: [`../TAXONOMY.md`](../TAXONOMY.md) §4.
  
  1. `tool-registry` (tools) — no dependencies, consumed by almost everything. ✅ TESTED
  2. `model-provider-abstraction` (models) — no dependencies, consumed by everything above. ✅ TESTED
@@ -150,3 +146,5 @@ For each: RESEARCHED → UNDERSTOOD → DESIGNED → DECIDED (ADR) → IMPLEMENT
 - **Session — Phase 5B.2: `memory-framework` → TESTED (HERMES, 2026-10-23).** Implemented `catalog/memory/framework/` (InMemoryMemory composing VectorStore: extraction, consolidation, eviction policies LRU/TTL/importance, scoping; protocol-first; zero runtime deps; ADR-0040). Promoted taxonomy entry to TESTED (25 tests incl. diff-coverage 100%). Merged PR #18.
 
 - **Session — Phase 5B.4: `rate-limiting` → TESTED (HERMES, 2026-10-23).** Implemented `catalog/reliability/rate_limiting/` (TokenBucket, RetryPolicy, ResilientExecutor; caller-invoked; zero runtime deps; ADR-0041). Re-decided from DEFER (DW-017) — trigger fired with model-gateway TESTED. Promoted to TESTED (28 tests, diff-coverage 100%). Merged PR #20.
+
+- **Session — Phase 0–4, 7: stabilization pass (HERMES, 2026-10-23).** Reconciled repository truth (README/architecture/gap-analysis/BLOCKERS/INDEX: 8→13 capabilities, 1337→1570 tests, 36→42 ADRs), removed stale DW-017, corrected TAXONOMY `depends_on` drift, added `make doc-sync` + `make wheel-check` gates (both 100% coverage), widened SAST to `study_pipeline` + classified B314 (AR-007), added ADR-0042 (public-API namespace policy) + ADR-0043 (framework boundary), recorded baseline snapshot at `state/BASELINES/2026-10-23.md`, and validated external-consumer proof (5 capabilities from installed wheel). 1588 tests, all gates green. Merged PR #22.

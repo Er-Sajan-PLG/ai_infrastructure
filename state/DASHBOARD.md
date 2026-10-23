@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-23 (session HERMES — rate-limiting TESTED (PR #20 merged); 13 TESTED; 1570 tests; make check green)
+> **Last Reconciled:** 2026-10-23 (session HERMES — stabilization pass merged (PR #22) + all sessions closed (PR #23); 13 TESTED; 1588 tests; `make check-strict` green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -14,8 +14,8 @@ An independent AI infrastructure laboratory — research repository, architectur
 | Field | Value |
 |---|---|
 | **Phase** | Phase 5 (Sustain) — Active; laboratory foundation and top-level package complete and production ready |
-| **Branch** | `feat/rate-limiting` |
-| **Tests** | 1570 passing, 3 deselected (verified via `make check`, 2026-10-23) |
+| **Branch** | `master` |
+| **Tests** | 1588 passing, 3 deselected (verified via `make check-strict`, 2026-10-23) |
 | **Coverage** | ≥85% floor enforced, green (>91%) |
 | **ADRs** | 42 (0000–0041 contiguous, counted from disk) |
 | **Capabilities** | 13 TESTED across 13 categories (verified via `make status`) |
@@ -33,6 +33,11 @@ _(none — all sessions closed by maintainer directive 2026-10-23; claims releas
 
 ## Recently Completed
 
+- Phase 0–4, 7 — stabilization pass (PR #22, 2026-10-23): reconciled repo truth (README/architecture/gap-analysis/BLOCKERS/INDEX), removed stale DW-017, corrected TAXONOMY `depends_on`, added `make doc-sync` + `make wheel-check` gates, widened SAST, ADR-0042/0043, baseline snapshot, external-consumer proof. 1588 tests, all gates green.
+- Phase 5B.4 — `rate-limiting` → TESTED (PR #20, 2026-10-23): TokenBucket, RetryPolicy, ResilientExecutor; ADR-0041; 28 tests.
+- Phase 5B.2 — `memory-framework` → TESTED (PR #18, 2026-10-23): InMemoryMemory composing VectorStore; ADR-0040; 25 tests.
+- Phase 5B.1 — `model-gateway` → TESTED (PR #17, 2026-10-23): DefaultGateway with fallback/cooldown/cost; ADR-0039; 22 tests.
+- All 2026-10-23 sessions closed (PR #23): memory-framework, model-gateway, rate-limiting; passkey not yet configured; close authorization recorded as maintainer directive.
 - Phase 5A.2 — `guardrails` (deterministic half) → TESTED (HERMES, 2026-10-22): Validator protocol, GuardrailPolicy (PASS/FLAG/REJECT), Rails, deterministic validators (length, JSON schema, regex, allowlist, denylist, PII, one-line, valid-JSON); ADR-0038; DW-016 removed (10 TESTED capabilities)
 - WP6 — `InfrastructureScanner` now honors an injected `model_provider` (threaded through `scan()` into `scan_with_llm`; defaults to `OpenAIProvider` only when `None`); DEBT-005 resolved, DEBT-004 moved to Resolved (`065b2a6`, 2026-10-16)
 - WP5 — five discovered capabilities decided (ADR-0035): DEFER config-and-settings, response-cache, guardrails, rate-limiting (DW-014–017); DOCUMENT agent-instruction-files (`21e2f64`, 2026-10-16)
@@ -77,6 +82,6 @@ _(none — all sessions closed by maintainer directive 2026-10-23; claims releas
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `chore/session-closure-2026-10-23` at `f47bfce`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `fix/docs-reconcile-2026-10-23` at `7ac5fb6`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
