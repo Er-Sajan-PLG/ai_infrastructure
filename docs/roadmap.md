@@ -148,3 +148,5 @@ For each: RESEARCHED → UNDERSTOOD → DESIGNED → DECIDED (ADR) → IMPLEMENT
 - **Session — Phase 5B.1: `model-gateway` → TESTED (HERMES, 2026-10-23).** Implemented `catalog/models/gateway/` (DefaultGateway with fallback chains, cooldown/cost tracking, protocol-first, zero runtime deps; ADR-0039). Promoted taxonomy entry to TESTED (22 tests). Merged PR #17.
 
 - **Session — Phase 5B.2: `memory-framework` → TESTED (HERMES, 2026-10-23).** Implemented `catalog/memory/framework/` (InMemoryMemory composing VectorStore: extraction, consolidation, eviction policies LRU/TTL/importance, scoping; protocol-first; zero runtime deps; ADR-0040). Promoted taxonomy entry to TESTED (25 tests incl. diff-coverage 100%). Merged PR #18.
+
+- **Session — Phase 5B.4: `rate-limiting` → TESTED (HERMES, 2026-10-23).** Implemented `catalog/reliability/rate_limiting/` (TokenBucket, RetryPolicy, ResilientExecutor; caller-invoked; zero runtime deps; ADR-0041). Re-decided from DEFER (DW-017) — trigger fired with model-gateway TESTED. Promoted to TESTED (28 tests, diff-coverage 100%). Merged PR #20.

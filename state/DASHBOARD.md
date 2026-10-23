@@ -1,6 +1,6 @@
 # DASHBOARD — Executive Summary
 
-> **Last Reconciled:** 2026-10-23 (session HERMES — memory-framework IMPLEMENTED → TESTED; PR #18 merged; master; 1542 tests; make check green)
+> **Last Reconciled:** 2026-10-23 (session HERMES — rate-limiting TESTED (PR #20 merged); 13 TESTED; 1570 tests; make check green)
 > **Protocol:** MACP (Multi-Agent Coordination Protocol)
 
 ---
@@ -79,6 +79,6 @@ An independent AI infrastructure laboratory — research repository, architectur
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `feat/rate-limiting` at `3c95da8`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `chore/session-closeout-rate-limiting` at `2cd0803`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
