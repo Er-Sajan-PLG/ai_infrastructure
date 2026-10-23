@@ -82,6 +82,6 @@ _(none — all sessions closed by maintainer directive 2026-10-23; claims releas
 
 <!-- AUTO-SYNC:START -->
 > Branched reality check (auto-synced, git-derived — do not hand-edit):
-> branch `fix/docs-reconcile-2026-10-23` at `7ac5fb6`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
+> branch `chore/sync-state-master` at `f5912c5`; session commits not on master: 0 (see `git log master..HEAD --oneline`).
 > working tree dirty at sync time — see `git status`.
 <!-- AUTO-SYNC:END -->
