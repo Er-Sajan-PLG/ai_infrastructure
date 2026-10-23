@@ -68,13 +68,18 @@ def validate_wheel(names: list[str]) -> int:
 
 
 def _build(outdir: Path) -> list[Path]:
-    subprocess.run(  # noqa: S603
+    result = subprocess.run(  # noqa: S603
         [sys.executable, "-m", "build", "--wheel", "--outdir", str(outdir)],
         cwd=ROOT,
-        check=True,
         capture_output=True,
         text=True,
     )
+    if result.returncode != 0:
+        sys.stderr.write(result.stdout)
+        sys.stderr.write(result.stderr)
+        raise subprocess.CalledProcessError(
+            result.returncode, result.args, result.stdout, result.stderr
+        )
     return list(outdir.glob("*.whl"))
 
 
