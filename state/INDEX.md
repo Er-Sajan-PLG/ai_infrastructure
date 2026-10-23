@@ -4,6 +4,18 @@
 
 ---
 
+## Session: 2026-10-23 — Capability Expansion + Stabilization (HERMES, closed)
+
+- **Agent:** HERMES (meituan/longcat-2.5-preview:free)
+- **Branch:** `master` (feat/model-gateway → feat/memory-framework → feat/rate-limiting → chore/stabilization-truth, all merged)
+- **Task:** Phase 5B.1–5B.4 (model-gateway, memory-framework, rate-limiting) + Phase 0–4,7 stabilization (doc-sync, wheel-check, SAST widening, ADR-0042/0043, baseline snapshot, external consumer proof)
+- **Files touched:** `catalog/models/gateway/`, `catalog/memory/framework/`, `catalog/reliability/rate_limiting/`, `scripts/check_doc_sync.py`, `scripts/check_wheel.py`, `scripts/check_session_closure.py`, `docs/decisions/0042-*.md`, `docs/decisions/0043-*.md`, `state/BASELINES/2026-10-23.md`, `state/sessions/20261023-HERMES-*.md`, `state/REGISTRY.md`, `state/DASHBOARD.md`, `state/INDEX.md`, `TAXONOMY.md`, `docs/architecture.md`, `docs/gap-analysis-report.md`, `state/BLOCKERS.md`, `README.md`, `examples/`
+- **Outcome:** 13 TESTED / 3 DECIDED / 1588 tests / 42 ADRs / 16 research records / 16 specs. PR #16–#22 merged. All sessions closed by maintainer directive 2026-10-23. Passkey not yet configured; close authorization recorded as maintainer directive.
+- **Session files:** `state/sessions/20261023-HERMES-model-gateway.md`, `state/sessions/20261023-HERMES-memory-framework.md`, `state/sessions/20261023-HERMES-rate-limiting.md`
+- **Plan:** `state/plans/2026-10-23-stabilization.md` (if present)
+
+---
+
 ## Session: 2026-10-21 — Production Readiness & Unified Package (PR1)
 
 - **Agent:** PR1 (gemini-3.8-flash)
